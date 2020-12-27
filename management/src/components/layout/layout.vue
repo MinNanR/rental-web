@@ -1,14 +1,16 @@
 <template>
-  <el-container style="height: 100vh">
+  <el-container class="my-container">
     <el-header>
       <my-header />
     </el-header>
     <el-container>
-      <el-aside width="200px">
+      <el-aside width="10vw">
         <sidebar />
       </el-aside>
-      <el-main>
-        <router-view></router-view>
+      <el-main style="padding: 0">
+        <div class="main-content">
+          <router-view></router-view>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -23,7 +25,6 @@ export default {
     sidebar,
     myHeader,
   },
-  methods: {},
 };
 </script>
 
@@ -47,7 +48,7 @@ export default {
   background-color: #e9eef3;
   color: #333;
   text-align: left;
-  line-height: 160px;
+  /* line-height: 160px; */
 }
 
 body > .el-container {
@@ -56,5 +57,16 @@ body > .el-container {
 
 body {
   margin: 0;
+}
+
+.my-container {
+  height: 100vh;
+}
+
+.main-content {
+  width: 96%;
+  margin-right: 2%;
+  margin-left: 2%;
+  margin-top: 50px;
 }
 </style>
