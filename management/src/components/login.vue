@@ -4,19 +4,20 @@
       <h3>请登录</h3>
       <div class="login-form">
         <el-form
-          :label-position="labelPosition"
+          :label-position="'right'"
           label-width="80px"
           :model="loginForm"
+          ref="loginForm"
         >
-          <el-form-item label="用户名" style="width: 300px">
+          <el-form-item label="用户名" style="width: 300px" prop="username">
             <el-input v-model="loginForm.username"></el-input>
           </el-form-item>
-          <el-form-item label="密码" style="width: 300px">
+          <el-form-item label="密码" style="width: 300px" prop="password">
             <el-input type="password" v-model="loginForm.password"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">立即创建</el-button>
-            <el-button>取消</el-button>
+            <el-button type="primary" @click="login">登录</el-button>
+            <el-button @click="resetForm('loginForm')">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -25,6 +26,8 @@
 </template>
 
 <script>
+import md5 from "js-md5";
+
 export default {
   data() {
     return {
@@ -36,20 +39,25 @@ export default {
   },
   methods: {
     login() {
+      let submitForm = {
+        username: this.loginForm.username,
+        password: md5(this.loginForm.password),
+      };
       this.request
-        .post("/auth/login/password", this.loginForm)
+        .post("/auth/login/password", submitForm)
         .then((response) => {
           let data = response.data;
-          let whiteList = data.router;
-          let token = data.jwtToken;
-          localStorage.setItem("whiteList", whiteList);
+          let token = data.token;
           localStorage.setItem("token", `Bearer ${token}`);
-          this.$router.push(data.redirectUrl);
+          this.$router.push('/');
         })
         .catch((error) => {
           console.log(error);
           alert("登录失败!");
         });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     },
   },
 };
