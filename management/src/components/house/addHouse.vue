@@ -11,6 +11,13 @@
           placeholder="请输入地址"
         ></el-input>
       </el-form-item>
+      <el-form-item label="简称" prop="houseName">
+        <el-input
+          type="text"
+          v-model="addHouseForm.houseName"
+          placehoder="请输入简称"
+        ></el-input>
+      </el-form-item>
       <el-form-item label="管理人姓名" prop="directorName">
         <el-input
           type="text"
@@ -41,6 +48,7 @@ export default {
     return {
       addHouseForm: {
         address: "",
+        houseName: "",
         directorName: "",
         directorPhone: "",
       },
@@ -56,6 +64,9 @@ export default {
             message: "请输入正确的手机号码",
             trigger: "blur",
           },
+        ],
+        houseName: [
+          { required: true, message: "请输入房屋简称", trigger: "blur" },
         ],
       },
     };

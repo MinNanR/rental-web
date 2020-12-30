@@ -10,11 +10,11 @@ const request = axios.create({
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     },
-    transformRequest: [
-        (data) => {
-            return JSON.stringify(data)
-        }
-    ]
+    // transformRequest: [
+    //     (data) => {
+    //         return JSON.stringify(data)
+    //     }
+    // ]
 })
 
 request.interceptors.request.use(

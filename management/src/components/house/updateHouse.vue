@@ -11,6 +11,13 @@
           placeholder="请输入地址"
         ></el-input>
       </el-form-item>
+      <el-form-item label="简称" prop="houseName">
+        <el-input
+          type="text"
+          v-model="updateHouseForm.houseName"
+          placehoder="请输入简称"
+        ></el-input>
+      </el-form-item>
       <el-form-item label="管理人姓名" prop="directorName">
         <el-input
           type="text"
@@ -54,6 +61,9 @@ export default {
             trigger: "blur",
           },
         ],
+        houseName: [
+          { required: true, message: "请输入房屋简称", trigger: "blur" },
+        ],
       },
     };
   },
@@ -65,6 +75,7 @@ export default {
       this.request.post("/house/getHouseInfo", { id: id }).then((response) => {
         let data = response.data;
         this.houseInfo = {
+          houseName: data.houseName,
           address: data.address,
           directorName: data.directorName,
           directorPhone: data.directorPhone,
@@ -89,6 +100,9 @@ export default {
           ) {
             formToSubmit.directorPhone = this.updateHouseForm.directorPhone;
           }
+          if (this.updateHouseForm.houseName !== this.houseInfo.houseName) {
+            formToSubmit.houseName = this.updateHouseForm.houseName;
+          }
           if (Object.keys(formToSubmit).length === 0) {
             this.$notify({
               title: "操作成功",
@@ -96,12 +110,13 @@ export default {
               type: "info",
             });
             this.turnBack();
-            return
+            return;
           }
-          formToSubmit.id = this.updateHouseForm.id
+          formToSubmit.id = this.updateHouseForm.id;
           this.request
             .post("/house/updateHouse", formToSubmit)
             .then((response, message) => {
+              console.log(response);
               this.$notify({
                 title: "操作成功",
                 message: message,

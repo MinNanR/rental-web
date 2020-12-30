@@ -14,19 +14,20 @@
         添加
       </el-button>
     </div>
-    <el-table :data="houseList" stripe style="width: 100%">
+    <el-table :data="houseList" stripe style="width: 100%" v-loading="loading">
       <el-table-column type="index" width="50"> </el-table-column>
-      <el-table-column prop="address" label="地址" width="180">
+      <el-table-column prop="address" label="地址" width="300">
       </el-table-column>
-      <el-table-column prop="directorName" label="管理人姓名" width="180">
+      <el-table-column prop="directorName" label="管理人姓名" width="150">
       </el-table-column>
       <el-table-column
         prop="updateUserName"
         label="最后更新人"
+        width="150"
       ></el-table-column>
-      <el-table-column prop="updateTime" label="最后更新时间"></el-table-column>
+      <el-table-column prop="updateTime" label="最后更新时间" width="200"></el-table-column>
       <el-table-column label="操作">
-        <template #default="scope">
+        <template #default="scope" v-show="!loading">
           <el-button
             type="primary"
             icon="el-icon-edit"
@@ -64,18 +65,22 @@ export default {
         address: null,
       },
       total: 0,
+      loading:false
     };
   },
   methods: {
     getHouseList() {
+      this.loading = true
       this.request
         .post("/house/getHouseList", this.queryForm)
         .then((response) => {
           this.houseList = response.data.list;
           this.total = response.data.totalCount;
+          this.loading = false
         })
         .catch((error) => {
           console.log(error);
+          this.loading = false
         });
     },
     toAddHouse() {

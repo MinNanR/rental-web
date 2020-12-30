@@ -14,7 +14,10 @@ const routes = [
         children: [
             {
                 path: "/",
-                component: () => import('../components/index/index.vue')
+                component: () => import('../components/index/index.vue'),
+                meta: {
+                    title: "主页"
+                }
             },
             {
                 path: 'house',
@@ -35,6 +38,34 @@ const routes = [
                 component: () => import('../components/house/updateHouse.vue'),
                 meta: {
                     title: '修改房屋'
+                }
+            },
+            {
+                path: 'room',
+                component: () => import('../components/room/index.vue'),
+                meta: {
+                    title: '房间信息'
+                }
+            },
+            {
+                path: 'addRoom',
+                component: () => import('../components/room/addRoom.vue'),
+                meta: {
+                    title: "添加房间"
+                }
+            },
+            {
+                path: 'roomInfo',
+                component: () => import('../components/room/updateRoom.vue'),
+                meta: {
+                    title: "修改房间"
+                }
+            },
+            {
+                path: 'tenant',
+                component: () => import('../components/tenant/index.vue'),
+                meta: {
+                    title: "房客信息"
                 }
             }
         ]
