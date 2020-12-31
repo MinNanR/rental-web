@@ -91,7 +91,7 @@
 export default {
   data() {
     return {
-      roomList: [{}],
+      roomList: [],
       roomStatusDropDown: [{}],
       queryForm: {
         pageSize: 10,
@@ -133,6 +133,7 @@ export default {
           }
         })
         .catch((error) => {
+          this.houseDropDown=[]
           console.log(error);
         });
     },

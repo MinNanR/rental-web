@@ -67,6 +67,13 @@ const routes = [
                 meta: {
                     title: "房客信息"
                 }
+            },
+            {
+                path: 'addTenant',
+                component: () => import('../components/tenant/addTenant.vue'),
+                meta: {
+                    title: '添加房客'
+                }
             }
         ]
     }

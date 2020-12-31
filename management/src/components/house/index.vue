@@ -27,7 +27,7 @@
       ></el-table-column>
       <el-table-column prop="updateTime" label="最后更新时间" width="200"></el-table-column>
       <el-table-column label="操作">
-        <template #default="scope" v-show="!loading">
+        <template #default="scope">
           <el-button
             type="primary"
             icon="el-icon-edit"
@@ -58,7 +58,7 @@
 export default {
   data() {
     return {
-      houseList: [{}],
+      houseList: [],
       queryForm: {
         pageSize: 10,
         pageIndex: 1,

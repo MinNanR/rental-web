@@ -21,22 +21,81 @@
             </el-option> </el-select
         ></el-form-item>
         <el-form-item label="房号">
-          <el-input v-model="queryForm.roomNumber" :disabled="!houseSelected"></el-input>
+          <el-input
+            v-model="queryForm.roomNumber"
+            :disabled="!houseSelected"
+          ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getRoomList()">查询</el-button>
+          <el-button type="primary" @click="getTenantList()">查询</el-button>
         </el-form-item>
       </el-form>
-      <el-button type="primary" @click="toAddRoom()">
+      <el-button type="primary" @click="toAddTenant()">
         <i class="el-icon-circle-plus"></i>
         添加
       </el-button>
-      <el-table :data="tenantList" strip style="width: 100%">
-          <el-table-column type="index" width="50" label="#"></el-table-column>
-          <el-table-column prop="name" width="100" label="姓名"></el-table-column>
-          <el-table-column prop="phone" width="100" label="电话"></el-table-column>
-          <el-table-column prop="hometown" width=""></el-table-column>
+    </div>
+    <div>
+      <el-table
+        :data="tenantList"
+        strip
+        style="width: 100%"
+        v-loading="loading"
+      >
+        <el-table-column type="index" width="50" label="#"></el-table-column>
+        <el-table-column prop="name" width="200" label="姓名"></el-table-column>
+        <el-table-column
+          prop="phone"
+          width="200"
+          label="电话"
+        ></el-table-column>
+        <el-table-column
+          prop="hometown"
+          width="200"
+          label="籍贯"
+        ></el-table-column>
+        <el-table-column
+          prop="identificationNumber"
+          width="200"
+          label="身份证号码"
+        ></el-table-column>
+        <el-table-column
+          prop="updateUserName"
+          width="200"
+          label="最后更新人"
+        ></el-table-column>
+        <el-table-column
+          prop="updateTime"
+          width="200"
+          label="更新时间"
+        ></el-table-column>
+        <el-table-column label="操作">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="toUpdateTenant(scope.$index, scope.row.id)"
+            >
+            </el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini">
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
+    </div>
+    <div>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryForm.pageIndex"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="10"
+        :hide-on-single-page="false"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -50,12 +109,19 @@ export default {
         name: "",
         houseId: "",
         roomNumber: "",
+        pageSize: 10,
+        pageIndex: 1,
       },
       houseSelected: false,
-      tenantList: [{}],
+      tenantList: [],
+      total: null,
+      loading: false,
     };
   },
   methods: {
+    toAddTenant() {
+      this.$router.push("/addTenant");
+    },
     getHouseDropDown() {
       this.request
         .post("/house/getHouseDropDown", {})
@@ -74,9 +140,35 @@ export default {
         this.houseSelected = true;
       }
     },
+    getTenantList() {
+      this.loading = true;
+      this.request
+        .post("/tenant/getTenantList", this.queryForm)
+        .then((response) => {
+          this.tenantList = response.data.list;
+          this.total = response.data.totalCount;
+          this.loading = false;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.laoding = false;
+        });
+    },
+    toUpdateTenant(index, id) {
+      console.log(id);
+    },
+    handleSizeChange(val) {
+      this.queryForm.pageSize = val;
+      this.getTenantList();
+    },
+    handleCurrentChange(val) {
+      this.queryForm.pageIndex = val;
+      this.getTenantList();
+    },
   },
   mounted() {
     this.getHouseDropDown();
+    this.getTenantList();
   },
 };
 </script>
