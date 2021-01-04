@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content">
     <div class="header">
       <el-form :inline="true" :model="queryForm" class="demo-form-inline">
         <el-form-item label="房屋">
@@ -38,7 +38,13 @@
         添加
       </el-button>
     </div>
-    <el-table :data="roomList" stripe style="width: 100%">
+    <el-table
+      :data="roomList"
+      stripe
+      style="width: 100%"
+      v-loading="loading"
+      :header-cell-style="{ background: '#d7e4fb' }"
+    >
       <el-table-column type="index" width="50"> </el-table-column>
       <el-table-column prop="roomNumber" label="房号" width="150">
       </el-table-column>
@@ -57,19 +63,25 @@
       <el-table-column label="操作">
         <template #default="scope">
           <el-button
+            type="info"
+            icon="el-icon-view"
+            size="mini"
+            @click="toReferRoom(scope.$index, scope.row.id)"
+          ></el-button>
+          <el-button
             type="primary"
             icon="el-icon-edit"
             size="mini"
             @click="toUpdateRoom(scope.$index, scope.row.id)"
           >
           </el-button>
-          <el-button type="primary" icon="el-icon-delete" size="mini">
+          <el-button type="danger" icon="el-icon-delete" size="mini">
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-    <div style="display: flex">
-      <div class="refresh-btn">
+    <div style="display: flex; margin-top: 30px">
+      <div class="refresh-btn" @click="getRoomList()">
         <i class="el-icon-refresh-right"></i>
       </div>
       <el-pagination
@@ -102,21 +114,24 @@ export default {
       },
       houseDropDown: [{}],
       total: 0,
+      loading: false,
     };
   },
   methods: {
     getRoomList() {
-      console.log(this.queryForm);
+      this.loading = true;
       this.request
         .post("/room/getRoomList", this.queryForm)
         .then((response) => {
           let data = response.data;
           this.roomList = data.list;
           this.total = data.totalCount;
+          this.loading = false;
         })
         .catch((error) => {
           console.log(error);
           this.error(error);
+          this.loading = false;
         });
     },
     getHouseDropDown() {
@@ -133,7 +148,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.houseDropDown=[]
+          this.houseDropDown = [];
           console.log(error);
         });
     },
@@ -151,8 +166,10 @@ export default {
       this.$router.push("/addRoom");
     },
     toUpdateRoom(index, id) {
+      this.$router.push({ path: "/updateRoom", query: { id: id } });
+    },
+    toReferRoom(index, id) {
       this.$router.push({ path: "/roomInfo", query: { id: id } });
-      console.log(id);
     },
     handleRoomStatusChange(val) {
       if (val === "") {
@@ -184,12 +201,8 @@ export default {
   padding-bottom: 10px;
 }
 
-.refresh-btn {
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
-  font-size: 26px;
-  color: #409eff;
-  cursor: pointer;
+.content {
+  background-color: white;
+  padding: 10px 10px 10px 10px;
 }
 </style>

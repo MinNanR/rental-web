@@ -55,10 +55,17 @@ const routes = [
                 }
             },
             {
-                path: 'roomInfo',
+                path: 'updateRoom',
                 component: () => import('../components/room/updateRoom.vue'),
                 meta: {
                     title: "修改房间"
+                }
+            },
+            {
+                path: 'roomInfo',
+                component: () => import('../components/room/roomInfo.vue'),
+                meta: {
+                    title: "房间信息"
                 }
             },
             {

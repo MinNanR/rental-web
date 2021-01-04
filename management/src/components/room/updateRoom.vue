@@ -1,56 +1,61 @@
 <template>
-  <div style="width: 30%">
-    <el-form
-      :model="updateRoomForm"
-      :rules="rules"
-      ref="updateRoomForm"
-      label-width="100px"
+  <div class="content">
+    <el-button :size="'small'" style="margin-bottom: 30px" @click="turnBack()"
+      >返回</el-button
     >
-      <el-form-item label="房屋" prop="houseId">
-        <el-select
-          v-model="updateRoomForm.houseId"
-          clearable
-          placeholder="请选择"
-          disabled="true"
-        >
-          <el-option
-            v-for="item in houseDropDown"
-            :key="item.id"
-            :label="item.houseName"
-            :value="item.id"
+    <div style="width: 30%">
+      <el-form
+        :model="updateRoomForm"
+        :rules="rules"
+        ref="updateRoomForm"
+        label-width="100px"
+      >
+        <el-form-item label="房屋" prop="houseId">
+          <el-select
+            v-model="updateRoomForm.houseId"
+            clearable
+            placeholder="请选择"
+            disabled="true"
           >
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="房间编号" prop="roomNumber">
-        <el-input
-          type="text"
-          v-model="updateRoomForm.roomNumber"
-          placehoder="请输入房间编号"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="楼层" prop="floor">
-        <el-input
-          type="text"
-          v-model.number="updateRoomForm.floor"
-          placeholder="楼层"
-          ><template #append>楼</template></el-input
-        >
-      </el-form-item>
-      <el-form-item label="每月房租" prop="price">
-        <el-input
-          type="text"
-          v-model.number="updateRoomForm.price"
-          placeholder="每月房租"
-          ><template #append>元</template></el-input
-        >
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submit('updateRoomForm')"
-          >提交</el-button
-        >
-      </el-form-item>
-    </el-form>
+            <el-option
+              v-for="item in houseDropDown"
+              :key="item.id"
+              :label="item.houseName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="房间编号" prop="roomNumber">
+          <el-input
+            type="text"
+            v-model="updateRoomForm.roomNumber"
+            placehoder="请输入房间编号"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="楼层" prop="floor">
+          <el-input
+            type="text"
+            v-model.number="updateRoomForm.floor"
+            placeholder="楼层"
+            ><template #append>楼</template></el-input
+          >
+        </el-form-item>
+        <el-form-item label="每月房租" prop="price">
+          <el-input
+            type="text"
+            v-model.number="updateRoomForm.price"
+            placeholder="每月房租"
+            ><template #append>元</template></el-input
+          >
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submit('updateRoomForm')"
+            >提交</el-button
+          >
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
@@ -177,4 +182,8 @@ export default {
 </script>
 
 <style>
+.content {
+  background-color: white;
+  padding: 10px 10px 10px 10px;
+}
 </style>

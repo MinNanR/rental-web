@@ -67,6 +67,6 @@ body {
   width: 96%;
   margin-right: 2%;
   margin-left: 2%;
-  margin-top: 50px;
+  margin-top: 20px;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="content">
     <div class="header">
       <el-form :inline="true" :model="queryForm" class="demo-form-inline">
         <el-form-item label="姓名">
@@ -41,6 +41,7 @@
         strip
         style="width: 100%"
         v-loading="loading"
+        :header-cell-style="{ background: '#d7e4fb' }"
       >
         <el-table-column type="index" width="50" label="#"></el-table-column>
         <el-table-column prop="name" width="200" label="姓名"></el-table-column>
@@ -84,7 +85,10 @@
         </el-table-column>
       </el-table>
     </div>
-    <div>
+    <div style="display: flex; margin-top: 30px">
+      <div class="refresh-btn" @click="getTenantList()">
+        <i class="el-icon-refresh-right"></i>
+      </div>
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -179,5 +183,10 @@ export default {
   justify-content: space-between;
   height: 40px;
   padding-bottom: 10px;
+}
+
+.content {
+  background-color: white;
+  padding: 10px 10px 10px 10px;
 }
 </style>

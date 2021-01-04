@@ -24,4 +24,13 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+
+.refresh-btn {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 24px;
+  color: #409eff;
+  cursor: pointer;
+}
 </style>

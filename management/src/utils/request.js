@@ -35,10 +35,10 @@ request.interceptors.response.use(
             if (data.code === '000') {
                 return { data: data.data, message: data.message }
             } else {
-                Promise.reject(data.message)
+                return Promise.reject(data.message)
             }
         } else {
-            Promise.reject()
+            return Promise.reject()
         }
     },
     error => {
@@ -52,9 +52,9 @@ request.interceptors.response.use(
                 alert("无权限")
                 app.router.push('/login')
             }
-            Promise.reject(error)
+            return Promise.reject(error)
         } else {
-            Promise.reject(error)
+            return Promise.reject(error)
         }
     }
 )
