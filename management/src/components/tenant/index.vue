@@ -197,7 +197,7 @@ export default {
         });
     },
     toUpdateTenant(index, id) {
-      console.log(id);
+      this.$router.push({ path: "/tenantInfo", query: { id: id } });
     },
     handleSizeChange(val) {
       this.queryForm.pageSize = val;
