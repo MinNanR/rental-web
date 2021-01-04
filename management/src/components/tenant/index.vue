@@ -5,12 +5,44 @@
         <el-form-item label="姓名">
           <el-input v-model="queryForm.name"></el-input>
         </el-form-item>
+        <el-form-item label="籍贯">
+          <el-select
+            v-model="queryForm.hometownProvince"
+            clearable
+            placeholder="请选择"
+            @change="handleSeleectProvince"
+          >
+            <el-option
+              v-for="(item, index) in provinceList"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-select
+            v-model="queryForm.hometownCity"
+            clearable
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="(item, index) in cityList"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="房屋"
           ><el-select
             v-model="queryForm.houseId"
             clearable
             placeholder="请选择"
             @change="handleSelecteHouse"
+            ref="houseSelect"
           >
             <el-option
               v-for="item in houseDropDown"
@@ -105,6 +137,8 @@
 </template>
 
 <script>
+import provinces from "../../utils/cities.js";
+
 export default {
   data() {
     return {
@@ -113,6 +147,8 @@ export default {
         name: "",
         houseId: "",
         roomNumber: "",
+        hometownProvince: null,
+        hometownCity: null,
         pageSize: 10,
         pageIndex: 1,
       },
@@ -120,6 +156,8 @@ export default {
       tenantList: [],
       total: null,
       loading: false,
+      provinceList: provinces,
+      cityList: [{}],
     };
   },
   methods: {
@@ -168,6 +206,16 @@ export default {
     handleCurrentChange(val) {
       this.queryForm.pageIndex = val;
       this.getTenantList();
+    },
+    handleSeleectProvince(val) {
+      if (val === "") {
+        this.cityList = [{}];
+        this.queryForm.hometownCity = null;
+        this.queryForm.hometownProvince = null;
+      } else {
+        let index = this.provinceList.findIndex((item) => item.value === val);
+        this.cityList = this.provinceList[index].children;
+      }
     },
   },
   mounted() {
