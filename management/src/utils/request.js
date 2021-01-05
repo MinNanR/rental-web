@@ -42,17 +42,21 @@ request.interceptors.response.use(
         }
     },
     error => {
-        if (error.response.status != null) {
-            if (error.response.status === 401) {
-                localStorage.removeItem("token")
-                alert("登录信息过期")
-                app.router.push("/login")
-            } else if (error.response.status === 403) {
-                localStorage.removeItem("token")
-                alert("无权限")
-                app.router.push('/login')
+        if (error.response != null) {
+            if (error.response.status != null) {
+                if (error.response.status === 401) {
+                    localStorage.removeItem("token")
+                    alert("登录信息过期")
+                    app.router.push("/login")
+                } else if (error.response.status === 403) {
+                    localStorage.removeItem("token")
+                    alert("无权限")
+                    app.router.push('/login')
+                }
+                return Promise.reject(error)
+            } else {
+                return Promise.reject(error)
             }
-            return Promise.reject(error)
         } else {
             return Promise.reject(error)
         }

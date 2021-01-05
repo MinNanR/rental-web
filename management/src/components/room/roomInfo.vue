@@ -112,20 +112,21 @@
         ></el-table-column>
         <el-table-column>
           <template #default="scope">
-            <div title="退租">
-              <el-button
-                type="primary"
-                icon="el-icon-remove"
-                size="mini"
-                @click="remove(scope.$index, scope.row.id)"
-              >
-              </el-button>
-            </div>
+            <el-popconfirm
+              :title="`${scope.row.name}确定要退租吗？`"
+              @confirm="surrender(scope.$index, scope.row.id)"
+            >
+              <template #reference>
+                <el-button type="primary" icon="el-icon-remove" size="mini"
+                  >退租</el-button
+                >
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog title="选择房客" v-model="dialogVisible">
+    <el-dialog title="选择房客" v-model="dialogVisible" @closed="onDialogClosed">
       <el-row>
         <el-col :span="12">
           <div style="padding-left: 20px; padding-right: 20px">
@@ -242,13 +243,9 @@ export default {
     getTenantList() {
       this.listLoading = true;
       this.request
-        .post("/tenant/getTenantList", {
-          roomId: this.id,
-          pageSize: 10,
-          pageIndex: 1,
-        })
+        .post("/tenant/getTenantByRoom", { roomId: this.id })
         .then((response) => {
-          this.tenantList = response.data.list;
+          this.tenantList = response.data;
           this.listLoading = false;
         })
         .catch((error) => {
@@ -256,7 +253,26 @@ export default {
           this.listLoading = false;
         });
     },
-    remove() {},
+    surrender(index, id) {
+      this.request
+        .post("/tenant/surrender", { id: id })
+        .then((response, message) => {
+          this.$notify({
+            title: "操作成功",
+            message: message,
+            type: "success",
+          });
+          this.getTenantList()
+        })
+        .catch((error) => {
+          console.error(error);
+          this.$notify({
+            title: "操作失败",
+            message: error,
+            type: "error",
+          });
+        });
+    },
     openDialog() {
       this.dialogVisible = true;
     },
@@ -304,18 +320,22 @@ export default {
             message: message,
             type: "success",
           });
-          this.dialogVisible = false
-          this.getTenantList()
+          this.dialogVisible = false;
+          this.getTenantList();
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.$error({
             title: "操作失败",
             message: error,
             type: "success",
           });
-        })
+        });
     },
+    onDialogClosed(){
+      this.tenantDropDown = []
+      this.selectTenantList = []
+    }
   },
   mounted() {
     this.infoLoading = true;

@@ -73,16 +73,10 @@ export default {
     return {
       addTenantForm: {
         name: "",
-        // houseId: null,
-        // houseName: "",
-        // roomId: null,
-        // roomNumber: "",
         gender: "",
         phone: "",
         identificationNumber: "",
         birthday: "",
-        // hometownProvince: null,
-        // hometownCity: null,
         room: [],
         hometown: [],
       },

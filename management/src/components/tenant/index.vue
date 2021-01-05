@@ -76,7 +76,7 @@
         :header-cell-style="{ background: '#d7e4fb' }"
       >
         <el-table-column type="index" width="50" label="#"></el-table-column>
-        <el-table-column prop="name" width="200" label="姓名"></el-table-column>
+        <el-table-column prop="name" width="150" label="姓名"></el-table-column>
         <el-table-column
           prop="phone"
           width="200"
@@ -93,13 +93,18 @@
           label="身份证号码"
         ></el-table-column>
         <el-table-column
+          prop="status"
+          width="150"
+          label="状态"
+        ></el-table-column>
+        <el-table-column
           prop="updateUserName"
-          width="200"
+          width="150"
           label="最后更新人"
         ></el-table-column>
         <el-table-column
           prop="updateTime"
-          width="200"
+          width="150"
           label="更新时间"
         ></el-table-column>
         <el-table-column label="操作">
