@@ -88,6 +88,20 @@ const routes = [
                 meta: {
                     title: '修改房客信息'
                 }
+            },
+            {
+                path: 'user',
+                component: () => import('../components/user/index.vue'),
+                meta: {
+                    title: '用户信息'
+                }
+            },
+            {
+                path: 'adduser',
+                component: () => import('../components/user/addUser.vue'),
+                meta: {
+                    title: '添加用户'
+                }
             }
         ]
     }

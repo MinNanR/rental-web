@@ -201,8 +201,4 @@ export default {
   padding-bottom: 10px;
 }
 
-.content {
-  background-color: white;
-  padding: 10px 10px 10px 10px;
-}
 </style>

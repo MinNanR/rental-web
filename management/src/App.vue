@@ -33,4 +33,9 @@ export default {
   color: #409eff;
   cursor: pointer;
 }
+
+.content {
+  background-color: white;
+  padding: 10px 10px 10px 10px;
+}
 </style>
