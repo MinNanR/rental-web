@@ -102,6 +102,13 @@ const routes = [
                 meta: {
                     title: '添加用户'
                 }
+            },
+            {
+                path: 'updateUser',
+                component: () => import('../components/user/updateUser.vue'),
+                meta: {
+                    title: '修改用户信息'
+                }
             }
         ]
     }

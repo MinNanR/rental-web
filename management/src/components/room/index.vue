@@ -30,7 +30,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getRoomList()">查询</el-button>
+          <el-button type="primary" @click="getRoomList(1)">查询</el-button>
         </el-form-item>
       </el-form>
       <el-button type="primary" @click="toAddRoom()">
@@ -67,15 +67,24 @@
             icon="el-icon-view"
             size="mini"
             @click="toReferRoom(scope.$index, scope.row.id)"
-          ></el-button>
+          >
+            查看</el-button
+          >
           <el-button
             type="primary"
             icon="el-icon-edit"
             size="mini"
             @click="toUpdateRoom(scope.$index, scope.row.id)"
           >
+            修改
           </el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini">
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            @click="deleteRoom()"
+          >
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -118,8 +127,9 @@ export default {
     };
   },
   methods: {
-    getRoomList() {
+    getRoomList(pageIndex) {
       this.loading = true;
+      this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex
       this.request
         .post("/room/getRoomList", this.queryForm)
         .then((response) => {
@@ -178,12 +188,16 @@ export default {
     },
     handleSizeChange(value) {
       this.queryForm.pageSize = value;
-      this.queryForm.pageIndex = 1;
-      this.getRoomList();
+      this.getRoomList(1);
     },
     handleCurrentChange(value) {
-      this.queryForm.pageIndex = value;
-      this.getRoomList();
+      this.getRoomList(value);
+    },
+    deleteRoom() {
+      this.$message({
+        type: "info",
+        message: "功能未开放",
+      });
     },
   },
   created() {
@@ -200,5 +214,4 @@ export default {
   height: 40px;
   padding-bottom: 10px;
 }
-
 </style>

@@ -6,7 +6,7 @@
           <el-input v-model="queryForm.address" placeholder="地址"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getHouseList">查询</el-button>
+          <el-button type="primary" @click="getHouseList(1)">查询</el-button>
         </el-form-item>
       </el-form>
       <el-button type="primary" @click="toAddHouse()">
@@ -44,8 +44,15 @@
             size="mini"
             @click="toUpdateHouse(scope.$index, scope.row.id)"
           >
+            修改
           </el-button>
-          <el-button type="primary" icon="el-icon-delete" size="mini">
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            @click="deleteHouse()"
+          >
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -106,13 +113,17 @@ export default {
       // console.log(id);
     },
     handleSizeChange(value) {
-      this.queryForm.pageSize = value;
-      this.queryForm.pageIndex = 1;
-      this.getHouseList();
+      this.queryForm.pageSize = value
+      this.getHouseList(1);
     },
     handleCurrentChange(value) {
-      this.queryForm.pageIndex = value;
-      this.getHouseList();
+      this.getHouseList(value);
+    },
+    deleteHouse() {
+      this.$message({
+        type: "info",
+        message: "功能未开放",
+      });
     },
   },
   mounted() {
@@ -128,6 +139,4 @@ export default {
   height: 40px;
   padding-bottom: 10px;
 }
-
-
 </style>

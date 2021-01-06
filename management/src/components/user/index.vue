@@ -8,6 +8,9 @@
         <el-form-item label="手机号码">
           <el-input v-model="queryForm.phoneNumber"></el-input>
         </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="getUserList()">查询</el-button>
+        </el-form-item>
       </el-form>
       <el-button type="primary" @click="toAddUser()">
         <i class="el-icon-circle-plus"></i>
@@ -61,15 +64,36 @@
               size="mini"
               @click="toUpdateUser(scope.$index, scope.row.id)"
             >
+              修改
             </el-button>
-            <el-button type="primary" icon="el-icon-delete" size="mini">
-            </el-button>
+            <el-popconfirm
+              :title="`确定禁用用户${scope.row.username}吗？`"
+              @confirm="disbaleUser(scope.$index, scope.row.id)"
+              v-if="scope.row.enabled === 1"
+            >
+              <template #reference>
+                <el-button type="danger" icon="el-icon-error" size="mini">
+                  禁用
+                </el-button>
+              </template>
+            </el-popconfirm>
+            <el-popconfirm
+              :title="`确定启用用户${scope.row.username}吗？`"
+              @confirm="enableUser(scope.$index, scope.row.id)"
+              v-else
+            >
+              <template #reference>
+                <el-button type="info" icon="el-icon-circle-check" size="mini"
+                  >启用</el-button
+                >
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div style="display: flex; margin-top: 30px">
-      <div class="refresh-btn" @click="getUserList()">
+      <div class="refresh-btn" @click="getUserList(1)">
         <i class="el-icon-refresh-right"></i>
       </div>
       <el-pagination
@@ -104,13 +128,14 @@ export default {
   },
   methods: {
     toAddUser() {
-        this.$router.push('/addUser')
+      this.$router.push("/addUser");
     },
     toUpdateUser(index, id) {
-      console.log(id);
+      this.$router.push({ path: "/updateUser", query: { id: id } });
     },
-    getUserList() {
+    getUserList(pageIndex) {
       this.loading = true;
+      this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex;
       this.request
         .post("/user/getUserList", this.queryForm)
         .then((response) => {
@@ -122,6 +147,53 @@ export default {
         .catch((error) => {
           console.error(error);
           this.loading = false;
+        });
+    },
+    handleSizeChange(val) {
+      this.queryForm.pageSize = val;
+      this.getUserList(1);
+    },
+    handleCurrentChange(val) {
+      this.getUserList(val);
+    },
+    disbaleUser(index, id) {
+      this.request
+        .post("/user/disableUser", { id: id })
+        .then((response, message) => {
+          this.$notify({
+            title: "操作成功",
+            message: message,
+            type: "success",
+          });
+          this.getUserList(1);
+        })
+        .catch((err) => {
+          console.error(err);
+          this.$notify({
+            title: "操作失败",
+            message: err,
+            type: "error",
+          });
+        });
+    },
+    enableUser(index, id) {
+      this.request
+        .post("/user/enableUser", { id: id })
+        .then((response, message) => {
+          this.$notify({
+            title: "操作成功",
+            message: message,
+            type: "success",
+          });
+          this.getUserList(1);
+        })
+        .catch((err) => {
+          console.error(err);
+          this.$notify({
+            title: "操作失败",
+            message: err,
+            type: "error",
+          });
         });
     },
   },

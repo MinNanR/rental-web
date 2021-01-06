@@ -59,7 +59,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="getTenantList()">查询</el-button>
+          <el-button type="primary" @click="getTenantList(1)">查询</el-button>
         </el-form-item>
       </el-form>
       <el-button type="primary" @click="toAddTenant()">
@@ -115,8 +115,15 @@
               size="mini"
               @click="toUpdateTenant(scope.$index, scope.row.id)"
             >
+              修改
             </el-button>
-            <el-button type="primary" icon="el-icon-delete" size="mini">
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="deleteTenant()"
+            >
+              删除
             </el-button>
           </template>
         </el-table-column>
@@ -187,8 +194,9 @@ export default {
         this.houseSelected = true;
       }
     },
-    getTenantList() {
+    getTenantList(pageIndex) {
       this.loading = true;
+      this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex
       this.request
         .post("/tenant/getTenantList", this.queryForm)
         .then((response) => {
@@ -206,11 +214,10 @@ export default {
     },
     handleSizeChange(val) {
       this.queryForm.pageSize = val;
-      this.getTenantList();
+      this.getTenantList(1);
     },
     handleCurrentChange(val) {
-      this.queryForm.pageIndex = val;
-      this.getTenantList();
+      this.getTenantList(val);
     },
     handleSeleectProvince(val) {
       if (val === "") {
@@ -222,10 +229,16 @@ export default {
         this.cityList = this.provinceList[index].children;
       }
     },
+    deleteTenant() {
+      this.$message({
+        type: "info",
+        message: "功能未开放",
+      });
+    },
   },
   mounted() {
     this.getHouseDropDown();
-    this.getTenantList();
+    this.getTenantList(1);
   },
 };
 </script>
