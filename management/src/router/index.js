@@ -109,6 +109,13 @@ const routes = [
                 meta: {
                     title: '修改用户信息'
                 }
+            },
+            {
+                path: 'utilities',
+                component: () => import('../components/utilities/index.vue'),
+                meta: {
+                    title: '水电'
+                }
             }
         ]
     }
