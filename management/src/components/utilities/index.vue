@@ -85,7 +85,7 @@
           label="最后更新时间"
         ></el-table-column>
         <el-table-column label="操作">
-          <template>
+          <template #default>
             <el-button type="primary" icon="el-icon-edit" size="mini">
               修改
             </el-button>
@@ -133,7 +133,9 @@ export default {
     };
   },
   methods: {
-    toAddUtility() {},
+    toAddUtility() {
+      this.$router.push('/addUtilities')
+    },
     getUtilityList(pageIndex) {
       this.loading = true;
       this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex;

@@ -41,7 +41,7 @@
             v-model="queryForm.houseId"
             clearable
             placeholder="请选择"
-            @change="handleSelecteHouse"
+            @change="handleSelectHouse"
             ref="houseSelect"
           >
             <el-option
@@ -186,7 +186,7 @@ export default {
           console.log(error);
         });
     },
-    handleSelecteHouse(val) {
+    handleSelectHouse(val) {
       if (val == "") {
         this.houseSelected = false;
         this.queryForm.roomNumber = "";

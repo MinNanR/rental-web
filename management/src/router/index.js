@@ -116,6 +116,13 @@ const routes = [
                 meta: {
                     title: '水电'
                 }
+            },
+            {
+                path: "addUtilities",
+                component: () => import('../components/utilities/addUtilities.vue'),
+                meta: {
+                    title: '登记水电'
+                }
             }
         ]
     }
@@ -136,7 +143,7 @@ router.beforeEach((to, from, next) => {
         } else {
             next()
         }
-        document.title = `${to.meta.title}`
+        document.title = to.meta.title || '出租屋管理系统'
     }
 })
 
