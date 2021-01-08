@@ -119,20 +119,10 @@ export default {
       });
     },
     submit() {
-      for (let item of this.utilityList) {
-        console.log(
-          item.water == null ||
-            (item.water == "" && item.electricity == null) ||
-            item.electricity == ""
-        );
-      }
       let submitList = this.utilityList.filter(
         (item) =>
-          !(
-            item.water == null ||
-            (item.water == "" && item.electricity == null) ||
-            item.electricity == ""
-          )
+          !(item.water == null || item.water == "") ||
+          !(item.electricity == null || item.electricity == "")
       );
       console.log(submitList);
     },
