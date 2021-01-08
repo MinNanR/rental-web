@@ -145,7 +145,7 @@ export default {
         this.queryForm.year = this.queryForm.monthValue.getFullYear();
       }
       this.request
-        .post("/utility/getUtilityList", this.queryForm)
+        .post("/bill/getUtilityList", this.queryForm)
         .then((response) => {
           let data = response.data;
           this.utilityList = data.list;

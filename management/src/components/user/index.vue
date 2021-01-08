@@ -122,7 +122,7 @@ export default {
         realName: "",
         phoneNumber: "",
       },
-      total: null,
+      total: 0,
       loading: false,
     };
   },

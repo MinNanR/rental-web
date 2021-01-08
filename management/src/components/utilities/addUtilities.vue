@@ -8,38 +8,20 @@
           ref="baseInfoForm"
           :model="baseInfo"
         >
-          <el-form-item label="房屋" prop="houseId">
-            <el-select
-              v-model="baseInfo.houseId"
-              clearable
-              placeholder="请选择"
-              @change="handleSelectHouse"
-            >
-              <el-option
-                v-for="item in houseDropDown"
-                :key="item.id"
-                :label="item.houseName"
-                :value="item.id"
-              >
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="楼层" prop="floor">
-            <el-select v-model="baseInfo.floor" :disabled="!houseSelected">
-              <el-option
-                v-for="(item, index) in floorDropDown"
-                :key="index"
-                :value="item"
-                :label="item + '楼'"
-                :disabled="!houseSelected"
-              ></el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="月份" prop="monthValue">
             <el-date-picker
               type="month"
               v-model="baseInfo.monthValue"
+              @change="handleSelectMonth"
             ></el-date-picker>
+          </el-form-item>
+          <el-form-item label="房屋" prop="floor">
+            <el-cascader
+              v-model="baseInfo.floor"
+              :props="props"
+              ref="roomCascader"
+              :disabled="!monthSelected"
+            ></el-cascader>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="finishBaseInfo()">查询</el-button>
@@ -50,6 +32,9 @@
         <el-button type="primary" @click="submit()">保存</el-button>
         <el-button @click="turnBack()">返回</el-button>
       </div>
+    </div>
+    <div style="color: red">
+      *用水量和用电量都不填则不记录，填一个则另一个计为0
     </div>
     <div style="padding-top: 30px">
       <el-table
@@ -63,14 +48,14 @@
         ></el-table-column>
         <el-table-column label="用水量" width="200px">
           <template #default="scope">
-            <el-input v-model="scope.row.water"
+            <el-input v-model.number="scope.row.water"
               ><template #append>度</template></el-input
             >
           </template>
         </el-table-column>
         <el-table-column label="用电量" width="200px">
           <template #default="scope">
-            <el-input v-model="scope.row.electricity"
+            <el-input v-model.number="scope.row.electricity"
               ><template #append>度</template></el-input
             >
           </template>
@@ -84,18 +69,18 @@
 export default {
   data() {
     return {
-      houseDropDown: [{}],
-      floorDropDown: [{}],
+      props: {
+        lazy: true,
+        lazyLoad: this.loadData,
+      },
       baseInfo: {
         houseId: null,
-        floor: null,
-        monthValue: null,
+        floor: [],
       },
-      houseSelected: false,
+      monthSelected: false,
       submitForm: {},
       utilityList: [],
       rules: {
-        houseId: [{ required: "true", message: "请选择房屋", trigger: "blur" }],
         floor: [{ required: "true", message: "请选择楼层", trigger: "blur" }],
         monthValue: [
           { required: "true", message: "请选择月份", trigger: "blur" },
@@ -108,17 +93,16 @@ export default {
       this.$router.history.go(-1);
     },
     finishBaseInfo() {
-      console.log(this.baseInfo);
       this.$refs["baseInfoForm"].validate((valid) => {
         if (valid) {
           let query = {
-            houseId: this.baseInfo.houseId,
-            floor: this.baseInfo.floor,
+            houseId: this.baseInfo.floor[0],
+            floor: this.baseInfo.floor[1],
             year: this.baseInfo.monthValue.getFullYear(),
             month: this.baseInfo.monthValue.getMonth() + 1,
           };
           this.request
-            .post("/utility/getUtilityToBeRecorded", query)
+            .post("/bill/getUnrecordedBill", query)
             .then((response) => {
               let data = response.data;
               this.utilityList = [];
@@ -135,29 +119,84 @@ export default {
       });
     },
     submit() {
-      console.log(this.utilityList);
+      for (let item of this.utilityList) {
+        console.log(
+          item.water == null ||
+            (item.water == "" && item.electricity == null) ||
+            item.electricity == ""
+        );
+      }
+      let submitList = this.utilityList.filter(
+        (item) =>
+          !(
+            item.water == null ||
+            (item.water == "" && item.electricity == null) ||
+            item.electricity == ""
+          )
+      );
+      console.log(submitList);
+    },
+    loadData(node, resolve) {
+      const { level } = node;
+      if (level == 0) {
+        this.getHouseDropDown().then((dropDown) => {
+          resolve(dropDown);
+        });
+      } else {
+        let houseId = node.data.value;
+        this.getFloorDropDown(houseId).then((dropDown) => {
+          resolve(dropDown);
+        });
+      }
     },
     getHouseDropDown() {
-      this.request
-        .post("/house/getHouseDropDown", {})
-        .then((response) => {
-          this.houseDropDown = response.data;
-        })
-        .catch((error) => {
-          this.houseDropDown = [];
-          console.log(error);
-        });
+      return new Promise((resolve) => {
+        this.request
+          .post("/house/getHouseDropDown", {})
+          .then((response) => {
+            let houseList = response.data;
+            let optionList = [];
+            for (let house of houseList) {
+              optionList.push({
+                value: house.id,
+                label: house.houseName,
+                leaf: false,
+              });
+            }
+            resolve(optionList);
+          })
+          .catch((error) => {
+            console.log(error);
+            resolve([]);
+          });
+      });
     },
-    getFloorDropDown() {
-      this.request
-        .post("/room/getFloorDropDown", { houseId: this.baseInfo.houseId })
-        .then((response) => {
-          this.floorDropDown = response.data;
-          console.log(this.floorDropDown);
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+    getFloorDropDown(houseId) {
+      return new Promise((resolve) => {
+        let queryForm = {
+          houseId: houseId,
+          year: this.baseInfo.monthValue.getFullYear(),
+          month: this.baseInfo.monthValue.getMonth() + 1,
+        };
+        this.request
+          .post("/bill/getFloorDropDown", queryForm)
+          .then((response) => {
+            let floor = response.data;
+            let optionList = [];
+            for (let i of floor) {
+              optionList.push({
+                value: i,
+                label: `${i}楼`,
+                leaf: true,
+              });
+            }
+            resolve(optionList);
+          })
+          .catch((err) => {
+            console.error(err);
+            resolve([]);
+          });
+      });
     },
     handleSelectHouse(val) {
       if (val == "") {
@@ -165,12 +204,27 @@ export default {
         this.baseInfo.floor = null;
       } else {
         this.houseSelected = true;
-        this.getFloorDropDown();
+        if (this.monthSelected) {
+          this.getFloorDropDown();
+        }
       }
+    },
+    handleSelectMonth() {
+      this.monthSelected = true;
     },
   },
   mounted() {
     this.getHouseDropDown();
+  },
+  watch: {
+    "baseInfo.monthValue": function (val) {
+      if (val !== null) {
+        this.monthSelected = true;
+      } else {
+        this.monthSelected = false;
+        this.baseInfo.floor = [];
+      }
+    },
   },
 };
 </script>

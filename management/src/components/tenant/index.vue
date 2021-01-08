@@ -166,7 +166,7 @@ export default {
       },
       houseSelected: false,
       tenantList: [],
-      total: null,
+      total: 0,
       loading: false,
       provinceList: provinces,
       cityList: [{}],
