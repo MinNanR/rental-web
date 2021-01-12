@@ -13,6 +13,7 @@
               type="month"
               v-model="baseInfo.monthValue"
               @change="handleSelectMonth"
+              :disabled="baseInfoFinshed"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="房屋" prop="floor">
@@ -20,7 +21,7 @@
               v-model="baseInfo.floor"
               :props="props"
               ref="roomCascader"
-              :disabled="!monthSelected"
+              :disabled="!monthSelected || baseInfoFinshed"
             ></el-cascader>
           </el-form-item>
           <el-form-item>
@@ -48,14 +49,14 @@
         ></el-table-column>
         <el-table-column label="用水量" width="200px">
           <template #default="scope">
-            <el-input v-model.number="scope.row.water"
+            <el-input v-model="scope.row.waterUsage"
               ><template #append>度</template></el-input
             >
           </template>
         </el-table-column>
         <el-table-column label="用电量" width="200px">
           <template #default="scope">
-            <el-input v-model.number="scope.row.electricity"
+            <el-input v-model="scope.row.electricityUsage"
               ><template #append>度</template></el-input
             >
           </template>
@@ -78,6 +79,7 @@ export default {
         floor: [],
       },
       monthSelected: false,
+      baseInfoFinshed: false,
       submitForm: {},
       utilityList: [],
       rules: {
@@ -108,12 +110,13 @@ export default {
               this.utilityList = [];
               for (let item of data) {
                 this.utilityList.push({
-                  roomId: item.id,
+                  id: item.id,
                   roomNumber: item.roomNumber,
-                  water: null,
-                  electricity: null,
+                  waterUsage: null,
+                  electricityUsage: null,
                 });
               }
+              this.baseInfoFinshed = true;
             });
         }
       });
@@ -121,10 +124,28 @@ export default {
     submit() {
       let submitList = this.utilityList.filter(
         (item) =>
-          !(item.water == null || item.water == "") ||
-          !(item.electricity == null || item.electricity == "")
+          !(item.waterUsage == null || item.waterUsage == "") ||
+          !(item.electricityUsage == null || item.electricityUsage == "")
       );
       console.log(submitList);
+      this.request
+        .post("/bill/recordUtility", submitList)
+        .then((response, message) => {
+          this.$notify({
+            title: "操作成功",
+            message: message,
+            type: "success",
+          });
+          this.turnBack();
+        })
+        .catch((err) => {
+          console.error(err);
+          this.$notify({
+            title: "操作失败",
+            message: err,
+            type: "error",
+          });
+        });
     },
     loadData(node, resolve) {
       const { level } = node;
@@ -201,7 +222,7 @@ export default {
     },
     handleSelectMonth() {
       this.monthSelected = true;
-    },
+    }
   },
   mounted() {
     this.getHouseDropDown();

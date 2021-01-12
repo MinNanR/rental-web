@@ -123,6 +123,20 @@ const routes = [
                 meta: {
                     title: '登记水电'
                 }
+            },
+            {
+                path: "bill",
+                component: () => import('../components/bill/index.vue'),
+                meta: {
+                    title: '账单'
+                }
+            },
+            {
+                path: "settle",
+                component: () => import('../components/bill/settle.vue'),
+                meta: {
+                    title: '结算'
+                }
             }
         ]
     }
