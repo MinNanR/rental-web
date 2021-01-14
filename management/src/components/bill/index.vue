@@ -54,6 +54,52 @@
         <el-button type="primary" @click="toSettle()">结算</el-button>
       </div>
     </div>
+    <div>
+      <el-table
+        :data="billList"
+        stripe
+        style="width: 100%"
+        :header-cell-style="{ background: '#d7e4fb' }"
+      >
+        <el-table-column type="index" width="55"> </el-table-column>
+        <el-table-column
+          prop="roomNumber"
+          label="房号"
+          width="200"
+        ></el-table-column>
+        <el-table-column
+          prop="waterUsage"
+          label="用水量(度)"
+          width="100"
+        ></el-table-column>
+        <el-table-column
+          prop="electricityUsage"
+          label="用电量(度)"
+          width="100"
+        ></el-table-column>
+        <el-table-column label="水费" width="100">
+          <template #default="scope"> {{ scope.row.waterCharge }} 元 </template>
+        </el-table-column>
+        <el-table-column label="电费" width="100">
+          <template #default="scope">
+            {{ scope.row.electricityCharge }} 元
+          </template>
+        </el-table-column>
+        <el-table-column label="房租" width="100">
+          <template #default="scope"> {{ scope.row.rent }} 元 </template>
+        </el-table-column>
+        <el-table-column label="费用总计" width="150">
+          <template #default="scope"> {{ scope.row.totalCharge }} 元 </template>
+        </el-table-column>
+        <el-table-column prop="time" label="时间" width="100"></el-table-column>
+        <el-table-column
+          prop="updateUserName"
+          label="更新人"
+          width="150"
+        ></el-table-column>
+        <el-table-column prop="updateTime" label="更新时间"></el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 
@@ -69,14 +115,17 @@ export default {
         monthValue: null,
         status: null,
       },
+      houseSelected: false,
       houseDropDown: [{}],
       billStatusDropDown: [{}],
       loading: false,
+      billList: [],
+      total: 0,
     };
   },
   methods: {
-    toSettle(){
-      this.$router.push("/settle")
+    toSettle() {
+      this.$router.push("/settle");
     },
     getbillStautsDropDown() {
       this.request
@@ -100,7 +149,7 @@ export default {
         });
     },
     handleSelectHouse(val) {
-      if (val == "") {
+      if (val === "") {
         this.houseSelected = false;
         this.queryForm.roomNumber = null;
       } else {
@@ -116,10 +165,19 @@ export default {
     getBillList(pageIndex) {
       this.loading = true;
       this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex;
+      if (this.queryForm.monthValue !== null) {
+        this.queryForm.year = this.queryForm.monthValue.getFullYear();
+        this.queryForm.month = this.queryForm.monthValue.getMonth() + 1;
+      } else {
+        this.queryForm.year = null;
+        this.queryForm.month = null;
+      }
       this.request
         .post("/bill/getBillList", this.queryForm)
         .then((response) => {
-          console.log(response);
+          let data = response.data;
+          this.billList = data.list;
+          this.total = data.totalCount;
         })
         .catch((err) => {
           console.error(err);
