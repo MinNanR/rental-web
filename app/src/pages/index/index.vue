@@ -1,55 +1,90 @@
 <template>
-  <view class="content">
-    <image class="logo" src="/static/logo.png"></image>
-    <view>
-      <text class="title">{{ title }}</text>
+  <view class="page">
+    <view class="tabbar-container">
+      <view
+        class="tabbar-item"
+        :class="className.tabbar1"
+        ref="tabbar1"
+        @click="switchTabbar1()"
+      >
+        <text class="cuIcon-moneybagfill" style="margin-right: 10px"></text>
+        未缴房租
+      </view>
+      <view
+        class="tabbar-item"
+        :class="className.tabbar2"
+        ref="tabbar2"
+        @click="switchTabbar2()"
+      >
+        <text class="cuIcon-form" style="margin-right: 10px"></text>
+        未出收据
+      </view>
     </view>
-    <button class="cu-btn bg-purple" @click="clickMethod()">跳转</button>
+    <unpaid-bill v-show="currentPage === 'unpaidBill'"></unpaid-bill>
+    <unprinted-bill v-show="currentPage === 'unprintedBill'"></unprinted-bill>
   </view>
 </template>
 
 <script>
+import unpaidBill from "./unpaidBill.vue";
+import unprintedBill from "./unprintedBill.vue";
+
 export default {
+  components: {
+    "unpaid-bill": unpaidBill,
+    "unprinted-bill": unprintedBill,
+  },
   data() {
     return {
       title: "hi",
+      className: {
+        tabbar1: "tabbar-active",
+        tabbar2: "",
+      },
+      currentPage: "unpaidBill",
     };
   },
   onLoad() {},
   methods: {
     clickMethod() {
-      uni.navigateTo({
-        url: "/pages/login/login",
-        fail: (err) => {
-          console.log(err);
-        },
-      });
+      this.request
+        .post("/house/getHouseList", { pageSize: 10, pageIndex: 1 })
+        .then((response) => {
+          let { data } = response;
+          console.log(data);
+        });
+    },
+    switchTabbar1() {
+      this.className.tabbar1 = "tabbar-active";
+      this.className.tabbar2 = "";
+      this.currentPage = "unpaidBill";
+    },
+    switchTabbar2() {
+      this.className.tabbar2 = "tabbar-active";
+      this.className.tabbar1 = "";
+      this.currentPage = "unprintedBill";
     },
   },
 };
 </script>
 
 <style>
-.content {
+.tabbar-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  height: 2rem;
 }
 
-.logo {
-  height: 200rpx;
-  width: 200rpx;
-  margin: 200rpx auto 50rpx auto;
+.tabbar-item {
+  line-height: 2;
+  width: 50%;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 16px;
 }
 
-.text-area {
-  display: flex;
-  justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
+.tabbar-active {
+  color: #5e99ff;
+  border-bottom: solid 1px;
 }
 </style>

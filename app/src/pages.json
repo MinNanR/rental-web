@@ -1,18 +1,77 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/login/login",
+			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "首页"
 			}
 		},
 		{
-			"path": "pages/index/index",
+			"path": "pages/login/login",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/room/room",
+			"style": {
+				"navigationBarTitleText": "房间"
+			}
+		},
+		{
+			"path": "pages/tenant/tenant",
+			"style": {
+				"navigationBarTitleText": "房客"
+			}
+		},
+		{
+			"path": "pages/utility/utility",
+			"style": {
+				"navigationBarTitleText": "水电"
+			}
+		},
+		{
+			"path": "pages/info/info",
+			"style": {
+				"navigationBarTitleText": "我的"
 			}
 		}
 	],
+	"tabBar": {
+		"selectedColor":"#808efe",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath":"/static/tabbar/home.png",
+				"selectedIconPath":"/static/tabbar/home_selected.png"
+			},
+			{
+				"pagePath": "pages/room/room",
+				"text": "房间",
+				"iconPath":"/static/tabbar/room.png",
+				"selectedIconPath":"/static/tabbar/room_selected.png"
+			},
+			{
+				"pagePath": "pages/tenant/tenant",
+				"text": "租客",
+				"iconPath":"/static/tabbar/tenant.png",
+				"selectedIconPath":"/static/tabbar/tenant_selected.png"
+			},
+			{
+				"pagePath": "pages/utility/utility",
+				"text": "水电",
+				"iconPath":"/static/tabbar/utility.png",
+				"selectedIconPath":"/static/tabbar/utility_selected.png"
+			},
+			{
+				"pagePath": "pages/info/info",
+				"text": "我的",
+				"iconPath":"/static/tabbar/info.png",
+				"selectedIconPath":"/static/tabbar/info_selected.png"
+			}
+		]
+	},
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
