@@ -104,7 +104,7 @@ export default {
             month: this.baseInfo.monthValue.getMonth() + 1,
           };
           this.request
-            .post("/bill/getUnrecordedBill", query)
+            .post("/bill/getBillList/Unrecorded", query)
             .then((response) => {
               let data = response.data;
               this.utilityList = [];

@@ -1,22 +1,64 @@
 <template>
   <view class="">
-    <view
-      v-for="(item, index) in billList"
-      :key="index"
-      class="unpaid-bill-container"
+    <scroll-view
+      scroll-y
+      class="scroll"
+      refresher-enabled
+      :refresher-triggered="triggered"
+      @refresherrefresh="onRefresh"
+      @scrolltolower="onScrollToLower"
     >
-      <view class="unpaid-bill-header">
-        <text>房号：{{ item.roomNumber }}</text>
-        <text>应缴费用：{{ item.totalCharge }}</text>
-      </view>
-      <view class="unpaid-bill-content">
-        <view class="unpaid-bill-content-line">
-          <view class="">
-
+      <view
+        class="unpaid-bill-container"
+        v-for="(item, index) in billList"
+        :key="item.id"
+      >
+        <view :class="item.className" @click="showContent(index)">
+          <text>房号：{{ item.roomNumber }}</text>
+          <text>应缴费用：{{ item.totalCharge }}</text>
+        </view>
+        <view style="display: flex" v-show="item.show">
+          <view class="unpaid-bill-content">
+            <view class="unpaid-bill-content-line">
+              <view class="unpaid-bill-content-span"
+                >居住人：{{ item.livingPeople }}</view
+              >
+              <view class="unpaid-bill-content-span"
+                >账单生成时间：{{ item.time }}</view
+              >
+            </view>
+            <view class="unpaid-bill-content-line">
+              <view class="unpaid-bill-content-span"
+                >联系电话：{{ item.phone }}</view
+              >
+              <view class="unpaid-bill-content-span"
+                >账单生成时间：{{ item.updateTime }}</view
+              >
+            </view>
+            <view class="unpaid-bill-content-line">
+              <view class="unpaid-bill-content-span"
+                >水费：{{ item.waterCharge }}元</view
+              >
+              <view class="unpaid-bill-content-span"
+                >电费：{{ item.electricityCharge }}元</view
+              >
+            </view>
+            <view class="unpaid-bill-content-line">
+              <view class="unpaid-bill-content-span"
+                >房租：{{ item.rent }}元</view
+              >
+              <view
+                class="unpaid-bill-content-span"
+                style="color: blue"
+                @click="refer(item.id)"
+              >
+                详情</view
+              >
+            </view>
           </view>
         </view>
       </view>
-    </view>
+    </scroll-view>
   </view>
 </template>
 
@@ -27,23 +69,65 @@ export default {
       billList: [],
       queryForm: {
         pageIndex: 1,
-        pageSize: 10,
-        status: "UNPAID",
+        pageSize: 15,
       },
+      expandClass: "unpaid-bill-header expand",
+      collapseClass: "unpaid-bill-header",
+      triggered: false,
+      _freshing: false,
+      haveMore: true,
     };
   },
   methods: {
-    getBillList() {
+    getBillList(pageIndex) {
+      this.queryForm.pageIndex = pageIndex;
       this.request
-        .post("/bill/getBillList", this.queryForm)
+        .post("/bill/getBillList/unpaid", this.queryForm)
         .then((response) => {
           let { data } = response;
-          this.billList = data.list;
+          data.list.forEach((e) => {
+            e.show = false;
+            e.className = this.collapseClass;
+          });
+          if (this.queryForm.pageIndex === 1) {
+            this.billList = data.list;
+          } else {
+            data.list.forEach((e) => this.billList.push(e));
+          }
+
+          if (this.billList.length === data.totalCount) {
+            this.haveMore = false;
+          }
+          this.triggered = false;
+          this._freshing = false;
         });
     },
+    showContent(index) {
+      this.billList[index].show = !this.billList[index].show;
+      this.billList[index].className = this.billList[index].show
+        ? this.expandClass
+        : this.collapseClass;
+    },
+    onRefresh() {
+      if (this._freshing) return;
+      this._freshing = true;
+      if (!this.triggered) this.triggered = true;
+      this.getBillList(1);
+    },
+    onRestore() {
+      this.triggered = false; // 需要重置
+    },
+    onScrollToLower() {
+      if (this.haveMore) {
+        this.getBillList(this.queryForm.pageIndex + 1);
+      }
+    },
+    refer(id) {
+      console.log(id);
+    },
   },
-  mounted: function () {
-    this.getBillList();
+  mounted() {
+    this.getBillList(1);
   },
 };
 </script>
@@ -54,26 +138,45 @@ export default {
 }
 
 .unpaid-bill-header {
-  width: 100vw;
+  width: 90vw;
   height: 3rem;
   display: flex;
   justify-content: space-between;
-  padding: 0.5px 15px;
-  line-height: 4;
+  /* padding: 0.5px 15px; */
+  padding-left: 5vw;
+  padding-right: 5vw;
+  line-height: 3;
   vertical-align: middle;
+  font-size: 0.8rem;
+}
+
+.expand {
+  color: #7dadff;
 }
 
 .unpaid-bill-content {
   width: 100vw;
   height: 5rem;
   background: #f2f2f2;
-
-  padding: 10px 15px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 3px;
 }
 
 .unpaid-bill-content-line {
   height: 1rem;
   display: flex;
   justify-content: space-between;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.unpaid-bill-content-span {
+  width: 50%;
+  line-height: 2;
+}
+
+.scroll {
+  height: 80vh;
 }
 </style>

@@ -1,13 +1,26 @@
 <template>
   <view class="page">
+    <view class="flex justify-center">
+      <view
+        class="bg-blue padding-sm margin-xs round"
+        style="width: 30%; text-align: center; font-size: 18px"
+        >本月总额</view
+      >
+    </view>
+    <view class="flex justify-center">
+      <view
+        class="padding-sm margin-xs"
+        style="text-align: center; font-size: 18px"
+        >￥{{ total }}</view
+      >
+    </view>
     <view class="tabbar-container">
       <view
         class="tabbar-item"
         :class="className.tabbar1"
-        ref="tabbar1"
         @click="switchTabbar1()"
       >
-        <text class="cuIcon-moneybagfill" style="margin-right: 10px"></text>
+        <text class="cuIcon-moneybag" style="margin-right: 10px"></text>
         未缴房租
       </view>
       <view
@@ -42,18 +55,11 @@ export default {
         tabbar2: "",
       },
       currentPage: "unpaidBill",
+      total: "12,371",
     };
   },
-  onLoad() {},
   methods: {
-    clickMethod() {
-      this.request
-        .post("/house/getHouseList", { pageSize: 10, pageIndex: 1 })
-        .then((response) => {
-          let { data } = response;
-          console.log(data);
-        });
-    },
+    switchPage() {},
     switchTabbar1() {
       this.className.tabbar1 = "tabbar-active";
       this.className.tabbar2 = "";
@@ -65,6 +71,12 @@ export default {
       this.currentPage = "unprintedBill";
     },
   },
+  onPullDownRefresh(){
+    console.log("pull");
+  },
+  onReachBottom(){
+    console.log("bottom");
+  }
 };
 </script>
 

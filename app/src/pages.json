@@ -77,5 +77,6 @@
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#FFFFFF",
 		"backgroundColor": "#FFFFFF"
+		// "onReachBottomDistance": 100
 	}
 }

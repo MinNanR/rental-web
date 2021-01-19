@@ -110,7 +110,7 @@ export default {
     },
     getBillList() {
       this.request
-        .post("/bill/getUnsettledBill", this.queryForm)
+        .post("/bill/getBillList/unsettled", this.queryForm)
         .then((response) => {
           this.billList = response.data;
         })

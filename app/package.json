@@ -61,11 +61,11 @@
     "flyio": "^0.6.2",
     "js-md5": "^0.7.3",
     "regenerator-runtime": "^0.12.1",
-    "uview-ui": "^1.8.3",
     "vue": "^2.6.11",
     "vuex": "^3.2.0"
   },
   "devDependencies": {
+    "@10yun/ggui-mobile": "^0.2.10",
     "@dcloudio/types": "*",
     "@dcloudio/uni-automator": "^2.0.0-30520210106003",
     "@dcloudio/uni-cli-shared": "^2.0.0-30520210106003",
