@@ -37,6 +37,9 @@
           <view class="padding-xs"> 水费：{{ item.waterCharge }}元 </view>
           <view class="padding-xs"> 电费：{{ item.electricityCharge }}元 </view>
           <view class="padding-xs"> 房租：{{ item.rent }}元 </view>
+          <view class="padding-xs" style="color: blue" @click="refer(item.id)">
+            详情
+          </view>
         </view>
       </view>
     </scroll-view>
@@ -102,6 +105,11 @@ export default {
         this.getBillList(this.queryForm.pageIndex + 1);
       }
     },
+    refer(id) {
+      uni.navigateTo({
+        url: `/pages/billDetails/billDetails?id=${id}`,
+      });
+    },
   },
   mounted() {
     this.getBillList(1);
@@ -114,43 +122,8 @@ export default {
   border-bottom: solid 1px #e7e7e7;
 }
 
-.paid-bill-header {
-  width: 90vw;
-  height: 3rem;
-  display: flex;
-  justify-content: space-between;
-  /* padding: 0.5px 15px; */
-  padding-left: 5vw;
-  padding-right: 5vw;
-  line-height: 3;
-  vertical-align: middle;
-  font-size: 0.8rem;
-}
-
 .expand {
   color: #7dadff;
-}
-
-.paid-bill-content {
-  width: 100vw;
-  height: 5rem;
-  background: #f2f2f2;
-  padding-left: 15px;
-  padding-right: 15px;
-  padding-top: 3px;
-}
-
-.paid-bill-content-line {
-  height: 1rem;
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  margin-top: 3px;
-}
-
-.paid-bill-content-span {
-  width: 50%;
-  line-height: 2;
 }
 
 .scroll {
