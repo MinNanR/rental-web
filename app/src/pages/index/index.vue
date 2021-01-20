@@ -70,12 +70,15 @@ export default {
       this.className.tabbar1 = "";
       this.currentPage = "unprintedBill";
     },
+    getTotal() {
+      this.request.post("/bill/getMonthTotal").then((response) => {
+        let { data } = response;
+        this.total = data;
+      });
+    },
   },
-  onPullDownRefresh(){
-    console.log("pull");
-  },
-  onReachBottom(){
-    console.log("bottom");
+  onShow(){
+    this.getTotal()
   }
 };
 </script>

@@ -13,48 +13,24 @@
         v-for="(item, index) in billList"
         :key="item.id"
       >
-        <view :class="item.className" @click="showContent(index)">
-          <text>房号：{{ item.roomNumber }}</text>
-          <text>应缴费用：{{ item.totalCharge }}</text>
+        <view :class="item.className" @click="showContent(index)" style="font-size: 16px">
+          <view class="padding-sm margin-xs">
+            房号：{{ item.roomNumber }}
+          </view>
+          <view class="padding-sm margin-xs">
+            应缴费用：{{ item.totalCharge }}元
+          </view>
         </view>
-        <view style="display: flex" v-show="item.show">
-          <view class="unpaid-bill-content">
-            <view class="unpaid-bill-content-line">
-              <view class="unpaid-bill-content-span"
-                >居住人：{{ item.livingPeople }}</view
-              >
-              <view class="unpaid-bill-content-span"
-                >账单生成时间：{{ item.time }}</view
-              >
-            </view>
-            <view class="unpaid-bill-content-line">
-              <view class="unpaid-bill-content-span"
-                >联系电话：{{ item.phone }}</view
-              >
-              <view class="unpaid-bill-content-span"
-                >账单生成时间：{{ item.updateTime }}</view
-              >
-            </view>
-            <view class="unpaid-bill-content-line">
-              <view class="unpaid-bill-content-span"
-                >水费：{{ item.waterCharge }}元</view
-              >
-              <view class="unpaid-bill-content-span"
-                >电费：{{ item.electricityCharge }}元</view
-              >
-            </view>
-            <view class="unpaid-bill-content-line">
-              <view class="unpaid-bill-content-span"
-                >房租：{{ item.rent }}元</view
-              >
-              <view
-                class="unpaid-bill-content-span"
-                style="color: blue"
-                @click="refer(item.id)"
-              >
-                详情</view
-              >
-            </view>
+        <view v-show="item.show" class="grid col-2 bg-gray" style="font-size: 14px">
+          <view class="padding-xs"> 居住人：{{ item.livingPeople }} </view>
+          <view class="padding-xs"> 账单时间：{{ item.time }} </view>
+          <view class="padding-xs"> 联系电话：{{ item.phone }} </view>
+          <view class="padding-xs"> 账单生成时间：{{ item.updateTime }} </view>
+          <view class="padding-xs"> 水费：{{ item.waterCharge }}元 </view>
+          <view class="padding-xs"> 电费：{{ item.electricityCharge }}元 </view>
+          <view class="padding-xs"> 房租：{{ item.rent }}元 </view>
+          <view class="padding-xs" style="color: blue" @click="refer(item.id)">
+            详情
           </view>
         </view>
       </view>
@@ -71,8 +47,8 @@ export default {
         pageIndex: 1,
         pageSize: 15,
       },
-      expandClass: "unpaid-bill-header expand",
-      collapseClass: "unpaid-bill-header",
+      expandClass: "flex solid-bottom justify-between expand",
+      collapseClass: "flex solid-bottom justify-between",
       triggered: false,
       _freshing: false,
       haveMore: true,
@@ -161,6 +137,7 @@ export default {
   padding-left: 15px;
   padding-right: 15px;
   padding-top: 3px;
+  padding-bottom: 10px;
 }
 
 .unpaid-bill-content-line {
