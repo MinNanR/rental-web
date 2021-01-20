@@ -77,9 +77,22 @@ export default {
       });
     },
   },
-  onShow(){
-    this.getTotal()
-  }
+  onShow() {
+    uni.authorize({
+      scope: "scope.userInfo",
+      success() {
+        uni.getUserInfo({
+          success(userInfo) {
+            console.log(userInfo);
+          },
+          fail() {
+            console.log("fail");
+          },
+        });
+      },
+    });
+    this.getTotal();
+  },
 };
 </script>
 

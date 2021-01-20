@@ -33,9 +33,7 @@
       <view class="padding solid font-size">
         总收费：{{ bill.totalCharge }}元
       </view>
-      <view class="padding solid font-size">
-        账单状态：{{ bill.status }}
-      </view>
+      <view class="padding solid font-size"> 账单状态：{{ bill.status }} </view>
       <template v-if="bill.status === '未支付'">
         <view class="padding solid font-size">
           账单生成时间：{{ bill.updateTime }}
@@ -54,11 +52,17 @@
 </template>
 
 <script>
+import Skeleton from "../../components/J-skeleton/J-skeleton.vue";
+
 export default {
+  components: {
+    Skeleton,
+  },
   data() {
     return {
       id: 0,
       bill: {},
+      loading: false,
     };
   },
   methods: {
@@ -68,6 +72,7 @@ export default {
         .then((response) => {
           let { data } = response;
           this.bill = data;
+          this.loading = false;
         })
         .catch((err) => {
           console.error(err);
@@ -76,6 +81,7 @@ export default {
   },
   onLoad(param) {
     this.id = param.id;
+    this.loading = true;
     this.getBillDetails();
   },
 };

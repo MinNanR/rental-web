@@ -41,6 +41,12 @@
 			"style": {
 				"navigationBarTitleText": "账单详情"
 			}
+		},
+		{
+			"path": "pages/roomList/roomList",
+			"style": {
+				"navigationBarTitleText": "房间列表"
+			}
 		}
 	],
 	"tabBar": {
