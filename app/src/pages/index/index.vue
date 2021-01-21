@@ -55,7 +55,7 @@ export default {
         tabbar2: "",
       },
       currentPage: "unpaidBill",
-      total: "12,371",
+      total: "0",
     };
   },
   methods: {
@@ -78,19 +78,6 @@ export default {
     },
   },
   onShow() {
-    uni.authorize({
-      scope: "scope.userInfo",
-      success() {
-        uni.getUserInfo({
-          success(userInfo) {
-            console.log(userInfo);
-          },
-          fail() {
-            console.log("fail");
-          },
-        });
-      },
-    });
     this.getTotal();
   },
 };

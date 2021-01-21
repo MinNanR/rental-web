@@ -110,7 +110,7 @@ export default {
   width: 80vw;
   height: 600rpx;
   border-radius: 10px 10px;
-  opacity: 0.8;
+  opacity: 0.5;
 }
 
 .login-form {
@@ -123,6 +123,7 @@ export default {
   margin-left: 20px;
   font-size: 20px;
   font-weight: 600;
+  opacity: 1;
 }
 
 .form-group {

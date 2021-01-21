@@ -5,7 +5,7 @@
         <view
           class="padding-lg margin font-size text-center radius"
           :class="index % 2 == 0 ? 'bg-orange' : 'bg-yellow'"
-          @click="refer(item.id)"
+          @click="refer(item.id, item.houseName)"
         >
           {{ item.houseName }}
         </view>
@@ -33,8 +33,8 @@ export default {
           console.error(err);
         });
     },
-    refer(id){
-      uni.navigateTo({url : `/pages/roomList/roomList?id=${id}`})
+    refer(id, name){
+      uni.navigateTo({url : `/pages/roomList/roomList?id=${id}&name=${name}`})
     }
   },
   mounted() {

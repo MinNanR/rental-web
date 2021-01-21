@@ -1,25 +1,246 @@
 <template>
-  <view class="page"> roomList </view>
+  <view class="page">
+    <view class="padding-top padding-left-lg padding-right">
+      <view
+        class="margin-bottom-sm padding-bottom-xs text-xl flex"
+        style="border-bottom: solid 1px #b2b8cb"
+      >
+        <text
+          class="cuIcon-search margin-right-xs"
+          style="color: #e2e2e2"
+        ></text>
+        <input
+          type="text"
+          v-model="queryForm.roomNumber"
+          placeholder="输入房间号搜素"
+          @cofirm-type="搜素;"
+          @confirm="getRoomList()"
+        />
+      </view>
+    </view>
+    <view class="VerticalBox">
+      <scroll-view
+        class="VerticalNav nav"
+        scroll-y
+        scroll-with-animation
+        :scroll-top="verticalNavTop"
+        style="height: calc(100vh - 170upx)"
+      >
+        <view
+          class="cu-item"
+          :class="index == tabCur ? 'text-blue cur' : ''"
+          v-for="(item, index) in list"
+          :key="index"
+          @tap="TabSelect"
+          :data-id="index"
+        >
+          {{ item.floor }}楼
+        </view>
+      </scroll-view>
+      <scroll-view
+        class="VerticalMain"
+        scroll-y
+        scroll-with-animation
+        style="height: calc(100vh - 170upx)"
+        :scroll-into-view="'main-' + mainCur"
+        @scroll="VerticalMain"
+      >
+        <view v-for="(item, index) in list" :key="index" :id="'main-' + index">
+          <view class="cu-bar solid-bottom bg-white">
+            <view class="action">
+              <text
+                class="cuIcon-title text-blue"
+                style="font-size: 18px"
+              ></text
+              >{{ item.floor }}楼</view
+            >
+          </view>
+          <view class="cu-list menu-avatar">
+            <template v-for="(room, i) in item.roomList">
+              <view class="cu-item" :key="i">
+                <view
+                  class="cu-avatar round lg"
+                  :class="'bg-' + colorList[i % colorList.length]"
+                >
+                  <span
+                    class="iconfont icon-StudyRoom"
+                    style="font-size: 28px"
+                  ></span>
+                </view>
+                <view class="content">
+                  <view
+                    :class="'text-' + colorList[(i + 2) % colorList.length]"
+                    >{{ room.roomNumber }}</view
+                  >
+                  <view> 租金：{{ room.price }} 元</view>
+                  <view>
+                    <text
+                      class="cuIcon-round margin-right-xs"
+                      :class="'text-' + statusColor[room.statusCode]"
+                    ></text>
+                    状态：
+                    <text :class="'text-' + statusColor[room.statusCode]">{{
+                      room.status
+                    }}</text>
+                  </view>
+                </view>
+                <view class="action" @click="refer(room.id)">
+                  <view class="text-blue text-xs">查看</view>
+                </view>
+              </view>
+            </template>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
 </template>
 
 <script>
 export default {
   data() {
     return {
-      id: 0,
+      list: [],
+      tabCur: 0,
+      mainCur: 0,
+      verticalNavTop: 0,
+      load: true,
+      houseId: 0,
+      colorList: ["red", "blue", "yellow", "green"],
+      statusColor: {
+        VACANT: "orange",
+        ON_RENT: "olive",
+      },
+      queryForm: {
+        houseId: "",
+        roomNumber: "",
+      },
     };
   },
-  methods:{
-    getRoomList(){
-      console.log(this.id);
-    }
-  },
   onLoad(params) {
-    this.id = params.id;
-    this.getRoomList()
+    this.queryForm.houseId = params.id;
+    this.getRoomList();
+    uni.showLoading({
+      title: "加载中...",
+      mask: true,
+    });
+    uni.setNavigationBarTitle({
+      title: params.name
+    })
+    // this.listCur = this.list[0];
+  },
+  onShow() {
+    // this.$nextTick(() => this.getRoomList());
+  },
+  onReady() {
+    uni.hideLoading();
+  },
+  methods: {
+    TabSelect(e) {
+      this.tabCur = e.currentTarget.dataset.id;
+      this.mainCur = e.currentTarget.dataset.id;
+      this.verticalNavTop = (e.currentTarget.dataset.id - 1) * 50;
+    },
+    VerticalMain(e) {
+      // #ifdef MP-ALIPAY
+      return false; //支付宝小程序暂时不支持双向联动
+      // #endif
+      let that = this;
+      let tabHeight = 0;
+      if (this.load) {
+        for (let i = 0; i < this.list.length; i++) {
+          let view = uni
+            .createSelectorQuery()
+            .select("#main-" + this.list[i].id);
+          view
+            .fields(
+              {
+                size: true,
+              },
+              (data) => {
+                this.list[i].top = tabHeight;
+                tabHeight = tabHeight + data.height;
+                this.list[i].bottom = tabHeight;
+              }
+            )
+            .exec();
+        }
+        this.load = false;
+      }
+      let scrollTop = e.detail.scrollTop + 10;
+      for (let i = 0; i < this.list.length; i++) {
+        if (scrollTop > this.list[i].top && scrollTop < this.list[i].bottom) {
+          this.verticalNavTop = (this.list[i].id - 1) * 50;
+          this.tabCur = this.list[i].id;
+          return false;
+        }
+      }
+    },
+    getRoomList() {
+      this.request
+        .post("/room/getAllRoom", this.queryForm)
+        .then((response) => {
+          let { data } = response;
+          this.list = data;
+          let id = 0;
+          this.list.forEach((e) => (e.id = id++));
+          this.listCur = this.list[0];
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    refer(id){
+      uni.navigateTo({url:`/pages/roomInfo/roomInfo?roomId=${id}`})
+    }
   },
 };
 </script>
 
 <style>
+.fixed {
+  position: fixed;
+  z-index: 99;
+}
+
+.VerticalNav.nav {
+  width: 200upx;
+  white-space: initial;
+}
+
+.VerticalNav.nav .cu-item {
+  width: 100%;
+  text-align: center;
+  background-color: #fff;
+  margin: 0;
+  border: none;
+  height: 50px;
+  position: relative;
+}
+
+.VerticalNav.nav .cu-item.cur {
+  background-color: #f1f1f1;
+}
+
+.VerticalNav.nav .cu-item.cur::after {
+  content: "";
+  width: 8upx;
+  height: 30upx;
+  border-radius: 10upx 0 0 10upx;
+  position: absolute;
+  background-color: currentColor;
+  top: 0;
+  right: 0upx;
+  bottom: 0;
+  margin: auto;
+}
+
+.VerticalBox {
+  display: flex;
+}
+
+.VerticalMain {
+  background-color: #f1f1f1;
+  flex: 1;
+}
 </style>

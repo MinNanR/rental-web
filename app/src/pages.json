@@ -47,6 +47,12 @@
 			"style": {
 				"navigationBarTitleText": "房间列表"
 			}
+		},
+		{
+			"path": "pages/roomInfo/roomInfo",
+			"style": {
+				"navigationBarTitleText": "房间详情"
+			}
 		}
 	],
 	"tabBar": {
