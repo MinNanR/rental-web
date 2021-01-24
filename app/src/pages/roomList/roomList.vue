@@ -119,18 +119,19 @@ export default {
   },
   onLoad(params) {
     this.queryForm.houseId = params.id;
-    this.getRoomList();
+    // this.getRoomList();
     uni.showLoading({
       title: "加载中...",
       mask: true,
     });
     uni.setNavigationBarTitle({
-      title: params.name
-    })
+      title: params.name,
+    });
     // this.listCur = this.list[0];
   },
   onShow() {
-    // this.$nextTick(() => this.getRoomList());
+    console.log("show");
+    this.$nextTick(() => this.getRoomList());
   },
   onReady() {
     uni.hideLoading();
@@ -190,9 +191,16 @@ export default {
           console.error(err);
         });
     },
-    refer(id){
-      uni.navigateTo({url:`/pages/roomInfo/roomInfo?roomId=${id}`})
-    }
+    refer(id) {
+      uni.navigateTo({
+        url: `/pages/roomInfo/roomInfo?roomId=${id}`,
+        events: {
+          acceptDataFromOpenedPage: function (data) {
+            console.log(data);
+          },
+        },
+      });
+    },
   },
 };
 </script>

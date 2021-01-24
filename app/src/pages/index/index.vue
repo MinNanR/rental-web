@@ -87,7 +87,7 @@ export default {
 .tabbar-container {
   display: flex;
   justify-content: space-between;
-  height: 2rem;
+  height: 100upx;
 }
 
 .tabbar-item {
