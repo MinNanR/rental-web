@@ -17,9 +17,12 @@ export default {
 @import "colorui/icon.css";
 @import "./static/iconfont/iconfont.css";
 /*每个页面公共css */
-.page {
+/* .page {
   width: 100vw;
   height: 100vh;
+  background: #ffffff;
+} */
+body{
   background: #ffffff;
 }
 </style>

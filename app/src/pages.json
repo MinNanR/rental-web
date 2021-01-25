@@ -53,6 +53,12 @@
 			"style": {
 				"navigationBarTitleText": "房间详情"
 			}
+		},
+		{
+			"path": "pages/addTenant/addTenant",
+			"style": {
+				"navigationBarTitleText": "房间详情"
+			}
 		}
 	],
 	"tabBar": {

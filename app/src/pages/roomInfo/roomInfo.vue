@@ -50,28 +50,32 @@
         <view class="font-size-17"> 状态：{{ roomInfo.status }} </view>
       </view>
       <template v-for="(t, index) in tenantList">
-        <view class="" :key="index">
-          <view class="padding-sm flex">
-            <view class="font-size-20">
-              <text class="cuIcon-people margin-right-xs text-olive"></text>
+        <view class="flex solid-bottom" :key="index">
+          <view class="basis-xl">
+            <view class="padding-sm flex">
+              <view class="font-size-20">
+                <text class="cuIcon-people margin-right-xs text-olive"></text>
+              </view>
+              <view class="font-size-17" v-if="tenantList.length > 1">
+                <text> 居住人{{ index + 1 }}：{{ t.name }} </text>
+              </view>
+              <view class="font-size-17" v-else> 居住人：{{ t.name }}</view>
             </view>
-            <view class="font-size-17" v-if="tenantList.length > 1">
-              <text> 居住人{{ index + 1 }}：{{ t.name }} </text>
+            <view class="padding-sm flex">
+              <view class="font-size-20">
+                <text class="cuIcon-phone margin-right-xs text-yellow"></text>
+              </view>
+              <view class="font-size-17"> 联系电话：{{ t.phone }} </view>
             </view>
-            <view class="font-size-17" v-else> 居住人：{{ t.name }}</view>
+            <view class="padding-sm flex">
+              <view class="font-size-20">
+                <text class="cuIcon-homefill margin-right-xs text-brown"></text>
+              </view>
+              <view class="font-size-17"> 籍贯：{{ t.hometown }} </view>
+            </view>
           </view>
-          <view class="padding-sm flex">
-            <view class="font-size-20">
-              <text class="cuIcon-phone margin-right-xs text-yellow"></text>
-            </view>
-            <view class="font-size-17"> 联系电话：{{ t.phone }} </view>
-          </view>
-          <view class="padding-sm solid-bottom flex">
-            <view class="font-size-20">
-              <text class="cuIcon-homefill margin-right-xs text-brown"></text>
-            </view>
-            <view class="font-size-17"> 籍贯：{{ t.hometown }} </view>
-          </view>
+          <view class="basis-xs padding-xs"> 
+            <button class="cu-btn bg-red shadow-blur round" @click="leave(t.id)">离开</button> </view>
         </view>
       </template>
     </view>
@@ -81,8 +85,9 @@
           class="cu-btn bg-green shadow-blur round lg"
           @click="showChangeTenantModal()"
         >
-          修改房客
+          添加房客
         </button>
+        <button class="cu-btn bg-red shadow-blur round lg">全部退租</button>
         <button class="cu-btn bg-blue shadow-blur round lg">登记水电</button>
       </view>
     </view>
@@ -108,78 +113,6 @@
             <button
               class="cu-btn line-green text-green"
               @tap="hideChangePriceModal"
-            >
-              取消
-            </button>
-            <button class="cu-btn bg-green margin-left" @tap="changePrice()">
-              确定
-            </button>
-          </view>
-        </view>
-      </view>
-    </view>
-    <view class="cu-modal" :class="changeTenantModal ? 'show' : ''">
-      <view class="cu-dialog">
-        <view class="cu-bar bg-white justify-end">
-          <view class="content">修改房客</view>
-          <view class="action" @tap="hideChangeTenantModal()">
-            <text class="cuIcon-close text-red"></text>
-          </view>
-        </view>
-        <view class="cu-bar search bg-white">
-          <view class="search-form round">
-            <text class="cuIcon-search"></text>
-            <input
-              :adjust-position="false"
-              type="text"
-              placeholder="搜索房客"
-              confirm-type="search"
-              @confirm="getTenantDropDown"
-              v-model="search"
-            />
-          </view>
-          <view class="action">
-            <button
-              class="cu-btn bg-green shadow-blur round"
-              @click="getTenantDropDown"
-            >
-              搜索
-            </button>
-          </view>
-        </view>
-        <view>
-          <view class="grid col-3">
-            <template v-for="(tenant, index) in searchResult">
-              <view class="padding solid" :key="index">
-                {{ tenant.name }}
-              </view>
-              <view class="padding solid" :key="tenant.name">
-                {{ tenant.roomNumber }}
-              </view>
-              <view class="padding solid" :key="tenant.id">
-                <button
-                  class="cu-btn sm bg-blue round"
-                  @click="selectTenant(index)"
-                  v-show="!tenant.selected"
-                >
-                  添加
-                </button>
-                <button
-                  class="cu-btn sm line-green"
-                  v-show="tenant.selected"
-                  @click="selectedTenant(index)"
-                >
-                  <text class="cuIcon-check"></text> 已选择
-                </button>
-              </view>
-            </template>
-          </view>
-        </view>
-        <view class="cu-bar bg-white justify-end">
-          <view class="action">
-            <button
-              class="cu-btn line-green text-green"
-              @tap="hideChangeTenantModal()"
             >
               取消
             </button>
@@ -267,6 +200,8 @@ export default {
         });
     },
     showChangeTenantModal() {
+      let roomInfo = this.roomInfo
+      uni.navigateTo({ url: `/pages/addTenant/addTenant?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}` });
       this.changeTenantModal = true;
     },
     hideChangeTenantModal() {
@@ -292,6 +227,9 @@ export default {
       console.log(this.searchResult[index]["selected"]);
       this.searchResult[index].selected = !this.searchResult[index].selected;
     },
+    leave(id){
+      console.log(id);
+    }
   },
   onLoad(params) {
     this.id = params.roomId;
