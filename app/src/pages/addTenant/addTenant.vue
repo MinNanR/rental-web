@@ -13,6 +13,16 @@
       </view>
       <view class="padding-sm flex">
         <view class="font-size-20">
+          <text
+            :class="'cuIcon-' + tenant.gender + ' margin-right-xs text-blue'"
+          ></text>
+        </view>
+        <view class="font-size-17">
+          性别：{{ tenant.gender | genderStr }}
+        </view>
+      </view>
+      <view class="padding-sm flex">
+        <view class="font-size-20">
           <text class="cuIcon-phone margin-right-xs text-yellow"></text>
         </view>
         <view class="font-size-17"> 联系电话：{{ tenant.phone }} </view>
@@ -22,7 +32,7 @@
           <text class="cuIcon-card margin-right-xs text-blue"></text>
         </view>
         <view class="font-size-17">
-          身份证号码：{{ tenant.identifcationNumber }}
+          身份证号码：{{ tenant.identificationNumber }}
         </view>
       </view>
       <view class="padding-sm flex">
@@ -45,6 +55,28 @@
           <view class="title">姓名</view>
           <input placeholder="姓名" name="name" v-model="tenantForm.name" />
         </view>
+        <view class="cu-form-group justify-start">
+          <view class="title">性别</view>
+          <radio-group @change="genderChange">
+            <label class="margin-right">
+              <radio
+                :class="tenantForm.gender == 'male' ? 'checked' : ''"
+                :checked="tenantForm.gender == 'male'"
+                value="male"
+                class="margin-right-xs"
+              ></radio
+              >男
+            </label>
+            <label
+              ><radio
+                :class="tenantForm.gender == 'female' ? 'checked' : ''"
+                :checked="tenantForm.gender == 'female'"
+                value="female"
+                class="margin-right-xs"
+              ></radio></label
+            >女
+          </radio-group>
+        </view>
         <view class="cu-form-group">
           <view class="title">联系电话</view>
           <input
@@ -58,7 +90,7 @@
           <input
             placeholder="身份证号码"
             name="identifiNumber"
-            v-model="tenantForm.identifcationNumber"
+            v-model="tenantForm.identificationNumber"
           />
         </view>
         <view class="cu-form-group">
@@ -97,8 +129,10 @@
           添加房客
         </button>
       </view>
-      <view class="padding">
-        <button class="cu-btn bg-blue shadow-blur round lg" @click="saveAdd()">保存</button>
+      <view class="padding" v-show="tenantList.length > 0">
+        <button class="cu-btn bg-blue shadow-blur round lg" @click="saveAdd()">
+          保存
+        </button>
       </view>
     </view>
     <view class="cu-modal" :class="errorModal ? 'show' : ''">
@@ -118,6 +152,29 @@
         </view>
       </view>
     </view>
+    <view class="cu-modal" :class="responseModalShow ? 'show' : ''">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">{{ responseModal.title }}</view>
+          <view class="action" @tap="responseModalConfirm">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding">
+          {{ responseModal.message }}
+        </view>
+        <view class="cu-bar bg-white justify-end">
+          <view class="action">
+            <button
+              class="cu-btn bg-green margin-left"
+              @tap="responseModalConfirm"
+            >
+              确定
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -130,21 +187,17 @@ export default {
   data() {
     return {
       id: "",
-      tenantList: [
-        {
-          name: "123",
-          phone: "123",
-          identifcationNumber: "12312313123213",
-          hometownProvince: "广东省",
-          hometownCity: "东莞市",
-        },
-      ],
+      roomNumber: "",
+      houseId: "",
+      houseName: "",
+      tenantList: [],
       formShow: false,
       tenantForm: {
         name: "",
-        identifcationNumber: "",
+        identificationNumber: "",
         phone: "",
         hometown: [],
+        gender: "male",
       },
       errorModal: false,
       errorMessage: [],
@@ -166,7 +219,7 @@ export default {
             message: "请输入正确的手机号码",
           },
         ],
-        identifcationNumber: [
+        identificationNumber: [
           {
             type: "string",
             required: true,
@@ -181,8 +234,14 @@ export default {
           },
         ],
       },
-
       cityList: [region.provinceList, region.getCityList("北京市")],
+      responseModal: {
+        show: false,
+        title: "",
+        message: "",
+        action: null,
+      },
+      responseModalShow: false,
     };
   },
   methods: {
@@ -196,7 +255,8 @@ export default {
         .then(() => {
           this.tenantList.push({
             name: this.tenantForm.name,
-            identifcationNumber: this.tenantForm.identifcationNumber,
+            gender: this.tenantForm.gender,
+            identificationNumber: this.tenantForm.identificationNumber,
             phone: this.tenantForm.phone,
             hometownProvince: this.tenantForm.hometown[0],
             hometownCity: this.tenantForm.hometown[1],
@@ -222,9 +282,10 @@ export default {
     onTenantFormHide() {
       this.tenantForm = {
         name: "",
-        identifcationNumber: "",
+        identificationNumber: "",
         phone: "",
         hometown: "",
+        gender: "male",
       };
     },
     showErrorModal(messages) {
@@ -246,6 +307,9 @@ export default {
           }
         });
     },
+    genderChange(e) {
+      this.tenantForm.gender = e.detail.value;
+    },
     hometownChange(e) {
       console.log(e.detail.value);
       let provinceIndex = e.detail.value[0];
@@ -260,12 +324,52 @@ export default {
         this.cityList[1] = region.getCityList(this.cityList[0][e.detail.value]);
       }
     },
-    saveAdd(){
-      
-    }
+    saveAdd() {
+      this.request
+        .post("/tenant/addTenant", {
+          roomId: this.id,
+          roomNumber: this.roomNumber,
+          houseId: this.houseId,
+          houseName: this.houseName,
+          tenantList: this.tenantList,
+        })
+        .then((response) => {
+          let { message } = response;
+          this.responseModal.title = "成功";
+          this.responseModal.message = message;
+          this.responseModal.action = this.successAction;
+          this.responseModalShow = true;
+        })
+        .catch((err) => {
+          console.error(err);
+          this.responseModal.title = "失败";
+          this.responseModal.message = err;
+          this.responseModal.action = this.failAction;
+          this.responseModalShow = true;
+          console.log(this.responseModalShow);
+        });
+    },
+    responseModalConfirm() {
+      this.responseModalShow = false;
+      this.responseModal.action();
+    },
+    successAction() {
+      uni.navigateBack({
+        delta: 1,
+      });
+    },
+    failAction() {},
   },
   onLoad(params) {
     this.id = params.roomId;
+    this.roomNumber = params.roomNumber;
+    this.houseId = params.houseId;
+    this.houseName = params.houseName;
+  },
+  filters: {
+    genderStr(value) {
+      return value == "male" ? "男" : "女";
+    },
   },
 };
 </script>

@@ -74,8 +74,14 @@
               <view class="font-size-17"> 籍贯：{{ t.hometown }} </view>
             </view>
           </view>
-          <view class="basis-xs padding-xs"> 
-            <button class="cu-btn bg-red shadow-blur round" @click="leave(t.id)">离开</button> </view>
+          <view class="basis-xs padding-xs">
+            <button
+              class="cu-btn bg-red shadow-blur round"
+              @click="leave(t.id)"
+            >
+              离开
+            </button>
+          </view>
         </view>
       </template>
     </view>
@@ -87,7 +93,7 @@
         >
           添加房客
         </button>
-        <button class="cu-btn bg-red shadow-blur round lg">全部退租</button>
+        <button class="cu-btn bg-red shadow-blur round lg" v-if="roomInfo.statusCode == 'ON_RENT'">全部退租</button>
         <button class="cu-btn bg-blue shadow-blur round lg">登记水电</button>
       </view>
     </view>
@@ -200,8 +206,10 @@ export default {
         });
     },
     showChangeTenantModal() {
-      let roomInfo = this.roomInfo
-      uni.navigateTo({ url: `/pages/addTenant/addTenant?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}` });
+      let roomInfo = this.roomInfo;
+      uni.navigateTo({
+        url: `/pages/addTenant/addTenant?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
+      });
       this.changeTenantModal = true;
     },
     hideChangeTenantModal() {
@@ -227,14 +235,20 @@ export default {
       console.log(this.searchResult[index]["selected"]);
       this.searchResult[index].selected = !this.searchResult[index].selected;
     },
-    leave(id){
+    leave(id) {
       console.log(id);
-    }
+    },
   },
   onLoad(params) {
     this.id = params.roomId;
-    this.getRoomInfo();
-    this.getTeant();
+    // this.getRoomInfo();
+    // this.getTeant();
+  },
+  onShow() {
+    this.$nextTick(() => {
+      this.getRoomInfo();
+      this.getTeant();
+    });
   },
 };
 </script>
