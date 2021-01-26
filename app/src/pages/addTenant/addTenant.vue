@@ -160,11 +160,16 @@
             <text class="cuIcon-close text-red"></text>
           </view>
         </view>
-        <view class="padding">
+        <view class="padding" v-show="!responseModal.loading" >
           {{ responseModal.message }}
         </view>
+        <view class="padding" v-show="responseModal.loading">
+          <view class="font-size-20">
+            <text class="cuIcon-loading2"></text>
+          </view>
+        </view>
         <view class="cu-bar bg-white justify-end">
-          <view class="action">
+          <view class="action" v-show="!responseModal.loading">
             <button
               class="cu-btn bg-green margin-left"
               @tap="responseModalConfirm"
@@ -240,6 +245,7 @@ export default {
         title: "",
         message: "",
         action: null,
+        loading: false,
       },
       responseModalShow: false,
     };
@@ -325,6 +331,11 @@ export default {
       }
     },
     saveAdd() {
+      this.responseModal.title = "操作中";
+      this.responseModal.message = "操作中，请稍后";
+      this.responseModal.loading = true
+      this.responseModal.action = function () {};
+      this.responseModalShow = true;
       this.request
         .post("/tenant/addTenant", {
           roomId: this.id,
@@ -338,15 +349,16 @@ export default {
           this.responseModal.title = "成功";
           this.responseModal.message = message;
           this.responseModal.action = this.successAction;
-          this.responseModalShow = true;
+          this.responseModal.loading = false
+          // this.responseModalShow = true;
         })
         .catch((err) => {
           console.error(err);
           this.responseModal.title = "失败";
           this.responseModal.message = err;
           this.responseModal.action = this.failAction;
-          this.responseModalShow = true;
-          console.log(this.responseModalShow);
+          this.responseModal.loading =false
+          // this.responseModalShow = true;
         });
     },
     responseModalConfirm() {
@@ -358,7 +370,9 @@ export default {
         delta: 1,
       });
     },
-    failAction() {},
+    failAction() {
+      this.responseModalShow = false;
+    },
   },
   onLoad(params) {
     this.id = params.roomId;

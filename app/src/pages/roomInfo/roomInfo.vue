@@ -49,8 +49,8 @@
         </view>
         <view class="font-size-17"> 状态：{{ roomInfo.status }} </view>
       </view>
-      <template v-for="(t, index) in tenantList">
-        <view class="flex solid-bottom" :key="index">
+      <block v-for="(t, index) in tenantList" :key="index">
+        <view class="flex solid-bottom" @click="showTenantDetails(index)">
           <view class="basis-xl">
             <view class="padding-sm flex">
               <view class="font-size-20">
@@ -61,29 +61,59 @@
               </view>
               <view class="font-size-17" v-else> 居住人：{{ t.name }}</view>
             </view>
-            <view class="padding-sm flex">
-              <view class="font-size-20">
-                <text class="cuIcon-phone margin-right-xs text-yellow"></text>
-              </view>
-              <view class="font-size-17"> 联系电话：{{ t.phone }} </view>
-            </view>
-            <view class="padding-sm flex">
-              <view class="font-size-20">
-                <text class="cuIcon-homefill margin-right-xs text-brown"></text>
-              </view>
-              <view class="font-size-17"> 籍贯：{{ t.hometown }} </view>
-            </view>
           </view>
-          <view class="basis-xs padding-xs">
-            <button
-              class="cu-btn bg-red shadow-blur round"
-              @click="leave(t.id)"
-            >
-              离开
-            </button>
+          <view class="padding-xs" style="font-size: 20px">
+            <text class="cuIcon-roundright" v-show="!t.show"></text>
+            <text class="cuIcon-rounddown" v-show="t.show"></text>
           </view>
         </view>
-      </template>
+        <view v-show="t.show" class="bg-gray" style="font-size: 14px">
+          <view class="flex">
+            <view class="basis-sm padding-xs"> 姓名： </view>
+            <view class="basis-lg padding-xs">
+              {{ t.name }}
+            </view>
+          </view>
+          <view class="flex">
+            <view class="basis-sm padding-xs"> 性别： </view>
+            <view class="basis-lg padding-xs">
+              {{ t.gender }}
+            </view>
+          </view>
+          <view class="flex">
+            <view class="basis-sm padding-xs"> 联系电话： </view>
+            <view class="basis-lg padding-xs">
+              {{ t.phone }}
+            </view>
+          </view>
+          <view class="flex">
+            <view class="basis-sm padding-xs"> 籍贯： </view>
+            <view class="basis-lg padding-xs">
+              {{ t.hometown }}
+            </view>
+          </view>
+          <view class="flex">
+            <view class="basis-sm padding-xs"> 身份证号码： </view>
+            <view class="basis-lg padding-xs">
+              {{ t.identificationNumber }}
+            </view>
+          </view>
+          <view class="flex">
+            <view class="basis-sm padding-xs"> 出生日期： </view>
+            <view class="basis-lg padding-xs">
+              {{ t.birthday }}
+            </view>
+          </view>
+          <view class="flex justify-start">
+            <view class="padding-xs">
+              <button class="cu-btn bg-green shadow-blur round">修改</button>
+            </view>
+            <view class="padding-xs">
+              <button class="cu-btn bg-red shadow-blur round">离开</button>
+            </view>
+          </view>
+        </view>
+      </block>
     </view>
     <view class="box">
       <view class="cu-bar btn-group foot">
@@ -93,7 +123,12 @@
         >
           添加房客
         </button>
-        <button class="cu-btn bg-red shadow-blur round lg" v-if="roomInfo.statusCode == 'ON_RENT'">全部退租</button>
+        <button
+          class="cu-btn bg-red shadow-blur round lg"
+          v-if="roomInfo.statusCode == 'ON_RENT'"
+        >
+          全部退租
+        </button>
         <button class="cu-btn bg-blue shadow-blur round lg">登记水电</button>
       </view>
     </view>
@@ -176,6 +211,7 @@ export default {
         .post("/tenant/getTenantByRoom", { roomId: this.id })
         .then((resposne) => {
           let { data } = resposne;
+          data.forEach((e) => (e.show = false));
           this.tenantList = data;
         })
         .catch((err) => {
@@ -237,6 +273,9 @@ export default {
     },
     leave(id) {
       console.log(id);
+    },
+    showTenantDetails(index) {
+      this.tenantList[index].show = !this.tenantList[index].show;
     },
   },
   onLoad(params) {

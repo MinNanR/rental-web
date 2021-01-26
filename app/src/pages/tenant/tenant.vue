@@ -19,9 +19,12 @@
             >
               <view class="cu-avatar round lg">{{ item.key }}</view>
               <view class="content">
-                <view class="text-black">{{ tenant.name }}</view>
-                <view class="text-gray text-sm">
+                <view class="text-black" style="font-size: 17px">{{ tenant.name }}</view>
+                <view class="text-cyan text-sm">
                   {{ tenant.room }}
+                </view>
+                <view class="text-brown text-sm">
+                  {{ tenant.phone }}
                 </view>
               </view>
             </view>
@@ -63,13 +66,7 @@ export default {
       CustomBar: this.CustomBar,
       hidden: true,
       listCurID: "",
-      list: [
-        { key: "D", tenantList: [{ id: 1, name: "丁一", room: "永泰街1号" }] },
-        {
-          key: "W",
-          tenantList: [{ id: 1, name: "王二狗", room: "永泰街1号" }],
-        },
-      ],
+      list: [],
       // list:[],
       listCur: "",
     };
