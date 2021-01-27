@@ -1,5 +1,16 @@
 <template>
   <view class="">
+    <view class="block">
+      <view class="cu-bar search bg-withe status-bar">
+        <view class="content"> 水电 </view>
+        <view class="action padding-xs" style="margin-right: 0" @click="toRecordUtility()">
+          <text
+            class="cuIcon-roundadd margin-right-xs"
+            style="font-size: 32px"
+          ></text>
+        </view>
+      </view>
+    </view>
     <view class="cu-card">
       <view
         class="cu-item bg-img shadow"
@@ -56,6 +67,9 @@ export default {
         },
       });
     },
+    toRecordUtility() {
+      uni.navigateTo({ url: "/pages/recordUtility/recordUtility" });
+    },
   },
   onShow() {
     this.getRecordList();
@@ -66,5 +80,9 @@ export default {
 <style>
 .cu-card > .cu-item {
   padding: 0;
+}
+
+.status-bar {
+  margin-top: var(--status-bar-height);
 }
 </style>

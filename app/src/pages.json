@@ -27,7 +27,7 @@
 		{
 			"path": "pages/utility/utility",
 			"style": {
-				"navigationBarTitleText": "水电"
+				"navigationStyle": "custom"
 			}
 		},
 		{
@@ -70,6 +70,12 @@
 			"path": "pages/utilityList/utilityList",
 			"style": {
 				"navigationBarTitleText": "水电记录"
+			}
+		},
+		{
+			"path": "pages/recordUtility/recordUtility",
+			"style": {
+				"navigationBarTitleText": "登记水电"
 			}
 		}
 	],
