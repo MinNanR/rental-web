@@ -16,6 +16,7 @@
               class="cu-item"
               v-for="(tenant, sub) in item.tenantList"
               :key="sub"
+               @click="toModifyTenant(tenant.id)"
             >
               <view class="cu-avatar round lg">{{ item.key }}</view>
               <view class="content">
@@ -151,6 +152,9 @@ export default {
         this.list = data;
       });
     },
+    toModifyTenant(id){
+      uni.navigateTo({url: `/pages/modifyTenant/modifyTenant?id=${id}`})
+    }
   },
 };
 </script>

@@ -521,6 +521,12 @@ const region = {
     provinceList: provinceList,
     getCityList: function (provinceName) {
         return provinces[provinceName]
+    },
+    getProvinceIndex: function (provinceName) {
+        return provinceList.findIndex(e => e == provinceName)
+    },
+    getCityIndex: function (provinceName, cityName) {
+        return provinces[provinceName].findIndex(e => e == cityName)
     }
 }
 

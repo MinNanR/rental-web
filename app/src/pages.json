@@ -59,6 +59,18 @@
 			"style": {
 				"navigationBarTitleText": "房间详情"
 			}
+		},
+		{
+			"path": "pages/modifyTenant/modifyTenant",
+			"style": {
+				"navigationBarTitleText": "修改房客信息"
+			}
+		},
+		{
+			"path": "pages/utilityList/utilityList",
+			"style": {
+				"navigationBarTitleText": "水电记录"
+			}
 		}
 	],
 	"tabBar": {

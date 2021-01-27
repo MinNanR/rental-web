@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" id="page" :style="'padding-bottom: ' + barHeight + 'px'">
     <view
       v-for="(tenant, index) in tenantList"
       :key="index"
@@ -49,7 +49,7 @@
         </button>
       </view>
     </view>
-    <view v-show="formShow">
+    <view v-show="formShow" id="tenantFormDiv">
       <form class="bg-gray">
         <view class="cu-form-group margin-top">
           <view class="title">姓名</view>
@@ -120,20 +120,30 @@
         </view>
       </view>
     </view>
+    <view class="box">
+      <view class="cu-bar tabbar btn-group foot bg-white" id="box">
+        <view class="action">
+          <button
+            class="cu-btn bg-green shadow-blur round lg"
+            @click="showTenantForm()"
+          >
+            添加房客
+          </button>
+        </view>
+        <view class="action">
+          <button
+            class="cu-btn bg-blue shadow-blur round lg"
+            @click="saveAdd()"
+          >
+            保存
+          </button>
+        </view>
+        <view class="action"> </view>
+      </view>
+    </view>
     <view class="flex justify-start">
-      <view class="padding">
-        <button
-          class="cu-btn bg-green shadow-blur round lg"
-          @click="showTenantForm()"
-        >
-          添加房客
-        </button>
-      </view>
-      <view class="padding" v-show="tenantList.length > 0">
-        <button class="cu-btn bg-blue shadow-blur round lg" @click="saveAdd()">
-          保存
-        </button>
-      </view>
+      <view class="padding"> </view>
+      <view class="padding" v-show="tenantList.length > 0"> </view>
     </view>
     <view class="cu-modal" :class="errorModal ? 'show' : ''">
       <view class="cu-dialog">
@@ -160,7 +170,7 @@
             <text class="cuIcon-close text-red"></text>
           </view>
         </view>
-        <view class="padding" v-show="!responseModal.loading" >
+        <view class="padding" v-show="!responseModal.loading">
           {{ responseModal.message }}
         </view>
         <view class="padding" v-show="responseModal.loading">
@@ -248,17 +258,38 @@ export default {
         loading: false,
       },
       responseModalShow: false,
+      barHeight: 0,
     };
   },
   methods: {
     showTenantForm() {
       this.formShow = true;
+      this.$nextTick(() => {
+        uni
+          .createSelectorQuery()
+          .select("#page")
+          .boundingClientRect((data) => {
+            console.log(data);
+            uni
+              .createSelectorQuery()
+              .select("#tenantFormDiv")
+              .boundingClientRect((res) => {
+                console.log(res);
+                uni.pageScrollTo({
+                  duration: 0,
+                  scrollTop: res.top - data.top,
+                });
+              })
+              .exec();
+          })
+          .exec();
+      });
     },
     addTenant() {
       const validator = new Schema(this.rules);
       validator
         .validate(this.tenantForm)
-        .then(() => {
+        .then((valid) => {
           this.tenantList.push({
             name: this.tenantForm.name,
             gender: this.tenantForm.gender,
@@ -333,7 +364,7 @@ export default {
     saveAdd() {
       this.responseModal.title = "操作中";
       this.responseModal.message = "操作中，请稍后";
-      this.responseModal.loading = true
+      this.responseModal.loading = true;
       this.responseModal.action = function () {};
       this.responseModalShow = true;
       this.request
@@ -349,16 +380,14 @@ export default {
           this.responseModal.title = "成功";
           this.responseModal.message = message;
           this.responseModal.action = this.successAction;
-          this.responseModal.loading = false
-          // this.responseModalShow = true;
+          this.responseModal.loading = false;
         })
         .catch((err) => {
           console.error(err);
           this.responseModal.title = "失败";
           this.responseModal.message = err;
           this.responseModal.action = this.failAction;
-          this.responseModal.loading =false
-          // this.responseModalShow = true;
+          this.responseModal.loading = false;
         });
     },
     responseModalConfirm() {
@@ -379,6 +408,19 @@ export default {
     this.roomNumber = params.roomNumber;
     this.houseId = params.houseId;
     this.houseName = params.houseName;
+    this.$nextTick(() => {
+      let view = uni.createSelectorQuery().select("#box");
+      view
+        .fields(
+          {
+            size: true,
+          },
+          (data) => {
+            this.barHeight = data.height;
+          }
+        )
+        .exec();
+    });
   },
   filters: {
     genderStr(value) {
@@ -389,15 +431,32 @@ export default {
 </script>
 
 <style>
-.cu-form-group .title {
-  min-width: calc(4em + 15px);
+.box {
+  margin: 20upx 0;
 }
 
-.font-size-17 {
+.box view.cu-bar {
+  margin-top: 20upx;
+}
+
+.cu-form-group .title {
+  min-width: calc(4em + 15px);
   font-size: 17px;
 }
 
-.font-size-20 {
-  font-size: 20px;
+.cu-form-group {
+  font-size: 17px;
 }
+
+/* #ifdef H5 */
+.cu-bar.btn-group uni-button {
+  max-width: 100%;
+}
+/* #endif */
+
+/* #ifdef MP-WEIXIN */
+.cu-bar.btn-group button {
+  max-width: 100%;
+}
+/* #endif */
 </style>

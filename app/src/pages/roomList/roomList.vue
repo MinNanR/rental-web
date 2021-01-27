@@ -143,9 +143,6 @@ export default {
       this.verticalNavTop = (e.currentTarget.dataset.id - 1) * 50;
     },
     VerticalMain(e) {
-      // #ifdef MP-ALIPAY
-      return false; //支付宝小程序暂时不支持双向联动
-      // #endif
       let that = this;
       let tabHeight = 0;
       if (this.load) {

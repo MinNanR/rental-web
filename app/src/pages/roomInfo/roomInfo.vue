@@ -1,6 +1,6 @@
 <template>
   <view class="page">
-    <view class="grid col-1">
+    <view class="grid col-1" :style="'padding-bottom: ' + barHeight + 'px'">
       <view class="padding solid flex">
         <view class="font-size-20">
           <text class="cuIcon-home margin-right-xs text-blue"></text>
@@ -62,74 +62,85 @@
               <view class="font-size-17" v-else> 居住人：{{ t.name }}</view>
             </view>
           </view>
-          <view class="padding-xs" style="font-size: 20px">
+          <view class="padding-xs flex align-center" style="font-size: 20px">
             <text class="cuIcon-roundright" v-show="!t.show"></text>
             <text class="cuIcon-rounddown" v-show="t.show"></text>
           </view>
         </view>
-        <view v-show="t.show" class="bg-gray" style="font-size: 14px">
+        <view v-show="t.show" class="bg-gray" style="font-size: 15px">
           <view class="flex">
-            <view class="basis-sm padding-xs"> 姓名： </view>
-            <view class="basis-lg padding-xs">
+            <view class="basis-sm padding-lr-sm padding-rb-xs"> 姓名： </view>
+            <view class="basis-lg padding-rb-xs">
               {{ t.name }}
             </view>
           </view>
           <view class="flex">
-            <view class="basis-sm padding-xs"> 性别： </view>
-            <view class="basis-lg padding-xs">
+            <view class="basis-sm padding-lr-sm padding-rb-xs"> 性别： </view>
+            <view class="basis-lg padding-rb-xs">
               {{ t.gender }}
             </view>
           </view>
           <view class="flex">
-            <view class="basis-sm padding-xs"> 联系电话： </view>
-            <view class="basis-lg padding-xs">
+            <view class="basis-sm padding-lr-sm padding-rb-xs"> 联系电话： </view>
+            <view class="basis-lg padding-rb-xs text-blue" style="text-decoration: underline">
               {{ t.phone }}
             </view>
           </view>
           <view class="flex">
-            <view class="basis-sm padding-xs"> 籍贯： </view>
-            <view class="basis-lg padding-xs">
+            <view class="basis-sm padding-lr-sm padding-rb-xs"> 籍贯： </view>
+            <view class="basis-lg padding-rb-xs">
               {{ t.hometown }}
             </view>
           </view>
           <view class="flex">
-            <view class="basis-sm padding-xs"> 身份证号码： </view>
-            <view class="basis-lg padding-xs">
+            <view class="basis-sm padding-lr-sm padding-rb-xs"> 身份证号码： </view>
+            <view class="basis-lg padding-rb-xs">
               {{ t.identificationNumber }}
             </view>
           </view>
           <view class="flex">
-            <view class="basis-sm padding-xs"> 出生日期： </view>
-            <view class="basis-lg padding-xs">
+            <view class="basis-sm padding-lr-sm padding-rb-xs"> 出生日期： </view>
+            <view class="basis-lg padding-rb-xs">
               {{ t.birthday }}
             </view>
           </view>
           <view class="flex justify-start">
             <view class="padding-xs">
-              <button class="cu-btn bg-green shadow-blur round">修改</button>
+              <button
+                class="cu-btn bg-green shadow-blur round"
+                @click="toModifyTenant(index)"
+              >
+                修改
+              </button>
             </view>
             <view class="padding-xs">
-              <button class="cu-btn bg-red shadow-blur round">离开</button>
+              <button
+                class="cu-btn bg-red shadow-blur round"
+                @click="leave(t.id)"
+              >
+                离开
+              </button>
             </view>
           </view>
         </view>
       </block>
     </view>
     <view class="box">
-      <view class="cu-bar btn-group foot">
-        <button
-          class="cu-btn bg-green shadow-blur round lg"
-          @click="showChangeTenantModal()"
-        >
-          添加房客
-        </button>
-        <button
-          class="cu-btn bg-red shadow-blur round lg"
-          v-if="roomInfo.statusCode == 'ON_RENT'"
-        >
-          全部退租
-        </button>
-        <button class="cu-btn bg-blue shadow-blur round lg">登记水电</button>
+      <view class="cu-bar tabbar btn-group foot bg-white" id="box">
+        <view class="action">
+          <button
+            class="cu-btn bg-green shadow-blur round lg"
+            @click="toAddTenant()"
+          >
+            添加房客
+          </button>
+        </view>
+        <view class="action" v-if="roomInfo.statusCode == 'ON_RENT'">
+          <button class="cu-btn bg-red shadow-blur round lg" @click="allLeave()">全部退租</button>
+        </view>
+        <view class="action">
+          <button class="cu-btn bg-blue shadow-blur round lg" @click="toUtilityRecord()">水电记录</button>
+        </view>
       </view>
     </view>
     <view class="cu-modal" :class="changePriceModal ? 'show' : ''">
@@ -189,6 +200,7 @@ export default {
       eventChannel: null,
       search: "",
       searchResult: [],
+      barHeight: 0,
     };
   },
   methods: {
@@ -241,7 +253,7 @@ export default {
           console.error(err);
         });
     },
-    showChangeTenantModal() {
+    toAddTenant() {
       let roomInfo = this.roomInfo;
       uni.navigateTo({
         url: `/pages/addTenant/addTenant?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
@@ -272,11 +284,35 @@ export default {
       this.searchResult[index].selected = !this.searchResult[index].selected;
     },
     leave(id) {
+      //TODO 房客退租
+      console.log(id);
+    },
+    allLeave(){
+      //TODO 全部退租
       console.log(id);
     },
     showTenantDetails(index) {
       this.tenantList[index].show = !this.tenantList[index].show;
     },
+    toModifyTenant(index) {
+      let id = this.tenantList[index].id;
+      uni.navigateTo({
+        url: `/pages/modifyTenant/modifyTenant?id=${id}`,
+        success: (res) => {
+          res.eventChannel.emit("getTenantInfo", {
+            tenantInfo: this.tenantList[index],
+          });
+        },
+      });
+    },
+    confirmMakePhoneCall(number){
+      //TODO 拨打电话
+      console.log("拨打电话" + number);
+    },
+    toUtilityRecord(){
+      //TODO 查看水电记录
+      console.log(id);
+    }
   },
   onLoad(params) {
     this.id = params.roomId;
@@ -287,6 +323,18 @@ export default {
     this.$nextTick(() => {
       this.getRoomInfo();
       this.getTeant();
+      let view = uni.createSelectorQuery().select("#box");
+      view
+        .fields(
+          {
+            size: true,
+          },
+          (data) => {
+            console.log(data);
+            this.barHeight = data.height;
+          }
+        )
+        .exec();
     });
   },
 };
@@ -317,4 +365,16 @@ export default {
 .cu-form-group {
   font-size: 17px;
 }
+
+/* #ifdef H5 */
+.cu-bar.btn-group uni-button {
+  max-width: 100%;
+}
+/* #endif */
+
+/* #ifdef MP-WEIXIN */
+.cu-bar.btn-group button{
+  max-width: 100%;
+}
+/* #endif */
 </style>
