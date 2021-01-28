@@ -269,12 +269,10 @@ export default {
           .createSelectorQuery()
           .select("#page")
           .boundingClientRect((data) => {
-            console.log(data);
             uni
               .createSelectorQuery()
               .select("#tenantFormDiv")
               .boundingClientRect((res) => {
-                console.log(res);
                 uni.pageScrollTo({
                   duration: 0,
                   scrollTop: res.top - data.top,
@@ -348,7 +346,6 @@ export default {
       this.tenantForm.gender = e.detail.value;
     },
     hometownChange(e) {
-      console.log(e.detail.value);
       let provinceIndex = e.detail.value[0];
       let cityIndex = e.detail.value[1];
       this.tenantForm.hometown = [

@@ -3,7 +3,11 @@
     <view class="block">
       <view class="cu-bar search bg-withe status-bar">
         <view class="content"> 水电 </view>
-        <view class="action padding-xs" style="margin-right: 0" @click="toRecordUtility()">
+        <view
+          class="action padding-xs"
+          style="margin-right: 0"
+          @click="toRecordUtility()"
+        >
           <text
             class="cuIcon-roundadd margin-right-xs"
             style="font-size: 32px"
@@ -26,6 +30,11 @@
         </view>
       </view>
     </view>
+    <view
+      class="cu-load bg-gray fade"
+      v-show="showLoading"
+      :class="haveMore ? 'loading' : 'over'"
+    ></view>
   </view>
 </template>
 
@@ -39,16 +48,23 @@ export default {
         pageIndex: 1,
       },
       colorList: ["red", "blue", "yellow", "green"],
+      haveMore: true,
+      showLoading: false,
     };
   },
   methods: {
     getRecordList() {
-      //TODO 无限加载
+      this.showLoading = true
       this.request
         .post("/utility/getRecordList", this.queryForm)
         .then((response) => {
           let { data } = response;
-          this.recordList = data.list;
+          setTimeout(() => {
+            this.recordList = this.recordList.concat(data.list);
+            this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
+            this.haveMore = this.recordList.length < data.totalCount;
+            this.showLoading = false;
+          }, 1000);
         })
         .catch((err) => {
           console.error(err);
@@ -72,6 +88,16 @@ export default {
     },
   },
   onShow() {
+    this.getRecordList();
+  },
+  onReachBottom() {
+    if (!this.haveMore) {
+      this.showLoading = true;
+      setTimeout(() => {
+        this.showLoading = false;
+      }, 2000);
+      return;
+    }
     this.getRecordList();
   },
 };

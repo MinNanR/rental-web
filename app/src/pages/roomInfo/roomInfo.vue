@@ -81,8 +81,13 @@
             </view>
           </view>
           <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs"> 联系电话： </view>
-            <view class="basis-lg padding-rb-xs text-blue" style="text-decoration: underline">
+            <view class="basis-sm padding-lr-sm padding-rb-xs">
+              联系电话：
+            </view>
+            <view
+              class="basis-lg padding-rb-xs text-blue"
+              style="text-decoration: underline"
+            >
               {{ t.phone }}
             </view>
           </view>
@@ -93,13 +98,17 @@
             </view>
           </view>
           <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs"> 身份证号码： </view>
+            <view class="basis-sm padding-lr-sm padding-rb-xs">
+              身份证号码：
+            </view>
             <view class="basis-lg padding-rb-xs">
               {{ t.identificationNumber }}
             </view>
           </view>
           <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs"> 出生日期： </view>
+            <view class="basis-sm padding-lr-sm padding-rb-xs">
+              出生日期：
+            </view>
             <view class="basis-lg padding-rb-xs">
               {{ t.birthday }}
             </view>
@@ -116,7 +125,7 @@
             <view class="padding-xs">
               <button
                 class="cu-btn bg-red shadow-blur round"
-                @click="leave(t.id)"
+                @click="onLeave(t.name, t.id)"
               >
                 离开
               </button>
@@ -136,10 +145,20 @@
           </button>
         </view>
         <view class="action" v-if="roomInfo.statusCode == 'ON_RENT'">
-          <button class="cu-btn bg-red shadow-blur round lg" @click="allLeave()">全部退租</button>
+          <button
+            class="cu-btn bg-red shadow-blur round lg"
+            @click="onAllLeave()"
+          >
+            全部退租
+          </button>
         </view>
         <view class="action">
-          <button class="cu-btn bg-blue shadow-blur round lg" @click="toUtilityRecord()">水电记录</button>
+          <button
+            class="cu-btn bg-blue shadow-blur round lg"
+            @click="toUtilityRecord()"
+          >
+            水电记录
+          </button>
         </view>
       </view>
     </view>
@@ -175,6 +194,35 @@
         </view>
       </view>
     </view>
+    <view class="cu-modal" :class="modalShow ? 'show' : ''">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">{{ modal.title }}</view>
+          <view class="action" @tap="hideModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding text-lg">
+          <view
+            v-for="(m, index) in modal.message"
+            :key="index"
+            class="padding-xs"
+          >
+            {{ m }}
+          </view>
+        </view>
+        <view class="cu-bar bg-white justify-end">
+          <view class="action">
+            <button
+              class="cu-btn bg-green margin-left"
+              @tap="modal.confirmAction"
+            >
+              确定
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -201,6 +249,14 @@ export default {
       search: "",
       searchResult: [],
       barHeight: 0,
+      modalShow: false,
+      modal: {
+        title: "",
+        message: [""],
+        id: null,
+        name: null,
+        confirmAction: null,
+      },
     };
   },
   methods: {
@@ -279,17 +335,68 @@ export default {
         });
     },
     selectTenant(index) {
-      console.log(this.searchResult[index]);
-      console.log(this.searchResult[index]["selected"]);
       this.searchResult[index].selected = !this.searchResult[index].selected;
     },
-    leave(id) {
-      //TODO 房客退租
-      console.log(id);
+    onLeave(name, id) {
+      this.modal.title = "请确认";
+      this.modal.message = [`确认${name}要离开吗?`];
+      if (this.tenantList.length == 1) {
+        this.modal.message.push("退租前请确认已抄录水电表");
+      }
+      this.modal.id = id;
+      this.modal.name = name;
+      this.modal.confirmAction = this.leave;
+      this.modalShow = true;
     },
-    allLeave(){
+    leave() {
+      //TODO 房客退租
+      this.modalShow = false;
+      let id = this.modal.id;
+      this.request
+        .post("/tenant/surrender", { id: id })
+        .then((response) => {
+          this.modal.title = "操作成功";
+          this.modal.message = [`已办理${this.modal.name}的退租手续`];
+          this.modalShow = true;
+          this.modal.confirmAction = () => {
+            this.modalShow = false;
+            this.getTenant();
+          };
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    onAllLeave() {
+      this.modal.title = "请确认";
+      this.modal.message = [
+        `确认${this.roomInfo.roomNumber}所有人退租吗?`,
+        "退租前请确认已抄录水电表",
+      ];
+      this.modal.confirmAction = this.allLeave;
+      this.modalShow = true;
+    },
+    allLeave() {
       //TODO 全部退租
-      console.log(id);
+      let tenantIdList = this.tenantList.map((e) => e.id);
+      this.modalShow = false;
+      this.request
+        .post("/tenant/surrenderAll", { idList: tenantIdList })
+        .then((response) => {
+          this.modal.title = "操作成功";
+          this.modal.message = [`已办理${this.roomInfo.roomNumber}的退租手续`];
+          this.modalShow = true;
+          this.modal.confirmAction = () => {
+            this.modalShow = false;
+            this.getTenant();
+          };
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    hideModal() {
+      this.modalShow = false;
     },
     showTenantDetails(index) {
       this.tenantList[index].show = !this.tenantList[index].show;
@@ -305,14 +412,14 @@ export default {
         },
       });
     },
-    confirmMakePhoneCall(number){
+    confirmMakePhoneCall(number) {
       //TODO 拨打电话
       console.log("拨打电话" + number);
     },
-    toUtilityRecord(){
+    toUtilityRecord() {
       //TODO 查看水电记录
       console.log(id);
-    }
+    },
   },
   onLoad(params) {
     this.id = params.roomId;
@@ -330,7 +437,6 @@ export default {
             size: true,
           },
           (data) => {
-            console.log(data);
             this.barHeight = data.height;
           }
         )
@@ -373,7 +479,7 @@ export default {
 /* #endif */
 
 /* #ifdef MP-WEIXIN */
-.cu-bar.btn-group button{
+.cu-bar.btn-group button {
   max-width: 100%;
 }
 /* #endif */

@@ -9,11 +9,10 @@
           class="cu-item shadow card"
           style="padding-bottom: 0; margin: 0px 15px 10px 15px"
         >
-          <view class="title light" :class="'bg-' + colorList[index % colorList.length]"
-            ><view
-              class="text-cut font-size-20"
-              >{{ item.room }}</view
-            ></view
+          <view
+            class="title light"
+            :class="'bg-' + colorList[index % colorList.length]"
+            ><view class="text-cut font-size-20">{{ item.room }}</view></view
           >
           <view class="font-size-17 padding-xs">
             <view class="flex">
@@ -52,6 +51,11 @@
         </view>
       </view>
     </view>
+    <view
+      class="cu-load bg-gray fade"
+      v-show="showLoading"
+      :class="haveMore ? 'loading' : 'over'"
+    ></view>
   </view>
 </template>
 
@@ -62,21 +66,28 @@ export default {
       queryForm: {
         houseId: "",
         date: "",
-        pageSize: 10,
+        pageSize: 15,
         pageIndex: 1,
       },
+      haveMore: true,
       utilityList: [],
       colorList: ["red", "blue"],
+      showLoading: false,
     };
   },
   methods: {
     getUtilityList() {
-      // TODO 无限加载
+      this.showLoading = true;
       this.request
         .post("/utility/getUtilityList", this.queryForm)
         .then((response) => {
           let { data } = response;
-          this.utilityList = data.list;
+          setTimeout(() => {
+            this.utilityList = this.utilityList.concat(data.list);
+            this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
+            this.haveMore = this.utilityList.length < data.totalCount;
+            this.showLoading = false;
+          }, 2000);
         })
         .catch((err) => {
           console.error(err);
@@ -98,6 +109,15 @@ export default {
       this.getUtilityList();
     });
   },
+  onReachBottom() {
+    if (!this.haveMore) {
+      this.showLoading = true;
+      setTimeout(() => {
+        this.showLoading = false;
+      }, 2000);
+    }
+    this.getUtilityList();
+  },
 };
 </script>
 
@@ -110,7 +130,7 @@ export default {
   font-size: 17px;
 }
 
-.card{
-    box-shadow: 5px 5px 3px 3px #909090;
+.card {
+  box-shadow: 5px 5px 3px 3px #909090;
 }
 </style>
