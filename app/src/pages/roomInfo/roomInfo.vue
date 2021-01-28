@@ -274,7 +274,7 @@ export default {
           console.error(err);
         });
     },
-    getTeant() {
+    getTenant() {
       this.request
         .post("/tenant/getTenantByRoom", { roomId: this.id })
         .then((resposne) => {
@@ -349,7 +349,6 @@ export default {
       this.modalShow = true;
     },
     leave() {
-      //TODO 房客退租
       this.modalShow = false;
       let id = this.modal.id;
       this.request
@@ -377,7 +376,6 @@ export default {
       this.modalShow = true;
     },
     allLeave() {
-      //TODO 全部退租
       let tenantIdList = this.tenantList.map((e) => e.id);
       this.modalShow = false;
       this.request
@@ -424,12 +422,12 @@ export default {
   onLoad(params) {
     this.id = params.roomId;
     // this.getRoomInfo();
-    // this.getTeant();
+    // this.getTenant();
   },
   onShow() {
     this.$nextTick(() => {
       this.getRoomInfo();
-      this.getTeant();
+      this.getTenant();
       let view = uni.createSelectorQuery().select("#box");
       view
         .fields(

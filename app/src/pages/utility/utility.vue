@@ -23,7 +23,7 @@
         style="margin: 10px 10px"
         @click="refer(index)"
       >
-        <view style="border-radius: 15px" :class="'bg-' + colorList[index % 4]">
+        <view style="border-radius: 15px" :class="'light bg-' + colorList[index % colorList.length]">
           <view class="cardTitle text-center padding" style="font-size: 20px">
             {{ item.name }}
           </view>
@@ -47,7 +47,7 @@ export default {
         pageSize: 10,
         pageIndex: 1,
       },
-      colorList: ["red", "blue", "yellow", "green"],
+      colorList: ["red", "blue"],
       haveMore: true,
       showLoading: false,
     };
@@ -110,5 +110,9 @@ export default {
 
 .status-bar {
   margin-top: var(--status-bar-height);
+}
+
+.a{
+  background: #FFFFFF;
 }
 </style>
