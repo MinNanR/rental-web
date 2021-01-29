@@ -23,7 +23,10 @@
         style="margin: 10px 10px"
         @click="refer(index)"
       >
-        <view style="border-radius: 15px" :class="'light bg-' + colorList[index % colorList.length]">
+        <view
+          style="border-radius: 15px"
+          :class="'light bg-' + colorList[index % colorList.length]"
+        >
           <view class="cardTitle text-center padding" style="font-size: 20px">
             {{ item.name }}
           </view>
@@ -54,13 +57,17 @@ export default {
   },
   methods: {
     getRecordList() {
-      this.showLoading = true
+      this.showLoading = true;
       this.request
         .post("/utility/getRecordList", this.queryForm)
         .then((response) => {
           let { data } = response;
           setTimeout(() => {
-            this.recordList = this.recordList.concat(data.list);
+            if (this.queryForm.pageIndex == 1) {
+              this.recordList = data.list;
+            } else {
+              this.recordList = this.recordList.concat(data.list);
+            }
             this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
             this.haveMore = this.recordList.length < data.totalCount;
             this.showLoading = false;
@@ -112,7 +119,7 @@ export default {
   margin-top: var(--status-bar-height);
 }
 
-.a{
-  background: #FFFFFF;
+.a {
+  background: #ffffff;
 }
 </style>

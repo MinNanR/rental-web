@@ -1,5 +1,5 @@
 <template>
-  <view class="page">
+  <view class="page" :style="'padding-bottom: ' + barHeight + 'px'">
     <view class="grid col-2 border-solid">
       <view class="padding solid flex">
         <view class="font-size-20">
@@ -88,17 +88,13 @@
         </view>
         <view class="font-size-17"> 账单状态：{{ bill.status }} </view>
       </view>
-      <template v-if="bill.statusCode === 'UNPAID'">
-        <view class="padding solid flex">
-          <view class="font-size-20">
-            <text class="cuIcon-time margin-right-xs text-yellow"></text>
-          </view>
-          <view class="font-size-17">
-            账单生成时间：{{ bill.updateTime }}
-          </view>
+      <view class="padding solid flex">
+        <view class="font-size-20">
+          <text class="cuIcon-time margin-right-xs text-yellow"></text>
         </view>
-      </template>
-      <template v-else>
+        <view class="font-size-17"> 账单生成时间：{{ bill.updateTime }} </view>
+      </view>
+      <template v-if="bill.statusCode === 'PAID'">
         <view class="padding solid flex">
           <view class="font-size-20">
             <text class="cuIcon-time margin-right-xs text-yellow"></text>
@@ -120,6 +116,19 @@
         </view>
       </template>
     </view>
+    <view class="box">
+      <view class="cu-bar tabbar btn-group foot bg-white" id="box">
+        <template v-if="bill.statusCode === 'UNPAID'">
+          <button class="cu-btn bg-green shadow-blur round lg">已支付</button>
+        </template>
+        <template v-if="bill.statusCode === 'UNSETTLED'">
+          <button class="cu-btn bg-green shadow-blur round lg">确认结算</button>
+        </template>
+        <button class="cu-btn bg-blue shadow-blur round lg" @click="referReceipt">
+          查看收据
+        </button>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -132,6 +141,7 @@ export default {
   },
   data() {
     return {
+      barHeight: 0,
       id: 0,
       bill: {},
       loading: false,
@@ -139,6 +149,7 @@ export default {
         UNPAID: "icon-weizhifu",
         PAID: "icon-ic_paid",
         PRINTED: "icon-ic_paid",
+        UNSETTLED: "icon-jiesuan",
       },
       paymentMethodIcon: {
         WEIXIN: "weixin",
@@ -168,6 +179,19 @@ export default {
     this.id = param.id;
     this.loading = true;
     this.getBillDetails();
+    this.$nextTick(() => {
+      let view = uni.createSelectorQuery().select("#box");
+      view
+        .fields(
+          {
+            size: true,
+          },
+          (data) => {
+            this.barHeight = data.height;
+          }
+        )
+        .exec();
+    });
   },
 };
 </script>

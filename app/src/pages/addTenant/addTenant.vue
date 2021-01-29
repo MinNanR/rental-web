@@ -11,7 +11,7 @@
         </view>
         <view class="font-size-17"> 姓名：{{ tenant.name }} </view>
       </view>
-      <view class="padding-sm flex">
+      <!-- <view class="padding-sm flex">
         <view class="font-size-20">
           <text
             :class="'cuIcon-' + tenant.gender + ' margin-right-xs text-blue'"
@@ -20,7 +20,7 @@
         <view class="font-size-17">
           性别：{{ tenant.gender | genderStr }}
         </view>
-      </view>
+      </view> -->
       <view class="padding-sm flex">
         <view class="font-size-20">
           <text class="cuIcon-phone margin-right-xs text-yellow"></text>
@@ -35,14 +35,14 @@
           身份证号码：{{ tenant.identificationNumber }}
         </view>
       </view>
-      <view class="padding-sm flex">
+      <!-- <view class="padding-sm flex">
         <view class="font-size-20">
           <text class="cuIcon-homefill margin-right-xs text-brown"></text>
         </view>
         <view class="font-size-17">
           籍贯：{{ tenant.hometownProvince }}{{ tenant.hometownCity }}
         </view>
-      </view>
+      </view> -->
       <view class="basis-xs padding-xs">
         <button class="cu-btn bg-red round" @click="deleteTenant(index)">
           删除
@@ -55,7 +55,7 @@
           <view class="title">姓名</view>
           <input placeholder="姓名" name="name" v-model="tenantForm.name" />
         </view>
-        <view class="cu-form-group justify-start">
+        <!-- <view class="cu-form-group justify-start">
           <view class="title">性别</view>
           <radio-group @change="genderChange">
             <label class="margin-right">
@@ -76,7 +76,7 @@
               ></radio></label
             >女
           </radio-group>
-        </view>
+        </view> -->
         <view class="cu-form-group">
           <view class="title">联系电话</view>
           <input
@@ -93,7 +93,7 @@
             v-model="tenantForm.identificationNumber"
           />
         </view>
-        <view class="cu-form-group">
+        <!-- <view class="cu-form-group">
           <view class="title"> 籍贯 </view>
           <picker
             mode="multiSelector"
@@ -101,11 +101,12 @@
             :range="cityList"
             @columnchange="provinceChange"
           >
-            <view>
+            <view v-if="tenantForm.hometown.length > 0">
               {{ tenantForm.hometown[0] }}-{{ tenantForm.hometown[1] }}
             </view>
+            <view v-else> 请选择籍贯 </view>
           </picker>
-        </view>
+        </view> -->
       </form>
       <view class="flex justify-start">
         <view class="padding">
@@ -122,23 +123,19 @@
     </view>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
-        <view class="action">
-          <button
-            class="cu-btn bg-green shadow-blur round lg"
-            @click="showTenantForm()"
-          >
-            添加房客
-          </button>
-        </view>
-        <view class="action">
-          <button
-            class="cu-btn bg-blue shadow-blur round lg"
-            @click="saveAdd()"
-          >
-            保存
-          </button>
-        </view>
-        <view class="action"> </view>
+        <button
+          class="cu-btn bg-green shadow-blur round lg"
+          @click="showTenantForm()"
+        >
+          添加房客
+        </button>
+        <button
+          class="cu-btn bg-blue shadow-blur round lg"
+          @click="saveAdd()"
+          v-show="tenantList.length > 0"
+        >
+          保存
+        </button>
       </view>
     </view>
     <view class="flex justify-start">
@@ -170,13 +167,8 @@
             <text class="cuIcon-close text-red"></text>
           </view>
         </view>
-        <view class="padding" v-show="!responseModal.loading">
+        <view class="padding">
           {{ responseModal.message }}
-        </view>
-        <view class="padding" v-show="responseModal.loading">
-          <view class="font-size-20">
-            <text class="cuIcon-loading2"></text>
-          </view>
         </view>
         <view class="cu-bar bg-white justify-end">
           <view class="action" v-show="!responseModal.loading">
@@ -189,6 +181,11 @@
           </view>
         </view>
       </view>
+    </view>
+    <view class="cu-load load-modal" v-if="loadingModal">
+      <!-- <view class="cuIcon-emojifill text-orange"></view> -->
+      <image src="/static/logo.png" mode="aspectFit"></image>
+      <view class="gray-text">保存中...</view>
     </view>
   </view>
 </template>
@@ -206,7 +203,7 @@ export default {
       houseId: "",
       houseName: "",
       tenantList: [],
-      formShow: false,
+      formShow: true,
       tenantForm: {
         name: "",
         identificationNumber: "",
@@ -259,6 +256,7 @@ export default {
       },
       responseModalShow: false,
       barHeight: 0,
+      loadingModal: false,
     };
   },
   methods: {
@@ -359,11 +357,11 @@ export default {
       }
     },
     saveAdd() {
-      this.responseModal.title = "操作中";
-      this.responseModal.message = "操作中，请稍后";
-      this.responseModal.loading = true;
-      this.responseModal.action = function () {};
-      this.responseModalShow = true;
+      // this.responseModal.title = "操作中";
+      // this.responseModal.message = "操作中，请稍后";
+      // this.responseModal.loading = true;
+      // this.responseModal.action = ""
+      this.loadingModal = true;
       this.request
         .post("/tenant/addTenant", {
           roomId: this.id,
@@ -377,14 +375,20 @@ export default {
           this.responseModal.title = "成功";
           this.responseModal.message = message;
           this.responseModal.action = this.successAction;
-          this.responseModal.loading = false;
+          this.loadingModal = false;
+          this.$nextTick(() => {
+            this.responseModalShow = true;
+          });
         })
         .catch((err) => {
           console.error(err);
           this.responseModal.title = "失败";
           this.responseModal.message = err;
           this.responseModal.action = this.failAction;
-          this.responseModal.loading = false;
+          this.loadingModal = false;
+          this.$nextTick(() => {
+            this.responseModalShow = true;
+          });
         });
     },
     responseModalConfirm() {

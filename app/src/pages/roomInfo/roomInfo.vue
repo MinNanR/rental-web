@@ -136,30 +136,25 @@
     </view>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
-        <view class="action">
           <button
             class="cu-btn bg-green shadow-blur round lg"
             @click="toAddTenant()"
           >
             添加房客
           </button>
-        </view>
-        <view class="action" v-if="roomInfo.statusCode == 'ON_RENT'">
           <button
             class="cu-btn bg-red shadow-blur round lg"
             @click="onAllLeave()"
+            v-if="roomInfo.statusCode == 'ON_RENT'"
           >
             全部退租
           </button>
-        </view>
-        <view class="action">
           <button
             class="cu-btn bg-blue shadow-blur round lg"
             @click="toUtilityRecord()"
           >
             水电记录
           </button>
-        </view>
       </view>
     </view>
     <view class="cu-modal" :class="changePriceModal ? 'show' : ''">
@@ -213,15 +208,17 @@
         </view>
         <view class="cu-bar bg-white justify-end">
           <view class="action">
-            <button
-              class="cu-btn bg-green margin-left"
-              @tap="modal.confirmAction"
-            >
+            <button class="cu-btn bg-green margin-left" @tap="confirmAction">
               确定
             </button>
           </view>
         </view>
       </view>
+    </view>
+    <view class="cu-load load-modal" v-if="loadingModal">
+      <!-- <view class="cuIcon-emojifill text-orange"></view> -->
+      <image src="/static/logo.png" mode="aspectFit"></image>
+      <view class="gray-text">{{ loadingMessage }}</view>
     </view>
   </view>
 </template>
@@ -257,6 +254,8 @@ export default {
         name: null,
         confirmAction: null,
       },
+      loadingModal: false,
+      loadingMessage: "",
     };
   },
   methods: {
@@ -296,18 +295,28 @@ export default {
       this.changePriceModal = false;
     },
     changePrice() {
-      this.request
-        .post("/room/updateRoom", {
-          id: this.id,
-          price: this.priceToChange,
-        })
-        .then((response) => {
-          this.changePriceModal = false;
-          this.getRoomInfo();
-        })
-        .catch((err) => {
-          console.error(err);
-        });
+      this.changePriceModal = false;
+      this.$nextTick(() => {
+        this.loadingMessage = "更新中...";
+        this.loadingModal = true;
+        this.request
+          .post("/room/updateRoom", {
+            id: this.id,
+            price: this.priceToChange,
+          })
+          .then((response) => {
+            this.modal.title = "成功";
+            this.modal.message = ["更新房价成功"];
+            this.modal.confirmAction = "roomRefresh";
+            this.loadingModal = false;
+            this.$nextTick(() => {
+              this.modalShow = true;
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+          });
+      });
     },
     toAddTenant() {
       let roomInfo = this.roomInfo;
@@ -345,22 +354,24 @@ export default {
       }
       this.modal.id = id;
       this.modal.name = name;
-      this.modal.confirmAction = this.leave;
+      this.modal.confirmAction = "leave";
       this.modalShow = true;
     },
     leave() {
       this.modalShow = false;
       let id = this.modal.id;
+      this.loadingMessage = "保存中...";
+      this.loadingModal = true;
       this.request
         .post("/tenant/surrender", { id: id })
         .then((response) => {
           this.modal.title = "操作成功";
           this.modal.message = [`已办理${this.modal.name}的退租手续`];
-          this.modalShow = true;
-          this.modal.confirmAction = () => {
-            this.modalShow = false;
-            this.getTenant();
-          };
+          this.modal.confirmAction = "refresh";
+          this.loadingModal = false;
+          this.$nextTick(() => {
+            this.modalShow = true;
+          });
         })
         .catch((err) => {
           console.error(err);
@@ -372,7 +383,7 @@ export default {
         `确认${this.roomInfo.roomNumber}所有人退租吗?`,
         "退租前请确认已抄录水电表",
       ];
-      this.modal.confirmAction = this.allLeave;
+      this.modal.confirmAction = "allLeave";
       this.modalShow = true;
     },
     allLeave() {
@@ -383,11 +394,11 @@ export default {
         .then((response) => {
           this.modal.title = "操作成功";
           this.modal.message = [`已办理${this.roomInfo.roomNumber}的退租手续`];
-          this.modalShow = true;
-          this.modal.confirmAction = () => {
-            this.modalShow = false;
-            this.getTenant();
-          };
+          this.modal.confirmAction = "refresh";
+          this.loadingModal = false;
+          this.$nextTick(() => {
+            this.modalShow = true;
+          });
         })
         .catch((err) => {
           console.error(err);
@@ -415,8 +426,24 @@ export default {
       console.log("拨打电话" + number);
     },
     toUtilityRecord() {
-      //TODO 查看水电记录
-      console.log(id);
+      uni.navigateTo({
+        url: `/pages/roomUtility/roomUtility?id=${this.roomInfo.id}&roomNumber=${this.roomInfo.roomNumber}&houseId=${this.roomInfo.houseId}&houseName=${this.roomInfo.houseName}`,
+      });
+    },
+    confirmAction() {
+      let action = this.modal.confirmAction;
+      if (action === "leave") {
+        this.leave();
+      } else if (action === "allLeave") {
+        this.allLeave();
+      } else if (action === "refresh") {
+        this.modalShow = false;
+        this.getRoomInfo();
+        this.getTenant();
+      } else if (action === "roomRefresh") {
+        this.modalShow = false;
+        this.getRoomInfo();
+      }
     },
   },
   onLoad(params) {

@@ -22,7 +22,7 @@
             房号：{{ item.roomNumber }}
           </view>
           <view class="padding-sm margin-xs">
-            缴费{{ item.totalCharge }}元
+            总费用：{{ item.totalCharge }}元
           </view>
         </view>
         <view
@@ -32,8 +32,6 @@
         >
           <view class="padding-xs"> 居住人：{{ item.livingPeople }} </view>
           <view class="padding-xs"> 账单时间：{{ item.time }} </view>
-          <view class="padding-xs"> 支付时间：{{ item.payTime }} </view>
-          <view class="padding-xs"> 支付方式：{{ item.paymentMethod }} </view>
           <view class="padding-xs"> 水费：{{ item.waterCharge }}元 </view>
           <view class="padding-xs"> 电费：{{ item.electricityCharge }}元 </view>
           <view class="padding-xs"> 房租：{{ item.rent }}元 </view>
@@ -66,7 +64,7 @@ export default {
     getBillList(pageIndex) {
       this.queryForm.pageIndex = pageIndex;
       this.request
-        .post("/bill/getBillList/paid", this.queryForm)
+        .post("/bill/getBillList/unsettled", this.queryForm)
         .then((response) => {
           let { data } = response;
           data.list.forEach((e) => {

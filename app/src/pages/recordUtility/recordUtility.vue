@@ -68,13 +68,15 @@
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
         <view class="action">
-          <button
-            class="cu-btn bg-green shadow-blur round lg"
-            @click="onSave()"
-            :disabled="!houseSelected"
-          >
-            保存
-          </button>
+          <view class="cu-bar btn-group">
+            <button
+              class="cu-btn bg-green shadow-blur round lg"
+              @click="onSave()"
+              :disabled="!houseSelected"
+            >
+              保存
+            </button>
+          </view>
         </view>
       </view>
     </view>
@@ -97,10 +99,7 @@
         </view>
         <view class="cu-bar bg-white justify-end">
           <view class="action">
-            <button
-              class="cu-btn bg-green margin-left"
-              @tap="modal.confirmAction"
-            >
+            <button class="cu-btn bg-green margin-left" @tap="confirmAction">
               确定
             </button>
           </view>
@@ -240,7 +239,7 @@ export default {
         `即将登记${this.selectedFloor[0]}${this.selectedFloor[1]}水电，确认后不可修改`,
         "不填则不登记，如果只填一项则另一项读数不变",
       ];
-      this.modal.confirmAction = this.confirmFloor;
+      this.modal.confirmAction = "confirmFloor";
       this.modalShow = true;
     },
     confirmFloor() {
@@ -312,7 +311,7 @@ export default {
             this.loadingModal = false;
             this.modal.title = "成功";
             this.modal.message = ["保存成功"];
-            this.modal.confirmAction = this.turnBack;
+            this.modal.confirmAction = "turnBack";
             this.modalShow = true;
           }, 1000);
         });
@@ -321,6 +320,13 @@ export default {
       uni.navigateBack({
         delta: 1,
       });
+    },
+    confirmAction() {
+      if (this.modal.confirmAction == "confirmFloor") {
+        this.confirmFloor();
+      } else if (this.modal.confirmAction == "turnBack") {
+        this.turnBack();
+      }
     },
   },
   onShow() {
@@ -345,14 +351,16 @@ export default {
   },
   filters: {
     water(item) {
-      return Number(item.water == null || item.water == ""
-        ? item.currentWater
-        : item.water);
+      return Number(
+        item.water == null || item.water == "" ? item.currentWater : item.water
+      );
     },
     electricity(item) {
-      return Number(item.electricity == null || item.electricity == ""
-        ? item.currentElectricity
-        : item.electricity);
+      return Number(
+        item.electricity == null || item.electricity == ""
+          ? item.currentElectricity
+          : item.electricity
+      );
     },
   },
 };

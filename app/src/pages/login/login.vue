@@ -37,6 +37,29 @@
       </view>
       <button class="login-btn bg-blue" @click="login()">登录</button>
     </view>
+    <view class="cu-load load-modal" v-if="loadModal">
+      <!-- <view class="cuIcon-emojifill text-orange"></view> -->
+      <image src="/static/logo.png" mode="aspectFit"></image>
+      <view class="gray-text">登录中...</view>
+    </view>
+    <view class="cu-modal" :class="failModal ? 'show' : ''">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">失败</view>
+          <view class="action" @tap="hideModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding-xl"> 登录失败 </view>
+        <view class="cu-bar bg-white justify-end">
+          <view class="action">
+            <button class="cu-btn bg-green margin-left" @tap="hideModal">
+              确定
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -63,6 +86,8 @@ export default {
           message: "密码不能为空",
         },
       },
+      loadModal: false,
+      failModal: false,
     };
   },
   methods: {
@@ -75,14 +100,22 @@ export default {
             username: this.loginForm.username,
             password: md5(this.loginForm.password),
           };
+          this.loadModal = true;
           this.request
             .post("/auth/login/password", f)
             .then((response) => {
               let { data, message } = response;
-              this.setStorageExpire("token", `Bearer ${data.token}`, 7 * 24 * 60 * 60 * 1000);
-              uni.switchTab({url : '/pages/index/index'})
+              this.setStorageExpire(
+                "token",
+                `Bearer ${data.token}`,
+                7 * 24 * 60 * 60 * 1000
+              );
+              this.loadModal = false;
+              uni.switchTab({ url: "/pages/index/index" });
             })
             .catch((err) => {
+              this.loadModal = false;
+              this.failModal = true;
               console.error(err);
             });
         })
@@ -95,6 +128,9 @@ export default {
             });
           }
         });
+    },
+    hideModal() {
+      this.failModal = false;
     },
   },
 };

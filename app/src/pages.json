@@ -77,6 +77,12 @@
 			"style": {
 				"navigationBarTitleText": "登记水电"
 			}
+		},
+		{
+			"path": "pages/roomUtility/roomUtility",
+			"style": {
+				"navigationBarTitleText": "房间水电"
+			}
 		}
 	],
 	"tabBar": {

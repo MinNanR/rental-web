@@ -83,7 +83,11 @@ export default {
         .then((response) => {
           let { data } = response;
           setTimeout(() => {
-            this.utilityList = this.utilityList.concat(data.list);
+            if (this.queryForm.pageIndex == 1) {
+              this.utilityList = data.list;
+            } else {
+              this.utilityList = this.utilityList.concat(data.list);
+            }
             this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
             this.haveMore = this.utilityList.length < data.totalCount;
             this.showLoading = false;

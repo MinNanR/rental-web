@@ -30,22 +30,22 @@
         @click="switchTabbar2()"
       >
         <text class="cuIcon-form" style="margin-right: 10px"></text>
-        未出收据
+        未结算账单
       </view>
     </view>
     <unpaid-bill v-show="currentPage === 'unpaidBill'"></unpaid-bill>
-    <unprinted-bill v-show="currentPage === 'unprintedBill'"></unprinted-bill>
+    <unsettled-bill v-show="currentPage === 'unsettledBill'"></unsettled-bill>
   </view>
 </template>
 
 <script>
 import unpaidBill from "./unpaidBill.vue";
-import unprintedBill from "./unprintedBill.vue";
+import unsettledBill from "./unsettledBill.vue";
 
 export default {
   components: {
     "unpaid-bill": unpaidBill,
-    "unprinted-bill": unprintedBill,
+    "unsettled-bill": unsettledBill,
   },
   data() {
     return {
@@ -68,7 +68,7 @@ export default {
     switchTabbar2() {
       this.className.tabbar2 = "tabbar-active";
       this.className.tabbar1 = "";
-      this.currentPage = "unprintedBill";
+      this.currentPage = "unsettledBill";
     },
     getTotal() {
       this.request.post("/bill/getMonthTotal").then((response) => {

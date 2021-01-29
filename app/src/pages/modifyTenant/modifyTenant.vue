@@ -5,7 +5,7 @@
         <view class="title">姓名</view>
         <input placeholder="姓名" name="name" v-model="tenantForm.name" />
       </view>
-      <view class="cu-form-group justify-start">
+      <!-- <view class="cu-form-group justify-start">
         <view class="title">性别</view>
         <radio-group @change="genderChange">
           <label class="margin-right">
@@ -26,7 +26,7 @@
             ></radio></label
           >女
         </radio-group>
-      </view>
+      </view> -->
       <view class="cu-form-group">
         <view class="title">联系电话</view>
         <input placeholder="联系电话" name="phone" v-model="tenantForm.phone" />
@@ -39,7 +39,7 @@
           v-model="tenantForm.identificationNumber"
         />
       </view>
-      <view class="cu-form-group">
+      <!-- <view class="cu-form-group">
         <view class="title"> 籍贯 </view>
         <picker
           mode="multiSelector"
@@ -52,7 +52,7 @@
             {{ tenantForm.hometown[0] }}-{{ tenantForm.hometown[1] }}
           </view>
         </picker>
-      </view>
+      </view> -->
     </form>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
@@ -110,6 +110,11 @@
           </view>
         </view>
       </view>
+    </view>
+        <view class="cu-load load-modal" v-if="loadingModal">
+      <!-- <view class="cuIcon-emojifill text-orange"></view> -->
+      <image src="/static/logo.png" mode="aspectFit"></image>
+      <view class="gray-text">保存中...</view>
     </view>
   </view>
 </template>
@@ -171,6 +176,7 @@ export default {
         loading: false,
       },
       responseModalShow: false,
+      loadingModal:false,
     };
   },
   methods: {
@@ -248,14 +254,19 @@ export default {
             modifyForm.hometownCity = hometownCity;
           }
           if (Object.keys(modifyForm).length == 0) {
-            console.log("not modify");
+            this.responseModal.title = "无更改";
+            this.responseModal.message = "无更改的信息";
+            this.responseModal.loading = false;
+            this.responseModal.action = "success";
+            this.responseModalShow = true;
             return;
           }
-          this.responseModal.title = "操作中";
-          this.responseModal.message = "操作中，请稍后";
-          this.responseModal.loading = true;
-          this.responseModal.action = function () {};
-          this.responseModalShow = true;
+          // this.responseModal.title = "操作中";
+          // this.responseModal.message = "操作中，请稍后";
+          // this.responseModal.loading = true;
+          // this.responseModal.action = "";
+          // this.responseModalShow = true;
+          this.loadingModal = true
           modifyForm.id = this.tenantInfo.id;
           this.request
             .post("/tenant/updateTenant", modifyForm)
@@ -263,15 +274,21 @@ export default {
               let { message } = response;
               this.responseModal.title = "成功";
               this.responseModal.message = message;
-              this.responseModal.action = this.successAction;
-              this.responseModal.loading = false;
+              this.responseModal.action = "success";
+              this.loadingModal = false
+              this.$nextTick(() => {
+                this.responseModalShow = true
+              })
             })
             .cathc((err) => {
               console.error(err);
               this.responseModal.title = "失败";
               this.responseModal.message = err;
-              this.responseModal.action = this.failAction;
-              this.responseModal.loading = false;
+              this.responseModal.action = "fail";
+              this.loadingModal = false
+              this.$nextTick(() => {
+                this.responseModalShow = true
+              })
             });
         })
         .catch(({ errors, fields }) => {
@@ -308,7 +325,12 @@ export default {
     },
     responseModalConfirm() {
       this.responseModalShow = false;
-      this.responseModal.action();
+      let action = this.responseModal.action;
+      if (action === "success") {
+        this.successAction();
+      } else if (action === "fail") {
+        this.failAction();
+      }
     },
     successAction() {
       uni.navigateBack({
