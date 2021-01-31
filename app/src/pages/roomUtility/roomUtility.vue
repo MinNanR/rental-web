@@ -3,10 +3,15 @@
     <view class="padding-top font-size-17 text-center">
       <view class="flex" style="">
         <view class="flex-twice padding solid"> 时间 </view>
-        <view class="flex-sub padding solid"> 水表度数 </view>
-        <view class="flex-sub padding solid"> 电表度数 </view>
+        <view class="flex-sub padding solid"> 水表行度 </view>
+        <view class="flex-sub padding solid"> 电表行度 </view>
       </view>
-      <view v-for="(item, index) in utilityList" :key="index" class="flex">
+      <view
+        v-for="(item, index) in utilityList"
+        :key="index"
+        class="flex"
+        :class="colorList[index % colorList.length]"
+      >
         <view class="flex-twice padding solid" style="font-size: 15px">
           {{ item.updateTime }}
         </view>
@@ -40,12 +45,12 @@
         <view>
           <form>
             <view class="cu-form-group">
-              <view class="title font-szie-17">水表计数</view>
+              <view class="title font-szie-17">水表行度</view>
               <input type="text" v-model.number="utilityForm.water" />
               度
             </view>
             <view class="cu-form-group">
-              <view class="title font-size-17"> 电表计数 </view>
+              <view class="title font-size-17"> 电表行度 </view>
               <input type="text" v-model.number="utilityForm.electricity" />
               度
             </view>
@@ -107,6 +112,7 @@ export default {
       },
       registerModal: false,
       loadingModal: false,
+      colorList: ["color-0", "color-1"],
     };
   },
   methods: {
@@ -214,5 +220,13 @@ export default {
 
 .font-size-20 {
   font-size: 20px;
+}
+
+.color-0 {
+  background-color: #f0f0f0;
+}
+
+.color-1 {
+  background-color: #d3d3d3;
 }
 </style>

@@ -124,7 +124,10 @@
         <template v-if="bill.statusCode === 'UNSETTLED'">
           <button class="cu-btn bg-green shadow-blur round lg">确认结算</button>
         </template>
-        <button class="cu-btn bg-blue shadow-blur round lg" @click="referReceipt">
+        <button
+          class="cu-btn bg-blue shadow-blur round lg"
+          @click="referReceipt"
+        >
           查看收据
         </button>
       </view>
@@ -173,6 +176,12 @@ export default {
         .catch((err) => {
           console.error(err);
         });
+    },
+    referReceipt() {
+      console.log(this.id);
+      uni.navigateTo({
+        url: `/pages/receipt/receipt`,
+      });
     },
   },
   onLoad(param) {

@@ -1,6 +1,6 @@
 <template>
   <view class="">
-    <view v-for="(item, index) in utilityList" :key="index">
+    <!-- <view v-for="(item, index) in utilityList" :key="index">
       <view
         class="cu-card article"
         style="margin-left: 0px;margin-right 0px;margin-top: 0px;margin-bottom: 0px"
@@ -50,6 +50,25 @@
           </view>
         </view>
       </view>
+    </view> -->
+    <view class="padding-top font-size-17 text-center">
+      <view class="flex" style="">
+        <view class="flex-sub padding solid"> 房号 </view>
+        <view class="flex-sub padding solid"> 水表行度 </view>
+        <view class="flex-sub padding solid"> 电表行度 </view>
+      </view>
+      <view
+        v-for="(item, index) in utilityList"
+        :key="index"
+        class="flex"
+        :class="colorList[index % colorList.length]"
+      >
+        <view class="flex-sub padding solid" style="font-size: 15px">
+          {{ item.roomNumber }}
+        </view>
+        <view class="flex-sub padding solid"> {{ item.water }}度 </view>
+        <view class="flex-sub padding solid"> {{ item.electricity }}度 </view>
+      </view>
     </view>
     <view
       class="cu-load bg-gray fade"
@@ -71,7 +90,7 @@ export default {
       },
       haveMore: true,
       utilityList: [],
-      colorList: ["red", "blue"],
+      colorList: ["color-1", "color-0"],
       showLoading: false,
     };
   },
@@ -136,5 +155,13 @@ export default {
 
 .card {
   box-shadow: 5px 5px 3px 3px #909090;
+}
+
+.color-0 {
+  background-color: #f0f0f0;
+}
+
+.color-1 {
+  background-color:#D3D3D3;
 }
 </style>
