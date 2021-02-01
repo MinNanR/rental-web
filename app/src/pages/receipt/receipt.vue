@@ -17,7 +17,7 @@ export default {
     };
   },
   onLoad(params) {
-    imageUrl = params.src
+    this.imageUrl = `http://minnan.site:2000/receipt/${params.id}.png`
   },
 };
 </script>

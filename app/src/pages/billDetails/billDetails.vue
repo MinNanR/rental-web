@@ -180,7 +180,7 @@ export default {
     referReceipt() {
       console.log(this.id);
       uni.navigateTo({
-        url: `/pages/receipt/receipt`,
+        url: `/pages/receipt/receipt?id=${this.id}`,
       });
     },
   },

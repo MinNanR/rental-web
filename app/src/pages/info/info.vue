@@ -32,7 +32,7 @@
             <text class="text-grey">设置水电价格</text>
           </view>
         </view>
-        <view class="cu-item">
+        <view class="cu-item" @click="toBillList()">
           <view class="content">
             <text class="cuIcon-form text-yellow font-size-20"></text>
             <text class="text-grey">历史账单</text>
@@ -132,6 +132,9 @@ export default {
           this.loadingModal = false;
           this.changePriceModal = false;
         });
+    },
+    toBillList() {
+      uni.navigateTo({ url: "/pages/billList/billList" });
     },
   },
   onShow() {

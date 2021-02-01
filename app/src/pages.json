@@ -95,6 +95,12 @@
             "style": {
                 "navigationBarTitleText": "登记入住"
             }
+        },
+        {
+            "path": "pages/billList/billList",
+            "style": {
+                "navigationBarTitleText": "历史账单"
+            }
         }
     ],
     "tabBar": {
