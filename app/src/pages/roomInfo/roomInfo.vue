@@ -136,6 +136,7 @@
     </view>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
+        <block v-if="roomInfo.statusCode == 'ON_RENT'">
           <button
             class="cu-btn bg-green shadow-blur round lg"
             @click="toAddTenant()"
@@ -145,16 +146,24 @@
           <button
             class="cu-btn bg-red shadow-blur round lg"
             @click="onAllLeave()"
-            v-if="roomInfo.statusCode == 'ON_RENT'"
           >
             全部退租
           </button>
+        </block>
+        <block v-else>
           <button
-            class="cu-btn bg-blue shadow-blur round lg"
-            @click="toUtilityRecord()"
+            class="cu-btn bg-green shadow-blur round lg"
+            @click="toCheckIn()"
           >
-            水电记录
+            登记入住
           </button>
+        </block>
+        <button
+          class="cu-btn bg-blue shadow-blur round lg"
+          @click="toUtilityRecord()"
+        >
+          水电记录
+        </button>
       </view>
     </view>
     <view class="cu-modal" :class="changePriceModal ? 'show' : ''">
@@ -239,7 +248,6 @@ export default {
         VACANT: "red",
       },
       changePriceModal: false,
-      changeTenantModal: false,
       priceToChange: null,
       inputFocus: false,
       eventChannel: null,
@@ -323,10 +331,12 @@ export default {
       uni.navigateTo({
         url: `/pages/addTenant/addTenant?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
       });
-      this.changeTenantModal = true;
     },
-    hideChangeTenantModal() {
-      this.changeTenantModal = false;
+    toCheckIn() {
+      let roomInfo = this.roomInfo;
+      uni.navigateTo({
+        url: `/pages/checkIn/checkIn?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
+      });
     },
     getTenantDropDown() {
       this.request

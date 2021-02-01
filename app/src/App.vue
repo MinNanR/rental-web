@@ -22,7 +22,7 @@ export default {
   height: 100vh;
   background: #ffffff;
 } */
-body{
-  background: #ffffff;
+body {
+  background: #f5f5f5;
 }
 </style>

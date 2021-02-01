@@ -64,7 +64,7 @@
         :class="colorList[index % colorList.length]"
       >
         <view class="flex-sub padding solid" style="font-size: 15px">
-          {{ item.roomNumber }}
+          {{ item.room }}
         </view>
         <view class="flex-sub padding solid"> {{ item.water }}度 </view>
         <view class="flex-sub padding solid"> {{ item.electricity }}度 </view>

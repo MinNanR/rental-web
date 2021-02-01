@@ -80,6 +80,9 @@ export default {
   onShow() {
     this.getTotal();
   },
+  onLoad(){
+
+  }
 };
 </script>
 

@@ -5,28 +5,6 @@
         <view class="title">姓名</view>
         <input placeholder="姓名" name="name" v-model="tenantForm.name" />
       </view>
-      <!-- <view class="cu-form-group justify-start">
-        <view class="title">性别</view>
-        <radio-group @change="genderChange">
-          <label class="margin-right">
-            <radio
-              :class="tenantForm.gender == 'male' ? 'checked' : ''"
-              :checked="tenantForm.gender == 'male'"
-              value="male"
-              class="margin-right-xs"
-            ></radio
-            >男
-          </label>
-          <label
-            ><radio
-              :class="tenantForm.gender == 'female' ? 'checked' : ''"
-              :checked="tenantForm.gender == 'female'"
-              value="female"
-              class="margin-right-xs"
-            ></radio></label
-          >女
-        </radio-group>
-      </view> -->
       <view class="cu-form-group">
         <view class="title">联系电话</view>
         <input placeholder="联系电话" name="phone" v-model="tenantForm.phone" />
@@ -39,20 +17,6 @@
           v-model="tenantForm.identificationNumber"
         />
       </view>
-      <!-- <view class="cu-form-group">
-        <view class="title"> 籍贯 </view>
-        <picker
-          mode="multiSelector"
-          @change="hometownChange"
-          :range="cityList"
-          :value="cityValue"
-          @columnchange="provinceChange"
-        >
-          <view>
-            {{ tenantForm.hometown[0] }}-{{ tenantForm.hometown[1] }}
-          </view>
-        </picker>
-      </view> -->
     </form>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
