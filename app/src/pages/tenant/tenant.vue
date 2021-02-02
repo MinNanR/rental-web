@@ -20,11 +20,11 @@
             >
               <view class="cu-avatar round lg">{{ item.key }}</view>
               <view class="content">
-                <view class="text-black" style="font-size: 17px">{{ tenant.name }}</view>
-                <view class="text-cyan text-sm">
+                <view class="text-black" style="font-size: 20px">{{ tenant.name }}</view>
+                <view class="text-cyan text-xl">
                   {{ tenant.room }}
                 </view>
-                <view class="text-brown text-sm">
+                <view class="text-brown text-xl">
                   {{ tenant.phone }}
                 </view>
               </view>

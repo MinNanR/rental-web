@@ -39,34 +39,36 @@
           <view class="font-size-17"> 联系电话：{{ t.phone }} </view>
         </view>
       </template>
-      <view class="padding solid flex">
-        <view>
-          <span
-            class="iconfont icon-5 text-blue margin-right-xs font-size-20"
-          ></span>
+      <template v-if="typeCode === 'MONTHYLY'">
+        <view class="padding solid flex">
+          <view>
+            <span
+              class="iconfont icon-5 text-blue margin-right-xs font-size-20"
+            ></span>
+          </view>
+          <view class="font-size-17"> 用水量：{{ bill.waterUsage }}度 </view>
         </view>
-        <view class="font-size-17"> 用水量：{{ bill.waterUsage }}度 </view>
-      </view>
-      <view class="padding solid flex">
-        <view class="font-size-20">
-          <text class="cuIcon-recharge margin-right-xs text-red"></text>
+        <view class="padding solid flex">
+          <view class="font-size-20">
+            <text class="cuIcon-recharge margin-right-xs text-red"></text>
+          </view>
+          <view class="font-size-17"> 水费：{{ bill.waterCharge }}元 </view>
         </view>
-        <view class="font-size-17"> 水费：{{ bill.waterCharge }}元 </view>
-      </view>
-      <view class="padding solid flex">
-        <view class="font-size-20">
-          <text class="cuIcon-light margin-right-xs text-green"></text>
+        <view class="padding solid flex">
+          <view class="font-size-20">
+            <text class="cuIcon-light margin-right-xs text-green"></text>
+          </view>
+          <view class="font-size-17">
+            用电量：{{ bill.electricityUsage }}度
+          </view>
         </view>
-        <view class="font-size-17">
-          用电量：{{ bill.electricityUsage }}度
+        <view class="padding solid flex">
+          <view class="font-size-20">
+            <text class="cuIcon-recharge margin-right-xs text-yellow"></text>
+          </view>
+          电费：{{ bill.electricityCharge }}元
         </view>
-      </view>
-      <view class="padding solid flex">
-        <view class="font-size-20">
-          <text class="cuIcon-recharge margin-right-xs text-yellow"></text>
-        </view>
-        电费：{{ bill.electricityCharge }}元
-      </view>
+      </template>
       <view class="padding solid flex">
         <view class="font-size-20">
           <text class="cuIcon-recharge margin-right-xs text-blue"></text>

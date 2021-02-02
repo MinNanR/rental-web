@@ -33,6 +33,7 @@
           :key="index"
           @tap="TabSelect"
           :data-id="index"
+          style="font-size:22px"
         >
           {{ item.floor }}楼
         </view>
@@ -47,7 +48,7 @@
       >
         <view v-for="(item, index) in list" :key="index" :id="'main-' + index">
           <view class="cu-bar solid-bottom bg-white">
-            <view class="action">
+            <view class="action" style="font-size:22px">
               <text
                 class="cuIcon-title text-blue"
                 style="font-size: 18px"
@@ -70,6 +71,7 @@
                 <view class="content">
                   <view
                     :class="'text-' + colorList[(i + 2) % colorList.length]"
+                    style="font-size: 20px"
                     >{{ room.roomNumber }}</view
                   >
                   <view> 租金：{{ room.price }} 元</view>
@@ -85,7 +87,7 @@
                   </view>
                 </view>
                 <view class="action" @click="refer(room.id)">
-                  <view class="text-blue text-xs">查看</view>
+                  <view class="text-blue text-xs" style="font-size: 18px">查看</view>
                 </view>
               </view>
             </template>
