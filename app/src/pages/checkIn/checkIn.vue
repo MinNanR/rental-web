@@ -9,6 +9,27 @@
         <view class="title"> 门卡数量 </view>
         <input type="text" v-model="roomForm.cardQuantity" />
       </view>
+      <view class="cu-form-group">
+        <view class="title">入住日期</view>
+        <picker mode="date" :start="start" :end="end" @change="DateChange">
+          <view class="picker" style="text-align: left">
+            {{ dateString }}
+          </view>
+        </picker>
+      </view>
+      <view class="cu-form-group">
+        <view class="title">支付方式</view>
+        <picker
+          @change="paymethodChange"
+          :value="payMethodIndex"
+          :range="payMethodList"
+          range-key="value"
+        >
+          <view class="picker" style="text-align: left">
+            {{ payMethodList[payMethodIndex].value }}
+          </view>
+        </picker>
+      </view>
       <view class="cu-form-group solid">
         <view class="title"> 备注 </view>
         <textarea
@@ -23,7 +44,7 @@
     <view
       v-for="(tenant, index) in tenantList"
       :key="index"
-      class="solid-bottom"
+      class="solid-bottom bg-white"
     >
       <view class="padding-sm flex">
         <view class="font-size-20">
@@ -31,16 +52,6 @@
         </view>
         <view class="font-size-17"> 姓名：{{ tenant.name }} </view>
       </view>
-      <!-- <view class="padding-sm flex">
-        <view class="font-size-20">
-          <text
-            :class="'cuIcon-' + tenant.gender + ' margin-right-xs text-blue'"
-          ></text>
-        </view>
-        <view class="font-size-17">
-          性别：{{ tenant.gender | genderStr }}
-        </view>
-      </view> -->
       <view class="padding-sm flex">
         <view class="font-size-20">
           <text class="cuIcon-phone margin-right-xs text-yellow"></text>
@@ -55,14 +66,6 @@
           身份证号码：{{ tenant.identificationNumber }}
         </view>
       </view>
-      <!-- <view class="padding-sm flex">
-        <view class="font-size-20">
-          <text class="cuIcon-homefill margin-right-xs text-brown"></text>
-        </view>
-        <view class="font-size-17">
-          籍贯：{{ tenant.hometownProvince }}{{ tenant.hometownCity }}
-        </view>
-      </view> -->
       <view class="basis-xs padding-xs">
         <button class="cu-btn bg-red round" @click="deleteTenant(index)">
           删除
@@ -116,7 +119,7 @@
         <button
           class="cu-btn bg-blue shadow-blur round lg"
           @click="saveAdd()"
-          v-show="tenantList.length > 0"
+          v-if="tenantList.length > 0"
         >
           保存
         </button>
@@ -177,6 +180,7 @@
 <script>
 import Schema from "async-validator";
 import region from "@/utils/cities.js";
+import dayjs from "dayjs";
 Schema.warning = function () {};
 
 export default {
@@ -195,11 +199,20 @@ export default {
         hometown: [],
         gender: "male",
       },
+      end: dayjs().format("YYYY-MM-DD"),
+      start: dayjs().subtract(1, "month").format("YYYY-MM-DD"),
       roomForm: {
         deposit: 0,
         cardQuantity: 0,
+        checkInDate: dayjs().format("YYYY-MM-DD"),
         remark: "押金租满三个月方可退还",
       },
+      dateString: dayjs().format("YYYY年M月D日"),
+      payMethodList: [
+        { value: "微信", key: "WEIXIN" },
+        { value: "现金", key: "CASH" },
+      ],
+      payMethodIndex: 0,
       errorModal: false,
       errorMessage: [],
       rules: {
@@ -351,7 +364,7 @@ export default {
       // this.responseModal.loading = true;
       // this.responseModal.action = ""
       this.loadingModal = true;
-      let { deposit, cardQuantity, remark } = this.roomForm;
+      let { deposit, cardQuantity, remark,checkInDate } = this.roomForm;
       this.request
         .post("/tenant/checkIn", {
           roomId: this.id,
@@ -360,6 +373,8 @@ export default {
           houseName: this.houseName,
           deposit: deposit,
           cardQuantity: cardQuantity,
+          checkInDate:checkInDate,
+          payMethod: this.payMethodList[this.payMethodIndex].key,
           remark: remark,
           tenantList: this.tenantList,
         })
@@ -395,6 +410,15 @@ export default {
     },
     failAction() {
       this.responseModalShow = false;
+    },
+    DateChange(e) {
+      console.log(e.detail.value);
+      let value = e.detail.value;
+      this.dateString = dayjs(value).format("YYYY年M月D日");
+      this.roomForm.checkInDate = value;
+    },
+    paymethodChange(e) {
+      this.payMethodIndex = e.detail.value;
     },
   },
   onLoad(params) {

@@ -91,6 +91,11 @@
             </template>
           </view>
         </view>
+        <view
+          class="cu-load bg-gray fade"
+          v-show="showLoading"
+          :class="haveMore ? 'loading' : 'over'"
+        ></view>
       </scroll-view>
     </view>
   </view>
@@ -115,15 +120,13 @@ export default {
         houseId: "",
         roomNumber: "",
       },
+      showLoading: false,
+      haveMore: true,
     };
   },
   onLoad(params) {
     this.queryForm.houseId = params.id;
     // this.getRoomList();
-    uni.showLoading({
-      title: "加载中...",
-      mask: true,
-    });
     uni.setNavigationBarTitle({
       title: params.name,
     });
@@ -175,6 +178,7 @@ export default {
       }
     },
     getRoomList() {
+      this.showLoading = true;
       this.request
         .post("/room/getAllRoom", this.queryForm)
         .then((response) => {
@@ -183,6 +187,7 @@ export default {
           let id = 0;
           this.list.forEach((e) => (e.id = id++));
           this.listCur = this.list[0];
+          this.showLoading = false;
         })
         .catch((err) => {
           console.error(err);
