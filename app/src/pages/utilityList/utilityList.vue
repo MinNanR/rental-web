@@ -124,6 +124,7 @@ export default {
     });
   },
   onShow() {
+    this.utilityList = []
     this.$nextTick(() => {
       this.getUtilityList();
     });

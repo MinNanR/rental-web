@@ -34,18 +34,18 @@
       </view>
     </view>
     <unpaid-bill v-show="currentPage === 'unpaidBill'"></unpaid-bill>
-    <unsettled-bill v-show="currentPage === 'unsettledBill'"></unsettled-bill>
+    <unconfirmed-bill v-show="currentPage === 'unconfirmedBill'"></unconfirmed-bill>
   </view>
 </template>
 
 <script>
 import unpaidBill from "./unpaidBill.vue";
-import unsettledBill from "./unsettledBill.vue";
+import unconfirmedBill from "./unconfirmedBill.vue";
 
 export default {
   components: {
     "unpaid-bill": unpaidBill,
-    "unsettled-bill": unsettledBill,
+    "unconfirmed-bill": unconfirmedBill,
   },
   data() {
     return {
@@ -68,7 +68,7 @@ export default {
     switchTabbar2() {
       this.className.tabbar2 = "tabbar-active";
       this.className.tabbar1 = "";
-      this.currentPage = "unsettledBill";
+      this.currentPage = "unconfirmedBill";
     },
     getTotal() {
       this.request.post("/bill/getMonthTotal").then((response) => {

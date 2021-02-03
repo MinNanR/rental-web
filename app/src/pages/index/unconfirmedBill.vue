@@ -64,7 +64,7 @@ export default {
     getBillList(pageIndex) {
       this.queryForm.pageIndex = pageIndex;
       this.request
-        .post("/bill/getBillList/unsettled", this.queryForm)
+        .post("/bill/getBillList/unconfirmed", this.queryForm)
         .then((response) => {
           let { data } = response;
           data.list.forEach((e) => {
