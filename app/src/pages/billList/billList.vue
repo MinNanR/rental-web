@@ -67,7 +67,7 @@ export default {
       statusColor: {
         PAID: "green",
         UNPAID: "red",
-        UNSETTLED: "grey",
+        UNCONFIRMED: "grey",
       },
       showLoading: false,
       haveMore: true,

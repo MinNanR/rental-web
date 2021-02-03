@@ -52,13 +52,31 @@
         </view>
         <view class="font-size-17"> 姓名：{{ tenant.name }} </view>
       </view>
-      <view class="padding-sm flex">
+      <view
+        class="padding-sm flex"
+        v-if="
+          !(
+            tenant.phone === null ||
+            tenant.phone === undefined ||
+            tenant.phone == ''
+          )
+        "
+      >
         <view class="font-size-20">
           <text class="cuIcon-phone margin-right-xs text-yellow"></text>
         </view>
         <view class="font-size-17"> 联系电话：{{ tenant.phone }} </view>
       </view>
-      <view class="padding-sm flex">
+      <view
+        class="padding-sm flex"
+        v-if="
+          !(
+            tenant.identificationNumber === null ||
+            tenant.identificationNumber == 'undefined' ||
+            tenant.identificationNumber === ''
+          )
+        "
+      >
         <view class="font-size-20">
           <text class="cuIcon-card margin-right-xs text-blue"></text>
         </view>
@@ -223,22 +241,11 @@ export default {
         },
         phone: [
           {
-            type: "string",
-            required: true,
-
-            message: "电话号码不能为空",
-          },
-          {
             pattern: /^1([3456789])\d{9}$/,
             message: "请输入正确的手机号码",
           },
         ],
         identificationNumber: [
-          {
-            type: "string",
-            required: true,
-            message: "身份证号码不能为空",
-          },
           {
             pattern: /^[1-9]\d{5}(18|19|20|(3\d))\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
             message: "请填写正确的身份证号码",
@@ -285,6 +292,7 @@ export default {
     },
     addTenant() {
       const validator = new Schema(this.rules);
+      console.log(1);
       validator
         .validate(this.tenantForm)
         .then((valid) => {
@@ -331,6 +339,7 @@ export default {
       this.errorModal = false;
     },
     checkIdentificationNumberExist(rule, value, callback) {
+      if (value === "") callback();
       this.request
         .post("/tenant/checkIdNumber", { identificationNumber: value })
         .then((response) => {
@@ -364,7 +373,7 @@ export default {
       // this.responseModal.loading = true;
       // this.responseModal.action = ""
       this.loadingModal = true;
-      let { deposit, cardQuantity, remark,checkInDate } = this.roomForm;
+      let { deposit, cardQuantity, remark, checkInDate } = this.roomForm;
       this.request
         .post("/tenant/checkIn", {
           roomId: this.id,
@@ -373,7 +382,7 @@ export default {
           houseName: this.houseName,
           deposit: deposit,
           cardQuantity: cardQuantity,
-          checkInDate:checkInDate,
+          checkInDate: checkInDate,
           payMethod: this.payMethodList[this.payMethodIndex].key,
           remark: remark,
           tenantList: this.tenantList,

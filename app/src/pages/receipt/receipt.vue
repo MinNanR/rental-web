@@ -13,11 +13,11 @@ export default {
   data() {
     return {
       id: "",
-      imageUrl: "http://minnan.site:2000/receipt/88.png",
+      imageUrl: "",
     };
   },
   onLoad(params) {
-    this.imageUrl = `http://minnan.site:2000/receipt/${params.id}.png`
+     this.imageUrl = JSON.parse(decodeURIComponent(params.url))
   },
 };
 </script>

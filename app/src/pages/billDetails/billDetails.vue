@@ -1,6 +1,7 @@
 <template>
   <view class="page" :style="'padding-bottom: ' + barHeight + 'px'">
-    <view class="grid col-2 border-solid">
+    <view class="cu-load bg-gray fade loading" v-show="showLoading"></view>
+    <view class="grid col-2 border-solid" v-show="!showLoading">
       <view class="padding solid flex">
         <view class="font-size-20">
           <text class="cuIcon-home margin-right-xs text-blue"></text>
@@ -39,7 +40,7 @@
           <view class="font-size-17"> 联系电话：{{ t.phone }} </view>
         </view>
       </template>
-      <template v-if="typeCode === 'MONTHYLY'">
+      <template v-if="bill.typeCode === 'MONTHLY'">
         <view class="padding solid flex">
           <view>
             <span
@@ -66,7 +67,9 @@
           <view class="font-size-20">
             <text class="cuIcon-recharge margin-right-xs text-yellow"></text>
           </view>
-          电费：{{ bill.electricityCharge }}元
+          <view class="font-size-17">
+            电费：{{ bill.electricityCharge }}元
+          </view>
         </view>
       </template>
       <view class="padding solid flex">
@@ -123,16 +126,65 @@
         <template v-if="bill.statusCode === 'UNPAID'">
           <button class="cu-btn bg-green shadow-blur round lg">已支付</button>
         </template>
-        <template v-if="bill.statusCode === 'UNSETTLED'">
-          <button class="cu-btn bg-green shadow-blur round lg">确认结算</button>
+        <template v-if="bill.statusCode === 'UNCONFIRMED'">
+          <button
+            class="cu-btn bg-green shadow-blur round lg"
+            @click="confirm()"
+          >
+            确认无误并出单
+          </button>
         </template>
-        <button
-          class="cu-btn bg-blue shadow-blur round lg"
-          @click="referReceipt"
-        >
-          查看收据
-        </button>
+        <template v-if="bill.receiptUrl !== '' && bill.receiptUlr !== null">
+          <button
+            class="cu-btn bg-blue shadow-blur round lg"
+            @click="referReceipt"
+          >
+            查看收据
+          </button>
+        </template>
+        <template v-else>
+          <button
+            class="cu-btn bg-blue shadow-blur round lg"
+            @click="createReceipt()"
+          >
+            生成收据
+          </button>
+        </template>
+        <template v-if="bill.statusCode === 'UNCONFIRMED'">
+          <button
+            class="cu-btn bg-red shadow-blur round lg"
+            @click="correctBill()"
+          >
+            校正水电读数
+          </button>
+        </template>
       </view>
+    </view>
+    <view class="cu-modal" :class="responseModalShow ? 'show' : ''">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content"> </view>
+          <view class="action" @tap="responseModalShow = false">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view class="padding">
+          {{ responseMessage }}
+        </view>
+        <view class="cu-bar bg-white justify-end">
+          <button
+            class="cu-btn bg-green margin-left"
+            @tap="responseModalShow = false"
+          >
+            确定
+          </button>
+        </view>
+      </view>
+    </view>
+    <view class="cu-load load-modal" v-if="loadingModal">
+      <!-- <view class="cuIcon-emojifill text-orange"></view> -->
+      <image src="/static/logo.png" mode="aspectFit"></image>
+      <view class="gray-text">{{ loadingMessage }}</view>
     </view>
   </view>
 </template>
@@ -149,12 +201,15 @@ export default {
       barHeight: 0,
       id: 0,
       bill: {},
-      loading: false,
+      loadingModal: false,
+      showLoading: false,
+      responseModalShow: false,
+      responseMessage: "",
       statusIcon: {
         UNPAID: "icon-weizhifu",
         PAID: "icon-ic_paid",
         PRINTED: "icon-ic_paid",
-        UNSETTLED: "icon-jiesuan",
+        UNCONFIRMED: "icon-jiesuan",
       },
       paymentMethodIcon: {
         WEIXIN: "weixin",
@@ -164,6 +219,7 @@ export default {
         WEIXIN: "green",
         CASH: "red",
       },
+      loadingMessage: "",
     };
   },
   methods: {
@@ -173,7 +229,7 @@ export default {
         .then((response) => {
           let { data } = response;
           this.bill = data;
-          this.loading = false;
+          this.showLoading = false;
         })
         .catch((err) => {
           console.error(err);
@@ -182,13 +238,55 @@ export default {
     referReceipt() {
       console.log(this.id);
       uni.navigateTo({
-        url: `/pages/receipt/receipt?id=${this.id}`,
+        url: `/pages/receipt/receipt?url=${encodeURIComponent(
+          JSON.stringify(this.bill.receiptUrl)
+        )}`,
       });
     },
+    createReceipt() {
+      this.loadingModal = true;
+      this.loadingMessage = "生成收据中";
+      this.request
+        .post("/bill/createReceipt", { id: this.id })
+        .then((response) => {
+          let { data } = response;
+          this.bill.receiptUrl = data;
+          this.loadingModal = false;
+          this.$nextTick(() => {
+            this.responseMessage = "生成成功";
+            this.responseModalShow = true;
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+    },
+    correctBill() {
+      this.loadingModal = true;
+      this.loadingMessage = "校正中...";
+      this.request
+        .post("/bill/correctBill", { id: this.id })
+        .then((response) => {
+          this.loadingModal = false;
+          this.responseMessage = "校正成功";
+          this.$nextTick(() => {
+            this.responseModalShow = true;
+            this.getBillDetails();
+          });
+        })
+        .catch((err) => {
+          this.loadingModal = false;
+          this.responseMessage = "校正失败";
+          this.$nextTick(() => {
+            this.responseModalShow = true;
+          });
+        });
+    },
+    confirm() {},
   },
   onLoad(param) {
     this.id = param.id;
-    this.loading = true;
+    this.showLoading = true;
     this.getBillDetails();
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");

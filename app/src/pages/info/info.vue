@@ -2,11 +2,24 @@
   <view class="">
     <view class="flex margin-top" style="background: #ffffff">
       <view class="basis-sub padding" style="width: 102px;  height: 102px" st>
+        <!-- #ifdef MP-WEIXIN -->
         <open-data type="userAvatarUrl"></open-data>
+        <!-- #endif -->
+        <!-- #ifndef MP-WEIXIN -->
+        <image
+          src="/static/logo.png"
+          style="width: 102px;  height: 72px"
+        ></image>
+        <!-- #endif -->
       </view>
       <view class="text-xl">
         <view class="padding-lr padding-top text-xl">
+          <!-- #ifdef MP-WEIXIN -->
           <open-data type="userNickName"></open-data>
+          <!-- #endif -->
+          <!-- #ifndef MP-WEIXIN -->
+          用户名
+          <!-- #endif -->
         </view>
         <view class="padding-lr padding-top text-lg">
           {{ realName }}
@@ -51,20 +64,41 @@
         <view>
           <form>
             <view class="cu-form-group">
-              <view class="title font-szie-17">水费</view>
-              <input type="text" v-model="price.waterPrice" />
+              <view class="title font-size-17">水费</view>
+              <input
+                type="text"
+                v-model.number="price.waterPrice"
+                style="text-align: right"
+              />
               元/度
             </view>
             <view class="cu-form-group">
-              <view class="title font-szie-17">电费</view>
-              <input type="text" v-model="price.electricityPrice" />
+              <view class="title font-size-17">电费</view>
+              <input
+                type="text"
+                v-model.number="price.electricityPrice"
+                style="text-align: right"
+              />
               元/度
             </view>
-            <view class="cu-form-group">
-              <view class="title font-szie-17">门卡</view>
+            <!-- <view class="cu-form-group">
+              <view class="title font-size-17">门卡</view>
               <input type="text" v-model="price.accessCardPrice" />
               元/张
-            </view>
+            </view> -->
+            <block v-for="(item, index) in price.accessCardPrice" :key="index">
+              <view class="cu-form-group">
+                <view class="title font-size-17">
+                  {{ item.key }}
+                </view>
+                <input
+                  type="text"
+                  v-model.number="item.value"
+                  style="text-align: right"
+                />
+                元/张
+              </view>
+            </block>
           </form>
         </view>
         <view class="cu-bar bg-white justify-end">
@@ -111,7 +145,16 @@ export default {
       this.loadingModal = true;
       this.request.post("/bill/getUtilityPrice", {}).then((response) => {
         let { data } = response;
+        let accessCardPrice = [];
+        for (let item in data.accessCardPrice) {
+          accessCardPrice.push({
+            key: item,
+            value: data.accessCardPrice[item],
+          });
+        }
         this.price = data;
+        this.price.accessCardPrice = accessCardPrice;
+
         this.loadingModal = false;
         this.$nextTick(() => {
           this.changePriceModal = true;
@@ -124,13 +167,24 @@ export default {
     changePrice() {
       this.loadingMessage = "保存中...";
       this.loadingModal = true;
+      let { waterPrice, electricityPrice, accessCardPrice } = this.price;
+      let cardPrice = {};
+      for (let index in accessCardPrice) {
+        cardPrice[accessCardPrice[index]["key"]] =
+          accessCardPrice[index]["value"];
+      }
       this.request
-        .post("/bill/setUtilityPrice", this.price)
+        .post("/bill/setUtilityPrice", {
+          waterPrice: waterPrice,
+          electricityPrice: electricityPrice,
+          accessCardPrice: cardPrice,
+        })
         .then((response) => {
-          let { data } = response;
-          console.log(data);
           this.loadingModal = false;
           this.changePriceModal = false;
+        })
+        .then((err) => {
+          console.error(err);
         });
     },
     toBillList() {

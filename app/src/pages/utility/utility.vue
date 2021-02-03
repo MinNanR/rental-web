@@ -71,7 +71,7 @@ export default {
             this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
             this.haveMore = this.recordList.length < data.totalCount;
             this.showLoading = false;
-          }, 1000);
+          }, 500);
         })
         .catch((err) => {
           console.error(err);
@@ -80,14 +80,7 @@ export default {
     refer(index) {
       let { houseId, date, name } = this.recordList[index];
       uni.navigateTo({
-        url: `/pages/utilityList/utilityList`,
-        success(res) {
-          res.eventChannel.emit("acceptData", {
-            houseId: houseId,
-            date: date,
-            name: name,
-          });
-        },
+        url: `/pages/utilityList/utilityList?houseId=${houseId}&date=${date}&name=${name}`,
       });
     },
     toRecordUtility() {
@@ -102,7 +95,7 @@ export default {
       this.showLoading = true;
       setTimeout(() => {
         this.showLoading = false;
-      }, 2000);
+      }, 500);
       return;
     }
     this.getRecordList();

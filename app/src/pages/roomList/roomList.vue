@@ -33,7 +33,7 @@
           :key="index"
           @tap="TabSelect"
           :data-id="index"
-          style="font-size:22px"
+          style="font-size: 22px"
         >
           {{ item.floor }}楼
         </view>
@@ -48,7 +48,7 @@
       >
         <view v-for="(item, index) in list" :key="index" :id="'main-' + index">
           <view class="cu-bar solid-bottom bg-white">
-            <view class="action" style="font-size:22px">
+            <view class="action" style="font-size: 22px">
               <text
                 class="cuIcon-title text-blue"
                 style="font-size: 18px"
@@ -58,10 +58,10 @@
           </view>
           <view class="cu-list menu-avatar">
             <template v-for="(room, i) in item.roomList">
-              <view class="cu-item" :key="i">
+              <view class="cu-item" :key="i"  @click="refer(room.id)">
                 <view
                   class="cu-avatar round lg"
-                  :class="'bg-' + colorList[i % colorList.length]"
+                  :class="'bg-' + statusIconColor[room.statusCode]"
                 >
                   <span
                     class="iconfont icon-StudyRoom"
@@ -70,7 +70,7 @@
                 </view>
                 <view class="content">
                   <view
-                    :class="'text-' + colorList[(i + 2) % colorList.length]"
+                    :class="'text-black'"
                     style="font-size: 20px"
                     >{{ room.roomNumber }}</view
                   >
@@ -78,16 +78,15 @@
                   <view>
                     <text
                       class="cuIcon-round margin-right-xs"
-                      :class="'text-' + statusColor[room.statusCode]"
+                      :class="'text-' + statusTextColor[room.statusCode]"
                     ></text>
-                    状态：
-                    <text :class="'text-' + statusColor[room.statusCode]">{{
+                    <text :class="'text-' + statusTextColor[room.statusCode]">{{
                       room.status
                     }}</text>
                   </view>
                 </view>
-                <view class="action" @click="refer(room.id)">
-                  <view class="text-blue text-xs" style="font-size: 18px">查看</view>
+                <view class="action">
+                  <text class="cuIcon-right" style="font-size: 20px"></text>
                 </view>
               </view>
             </template>
@@ -113,10 +112,14 @@ export default {
       verticalNavTop: 0,
       load: true,
       houseId: 0,
-      colorList: ["red", "blue", "yellow", "green"],
-      statusColor: {
-        VACANT: "orange",
+      // colorList: ["red", "blue", "yellow", "green"],
+      statusTextColor: {
+        VACANT: "gray",
         ON_RENT: "olive",
+      },
+      statusIconColor: {
+        VACANT: "grey",
+        ON_RENT: "green",
       },
       queryForm: {
         houseId: "",

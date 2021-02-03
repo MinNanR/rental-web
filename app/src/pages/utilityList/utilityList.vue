@@ -52,7 +52,7 @@
       </view>
     </view> -->
     <view class="padding-top font-size-17 text-center">
-      <view class="flex" style="">
+      <view class="flex bg-cyan" style="">
         <view class="flex-sub padding solid"> 房号 </view>
         <view class="flex-sub padding solid"> 水表行度 </view>
         <view class="flex-sub padding solid"> 电表行度 </view>
@@ -60,11 +60,10 @@
       <view
         v-for="(item, index) in utilityList"
         :key="index"
-        class="flex"
-        :class="colorList[index % colorList.length]"
+        class="flex bg-white"
       >
         <view class="flex-sub padding solid" style="font-size: 15px">
-          {{ item.room }}
+          {{ item.roomNumber }}
         </view>
         <view class="flex-sub padding solid"> {{ item.water }}度 </view>
         <view class="flex-sub padding solid"> {{ item.electricity }}度 </view>
@@ -110,7 +109,7 @@ export default {
             this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
             this.haveMore = this.utilityList.length < data.totalCount;
             this.showLoading = false;
-          }, 2000);
+          }, 500);
         })
         .catch((err) => {
           console.error(err);
@@ -118,13 +117,10 @@ export default {
     },
   },
   onLoad(params) {
-    const eventChannel = this.getOpenerEventChannel();
-    eventChannel.on("acceptData", (data) => {
-      this.queryForm.houseId = data.houseId;
-      this.queryForm.date = data.date;
-      uni.setNavigationBarTitle({
-        title: data.name,
-      });
+    this.queryForm.houseId = params.houseId;
+    this.queryForm.date = params.date;
+    uni.setNavigationBarTitle({
+      title: params.name,
     });
   },
   onShow() {
@@ -137,7 +133,7 @@ export default {
       this.showLoading = true;
       setTimeout(() => {
         this.showLoading = false;
-      }, 2000);
+      }, 500);
     }
     this.getUtilityList();
   },
@@ -162,6 +158,6 @@ export default {
 }
 
 .color-1 {
-  background-color:#D3D3D3;
+  background-color: #d3d3d3;
 }
 </style>

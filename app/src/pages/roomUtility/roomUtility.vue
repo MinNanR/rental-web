@@ -1,7 +1,7 @@
 <template>
   <view class="" id="page" :style="'padding-bottom: ' + barHeight + 'px'">
     <view class="padding-top font-size-17 text-center">
-      <view class="flex" style="">
+      <view class="flex bg-cyan" style="">
         <view class="flex-twice padding solid"> 时间 </view>
         <view class="flex-sub padding solid"> 水表行度 </view>
         <view class="flex-sub padding solid"> 电表行度 </view>
@@ -9,10 +9,15 @@
       <view
         v-for="(item, index) in utilityList"
         :key="index"
-        class="flex"
-        :class="colorList[index % colorList.length]"
+        class="flex bg-white"
       >
         <view class="flex-twice padding solid" style="font-size: 15px">
+          <view
+            class="cu-tag badge"
+            v-if="item.statusCode === 'RECORDING'"
+            style="top: 0"
+            >当前行度</view
+          >
           {{ item.updateTime }}
         </view>
         <view class="flex-sub padding solid"> {{ item.water }}度 </view>
@@ -32,6 +37,12 @@
         >
           登记
         </button>
+        <button
+          class="cu-btn bg-red shadow-blur round lg"
+          @click="showUpdateModal()"
+        >
+          修改当前行度
+        </button>
       </view>
     </view>
     <view class="cu-modal" :class="registerModal ? 'show' : ''">
@@ -46,12 +57,20 @@
           <form>
             <view class="cu-form-group">
               <view class="title font-szie-17">水表行度</view>
-              <input type="text" v-model.number="utilityForm.water" />
+              <input
+                type="text"
+                v-model.number="utilityForm.water"
+                style="text-align: right"
+              />
               度
             </view>
             <view class="cu-form-group">
               <view class="title font-size-17"> 电表行度 </view>
-              <input type="text" v-model.number="utilityForm.electricity" />
+              <input
+                type="text"
+                v-model.number="utilityForm.electricity"
+                style="text-align: right"
+              />
               度
             </view>
           </form>
@@ -81,6 +100,58 @@
         </view>
       </view>
     </view>
+    <view class="cu-modal" :class="updateModal ? 'show' : ''">
+      <view class="cu-dialog">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">{{ title }}</view>
+          <view class="action" @tap="hideUpdateModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <view>
+          <form>
+            <view class="cu-form-group">
+              <view class="title font-szie-17">水表行度</view>
+              <input
+                type="text"
+                v-model.number="utilityForm.water"
+                style="text-align: right"
+              />
+              度
+            </view>
+            <view class="cu-form-group">
+              <view class="title font-size-17"> 电表行度 </view>
+              <input
+                type="text"
+                v-model.number="utilityForm.electricity"
+                style="text-align: right"
+              />
+              度
+            </view>
+          </form>
+        </view>
+        <view class="cu-bar bg-white justify-end">
+          <view class="action">
+            <button class="cu-btn line-green text-green" @tap="hideUpdateModal">
+              取消
+            </button>
+            <button
+              v-show="
+                !(utilityForm.water == null || utilityForm.water == '') ||
+                !(
+                  utilityForm.electricity == null ||
+                  utilityForm.electricity == ''
+                )
+              "
+              class="cu-btn bg-green margin-left"
+              @tap="update()"
+            >
+              确定
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
     <view class="cu-load load-modal" v-if="loadingModal">
       <!-- <view class="cuIcon-emojifill text-orange"></view> -->
       <image src="/static/logo.png" mode="aspectFit"></image>
@@ -90,6 +161,8 @@
 </template>
 
 <script>
+import dayjs from "dayjs";
+
 export default {
   data() {
     return {
@@ -97,7 +170,6 @@ export default {
       roomNumber: null,
       houseId: null,
       houseName: null,
-
       barHeight: 0,
       queryForm: {
         pageSize: 10,
@@ -109,10 +181,13 @@ export default {
       utilityForm: {
         water: null,
         electricity: null,
+        id: null,
       },
       registerModal: false,
       loadingModal: false,
       colorList: ["color-0", "color-1"],
+      updateModal: false,
+      title: "",
     };
   },
   methods: {
@@ -132,7 +207,7 @@ export default {
             this.haveMore = this.utilityList.length < data.totalCount;
             this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
             this.showLoading = false;
-          }, 2000);
+          }, 500);
         });
     },
     showRegisterModal() {
@@ -147,7 +222,9 @@ export default {
     },
     register() {
       this.registerModal = false;
-      let index = this.utilityList.findIndex((e) => e.status == "使用中");
+      let index = this.utilityList.findIndex(
+        (e) => e.statusCode == "RECORDING"
+      );
       let current = this.utilityList[index];
       if (this.utilityForm.water == null || this.utilityForm.water == "") {
         this.utilityForm.water = current.water;
@@ -166,6 +243,37 @@ export default {
         this.loadingModal = true;
         this.request
           .post("/utility/recordUtility/single", this.utilityForm)
+          .then((response) => {
+            this.queryForm.pageIndex = 1;
+            this.getUtlityList();
+            this.$nextTick(() => {
+              this.loadingModal = false;
+            });
+          });
+      });
+    },
+    showUpdateModal() {
+      let index = this.utilityList.findIndex(
+        (e) => e.statusCode === "RECORDING"
+      );
+      let { water, electricity, time, id } = this.utilityList[index];
+      this.title = dayjs(time).format("YYYY年M月D日") + "水电行度";
+      this.utilityForm = {
+        water: water,
+        electricity: electricity,
+        id: id,
+      };
+      this.updateModal = true;
+    },
+    hideUpdateModal() {
+      this.updateModal = false;
+    },
+    update() {
+      this.updateModal = false;
+      this.$nextTick(() => {
+        this.loadingModal = true;
+        this.request
+          .post("/utility/updateUtility", this.utilityForm)
           .then((response) => {
             this.queryForm.pageIndex = 1;
             this.getUtlityList();

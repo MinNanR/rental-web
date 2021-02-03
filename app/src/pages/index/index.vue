@@ -4,7 +4,7 @@
       <view
         class="bg-blue padding-sm margin-xs round"
         style="width: 30%; text-align: center; font-size: 18px"
-        >本月总额</view
+        >本月共收款</view
       >
     </view>
     <view class="flex justify-center">
@@ -30,7 +30,7 @@
         @click="switchTabbar2()"
       >
         <text class="cuIcon-form" style="margin-right: 10px"></text>
-        未结算账单
+        未确认账单
       </view>
     </view>
     <unpaid-bill v-show="currentPage === 'unpaidBill'"></unpaid-bill>
