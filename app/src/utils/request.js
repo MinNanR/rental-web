@@ -1,4 +1,5 @@
-const baseUrl = "http://192.168.43.106:2000/rental"
+// const baseUrl = "http://192.168.10.2:2000/rental"
+const baseUrl = "https://minnan.site:2002/rental"
 import localstorage from './localstorage.js'
 
 const request = {

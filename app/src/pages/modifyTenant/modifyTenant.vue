@@ -20,14 +20,12 @@
     </form>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
-        <view class="action">
-          <button
+        <button
             class="cu-btn bg-green shadow-blur round lg"
             @click="saveModify()"
           >
             保存
           </button>
-        </view>
       </view>
     </view>
     <view class="cu-modal" :class="errorModal ? 'show' : ''">
@@ -84,7 +82,7 @@
 </template>
 
 <script>
-import region from "@/utils/cities.js";
+// import region from "@/utils/cities.js";
 import Schema from "async-validator";
 Schema.warning = function () {};
 
@@ -94,7 +92,7 @@ export default {
       id: "",
       tenantInfo: {},
       tenantForm: {},
-      cityList: [region.provinceList, region.getCityList("北京市")],
+      // cityList: [region.provinceList, region.getCityList("北京市")],
       cityValue: [],
       loaded: false,
       rules: {
@@ -157,13 +155,13 @@ export default {
             hometown: [data.hometownProvince, data.hometownCity],
           };
           this.tenantInfo = data;
-          this.tenantInfo.gender = data.gender == "男" ? "male" : "female";
-          this.tenantInfo.hometown = [data.hometownProvince, data.hometownCity];
-          this.cityList[1] = region.getCityList(data.hometownProvince);
-          this.cityValue = [
-            region.getProvinceIndex(data.hometownProvince),
-            region.getCityIndex(data.hometownProvince, data.hometownCity),
-          ];
+          // this.tenantInfo.gender = data.gender == "男" ? "male" : "female";
+          // this.tenantInfo.hometown = [data.hometownProvince, data.hometownCity];
+          // this.cityList[1] = region.getCityList(data.hometownProvince);
+          // this.cityValue = [
+          //   region.getProvinceIndex(data.hometownProvince),
+          //   region.getCityIndex(data.hometownProvince, data.hometownCity),
+          // ];
           this.loaded = true;
           uni.setNavigationBarTitle({
             title: data.name,

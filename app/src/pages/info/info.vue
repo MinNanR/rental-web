@@ -22,7 +22,7 @@
           <!-- #endif -->
         </view>
         <view class="padding-lr padding-top text-lg">
-          {{ realName }}
+          账号：{{ account }}
         </view>
       </view>
     </view>
@@ -128,7 +128,7 @@
 export default {
   data() {
     return {
-      realName: "民难",
+      account: "",
       changePriceModal: false,
       price: {
         waterPrice: 0,
@@ -192,6 +192,11 @@ export default {
     },
   },
   onShow() {
+    let username = this.getStorage("username");
+    if (username != "") {
+      this.account = username;
+    }
+    console.log(this.account);
     // #ifdef MP-WEIXIN
     uni.login({
       provider: "weixin",

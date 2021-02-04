@@ -124,7 +124,6 @@ export default {
     });
   },
   onShow() {
-    this.utilityList = []
     this.$nextTick(() => {
       this.getUtilityList();
     });
@@ -137,6 +136,9 @@ export default {
       }, 500);
     }
     this.getUtilityList();
+  },
+  mounted() {
+    this.utilityList = [];
   },
 };
 </script>

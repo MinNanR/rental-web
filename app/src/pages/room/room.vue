@@ -11,6 +11,11 @@
         </view>
       </view>
     </template>
+    <view
+      class="cu-load bg-gray fade"
+      v-show="showLoading"
+      :class="'loading'"
+    ></view>
   </view>
 </template>
 
@@ -19,25 +24,34 @@ export default {
   data() {
     return {
       houseList: [],
+      showLoading: false,
     };
   },
   methods: {
     getHouseList() {
+      this.showLoading = true;
       this.request
         .post("/house/getHouseDropDown", {})
         .then((response) => {
           let { data } = response;
-          this.houseList = data;
+          setTimeout(() => {
+            this.showLoading = false;
+            this.houseList = data;
+          }, 200);
         })
         .catch((err) => {
           console.error(err);
         });
     },
-    refer(id, name){
-      uni.navigateTo({url : `/pages/roomList/roomList?id=${id}&name=${name}`})
-    }
+    refer(id, name) {
+      uni.navigateTo({ url: `/pages/roomList/roomList?id=${id}&name=${name}` });
+    },
   },
   mounted() {
+    this.getHouseList();
+  },
+  onPullDownRefresh() {
+    this.houseList = [];
     this.getHouseList();
   },
 };
@@ -48,7 +62,7 @@ export default {
   font-size: 20px;
 }
 
-.radius{
+.radius {
   border-radius: 20px;
 }
 </style>

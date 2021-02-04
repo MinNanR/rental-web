@@ -48,6 +48,9 @@
             ></span>
           </view>
           <view class="font-size-17"> 用水量：{{ bill.waterUsage }}度 </view>
+          <view @click="correctUtility()">
+            <text class="cuIcon-settingsfill" style="font-size: 20px"></text>
+          </view>
         </view>
         <view class="padding solid flex">
           <view class="font-size-20">
@@ -62,6 +65,9 @@
           <view class="font-size-17">
             用电量：{{ bill.electricityUsage }}度
           </view>
+          <view @click="correctUtility()">
+            <text class="cuIcon-settingsfill" style="font-size: 20px"></text>
+          </view>
         </view>
         <view class="padding solid flex">
           <view class="font-size-20">
@@ -69,6 +75,22 @@
           </view>
           <view class="font-size-17">
             电费：{{ bill.electricityCharge }}元
+          </view>
+        </view>
+      </template>
+      <template v-if="bill.typeCode === 'CHECK_IN'">
+        <view class="padding solid flex">
+          <view class="font-size-20">
+            <text class="cuIcon-moneybag margin-right-xs text-cyan"></text>
+          </view>
+          <view class="font-size-17"> 押金：{{ bill.deposit }}元 </view>
+        </view>
+        <view class="padding solid flex">
+          <view class="font-size-20">
+            <text class="cuIcon-card margin-right-xs text-black"></text>
+          </view>
+          <view class="font-size-17">
+            门禁卡：{{ bill.accessCardCharge }}元
           </view>
         </view>
       </template>
@@ -97,23 +119,27 @@
         <view class="font-size-20">
           <text class="cuIcon-time margin-right-xs text-yellow"></text>
         </view>
-        <view class="font-size-17"> 账单生成时间：{{ bill.updateTime }} </view>
+        <view class="font-size-17">
+          账单生成时间：{{ bill.updateTime | time }}
+        </view>
       </view>
       <template v-if="bill.statusCode === 'PAID'">
         <view class="padding solid flex">
           <view class="font-size-20">
             <text class="cuIcon-time margin-right-xs text-yellow"></text>
           </view>
-          <view class="font-size-17"> 支付时间：{{ bill.payTime }} </view>
+          <view class="font-size-17">
+            支付时间：{{ bill.payTime | time }}
+          </view>
         </view>
         <view class="padding solid flex">
           <view class="font-size-20">
             <text
               :class="
                 'cuIcon-' +
-                paymentMethodIcon[this.bill.paymentMethodCode] +
+                paymentMethodIcon[bill.paymentMethodCode] +
                 ' margin-right-xs text-' +
-                paymentMethodColor[this.bill.paymentMethodCode]
+                paymentMethodColor[bill.paymentMethodCode]
               "
             ></text>
           </view>
@@ -124,7 +150,12 @@
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
         <template v-if="bill.statusCode === 'UNPAID'">
-          <button class="cu-btn bg-green shadow-blur round lg">已支付</button>
+          <button
+            class="cu-btn bg-green shadow-blur round lg"
+            @click="showPaymentMethodModal()"
+          >
+            房客已支付
+          </button>
         </template>
         <template v-if="bill.statusCode === 'UNCONFIRMED'">
           <button
@@ -160,6 +191,48 @@
         </template>
       </view>
     </view>
+    <view class="cu-modal" :class="paymentModal ? 'show' : ''">
+      <view class="cu-dialog" @tap.stop="">
+        <view class="cu-bar bg-white justify-end">
+          <view class="content">Modal标题</view>
+          <view class="action" @tap="hidePaymentMethodModal">
+            <text class="cuIcon-close text-red"></text>
+          </view>
+        </view>
+        <radio-group class="block" @change="paymentMethodChange">
+          <view class="cu-list menu text-left">
+            <view
+              class="cu-item"
+              v-for="(item, index) in paymentMethodList"
+              :key="index"
+            >
+              <label class="flex justify-between align-center flex-sub">
+                <view class="flex-sub">{{ item.value }}</view>
+                <radio
+                  class="round"
+                  :class="paymentMethod == item.key ? 'checked' : ''"
+                  :checked="paymentMethod == item.key"
+                  :value="item.key"
+                ></radio>
+              </label>
+            </view>
+          </view>
+        </radio-group>
+        <view class="cu-bar bg-white justify-end">
+          <view class="action">
+            <button
+              class="cu-btn line-green text-green"
+              @tap="hidePaymentMethodModal()"
+            >
+              取消
+            </button>
+            <button class="cu-btn bg-green margin-left" @tap="paid()">
+              确定
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
     <view class="cu-modal" :class="responseModalShow ? 'show' : ''">
       <view class="cu-dialog">
         <view class="cu-bar bg-white justify-end">
@@ -190,6 +263,7 @@
 </template>
 
 <script>
+import dayjs from "dayjs";
 import Skeleton from "../../components/J-skeleton/J-skeleton.vue";
 
 export default {
@@ -220,6 +294,17 @@ export default {
         CASH: "red",
       },
       loadingMessage: "",
+      paymentModal: false,
+      paymentMethodList: [
+        {
+          key: "WEIXIN",
+          value: "微信支付",
+        },
+        { key: "CASH", value: "现金支付" },
+      ],
+      paymentMethod: "WEIXIN",
+      waterModalShow: false,
+      electricityModalShow: false,
     };
   },
   methods: {
@@ -282,7 +367,70 @@ export default {
           });
         });
     },
-    confirm() {},
+    confirm() {
+      this.loadingModal = true;
+      this.loadingMessage = "处理中";
+      this.request
+        .post("/bill/confirmBill", { id: this.id })
+        .then((response) => {
+          this.loadingModal = false;
+          this.responseMessage = "处理成功";
+          this.$nextTick(() => {
+            this.responseModalShow = true;
+            this.getBillDetails();
+          });
+        })
+        .catch((err) => {
+          console.error(err);
+          this.loadingModal = false;
+          this.responseMessage = "处理失败";
+          this.$nextTick(() => {
+            this.responseModalShow = true;
+          });
+        });
+    },
+    showPaymentMethodModal() {
+      this.paymentModal = true;
+    },
+    hidePaymentMethodModal() {
+      this.paymentModal = false;
+    },
+    paymentMethodChange(e) {
+      this.paymentMethod = e.detail.value;
+    },
+    paid() {
+      this.paymentModal = false;
+      this.$nextTick(() => {
+        this.loadingModal = true;
+        this.loadingMessage = "处理中";
+        this.request
+          .post("/bill/paid", {
+            id: this.id,
+            paymentMethod: this.paymentMethod,
+          })
+          .then((response) => {
+            this.loadingModal = false;
+            this.responseMessage = "处理成功";
+            this.$nextTick(() => {
+              this.responseModalShow = true;
+              this.getBillDetails();
+            });
+          })
+          .catch((err) => {
+            console.error(err);
+            this.loadingModal = false;
+            this.responseMessage = "处理失败";
+            this.$nextTick(() => {
+              this.responseModalShow = true;
+            });
+          });
+      });
+    },
+    correctUtility() {
+      uni.navigateTo({
+        url: `/pages/roomUtility/roomUtility?id=${this.bill.roomId}&roomNumber=${this.bill.roomNumber}&houseId=${this.bill.houseId}&houseName=${this.bill.houseName}`,
+      });
+    },
   },
   onLoad(param) {
     this.id = param.id;
@@ -301,6 +449,11 @@ export default {
         )
         .exec();
     });
+  },
+  filters: {
+    time(value) {
+      return dayjs(value).format("YYYY年M月D日");
+    },
   },
 };
 </script>

@@ -178,7 +178,7 @@
           <form>
             <view class="cu-form-group">
               <view class="title font-szie-17">房租</view>
-              <input type="text" v-model="priceToChange" :focus="inputFocus" />
+              <input type="number" v-model="priceToChange" :focus="inputFocus" />
               元
             </view>
           </form>

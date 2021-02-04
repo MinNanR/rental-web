@@ -12,10 +12,14 @@
         <input
           type="text"
           v-model="queryForm.roomNumber"
-          placeholder="输入房间号搜素"
-          @cofirm-type="搜素;"
+          style="width: 800upx"
+          placeholder="输入房间号搜索"
+          @cofirm-type="search"
           @confirm="getRoomList()"
         />
+        <view class="action" @click="refresh()">
+          <text class="cuIcon-refresh"></text>
+        </view>
       </view>
     </view>
     <view class="VerticalBox">
@@ -58,7 +62,7 @@
           </view>
           <view class="cu-list menu-avatar">
             <template v-for="(room, i) in item.roomList">
-              <view class="cu-item" :key="i"  @click="refer(room.id)">
+              <view class="cu-item" :key="i" @click="refer(room.id)">
                 <view
                   class="cu-avatar round lg"
                   :class="'bg-' + statusIconColor[room.statusCode]"
@@ -69,11 +73,9 @@
                   ></span>
                 </view>
                 <view class="content">
-                  <view
-                    :class="'text-black'"
-                    style="font-size: 20px"
-                    >{{ room.roomNumber }}</view
-                  >
+                  <view :class="'text-black'" style="font-size: 20px">{{
+                    room.roomNumber
+                  }}</view>
                   <view> 租金：{{ room.price }} 元</view>
                   <view>
                     <text
@@ -207,6 +209,10 @@ export default {
           },
         },
       });
+    },
+    refresh() {
+      this.list = [];
+      this.getRoomList();
     },
   },
 };

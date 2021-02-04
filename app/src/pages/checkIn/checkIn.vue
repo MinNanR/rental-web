@@ -3,11 +3,11 @@
     <form class="bg-gray">
       <view class="cu-form-group margin-top">
         <view class="title"> 押金 </view>
-        <input type="text" v-model="roomForm.deposit" />
+        <input type="number" v-model="roomForm.deposit" />
       </view>
       <view class="cu-form-group">
         <view class="title"> 门卡数量 </view>
-        <input type="text" v-model="roomForm.cardQuantity" />
+        <input type="number" v-model="roomForm.cardQuantity" />
       </view>
       <view class="cu-form-group">
         <view class="title">入住日期</view>

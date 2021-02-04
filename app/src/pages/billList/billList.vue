@@ -22,7 +22,7 @@
                 >
               </view>
               <view class="">
-                {{item.status}}
+                {{ item.status }}
                 <text class="cuIcon-right text-xl"></text> </view
             ></view>
             <view class="font-size-17 padding-xs">
@@ -98,6 +98,13 @@ export default {
   },
   onShow() {
     this.getBillList();
+  },
+  onPullDownRefresh() {
+    this.billList = [];
+    this.getBillList;
+  },
+  mounted() {
+    this.billList = []
   },
 };
 </script>

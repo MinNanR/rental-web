@@ -110,6 +110,7 @@ export default {
                 `Bearer ${data.token}`,
                 7 * 24 * 60 * 60 * 1000
               );
+              this.setStorage("username", this.loginForm.username);
               this.loadModal = false;
               uni.switchTab({ url: "/pages/index/index" });
             })

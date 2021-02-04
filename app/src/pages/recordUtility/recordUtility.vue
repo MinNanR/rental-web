@@ -49,7 +49,7 @@
         </view>
         <view class="flex-twice padding solid">
           <input
-            type="text"
+            type="number"
             v-model="item.water"
             :placeholder="'当前读数：' + item.currentWater"
             placeholder-style="font-size: 13px"
@@ -57,7 +57,7 @@
         </view>
         <view class="flex-twice padding solid">
           <input
-            type="text"
+            type="number"
             v-model="item.electricity"
             :placeholder="'当前：' + item.currentElectricity"
             placeholder-style="font-size: 13px"
@@ -314,6 +314,16 @@ export default {
             this.modal.confirmAction = "turnBack";
             this.modalShow = true;
           }, 1000);
+        })
+        .catch((err) => {
+          console.log(err);
+          setTimeout(() => {
+            this.loadingModal = false;
+            this.modal.title = "失败";
+            this.modal.message = ["保存失败"];
+            this.modal.confirmAction = "";
+            this.modalShow = true;
+          }, 500);
         });
     },
     turnBack() {
@@ -326,6 +336,8 @@ export default {
         this.confirmFloor();
       } else if (this.modal.confirmAction == "turnBack") {
         this.turnBack();
+      } else if (this.modal.confirmAction == "") {
+        this.modalShow = false;
       }
     },
   },
