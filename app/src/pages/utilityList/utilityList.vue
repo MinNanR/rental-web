@@ -62,7 +62,7 @@
         :key="index"
         class="flex bg-white"
       >
-        <view class="flex-sub padding solid" style="font-size: 15px">
+        <view class="flex-sub padding solid">
           {{ item.roomNumber }}
         </view>
         <view class="flex-sub padding solid"> {{ item.water }}度 </view>

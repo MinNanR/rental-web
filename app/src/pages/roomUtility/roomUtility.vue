@@ -58,7 +58,7 @@
             <view class="cu-form-group">
               <view class="title font-szie-17">水表行度</view>
               <input
-                type="text"
+                type="number"
                 v-model.number="utilityForm.water"
                 style="text-align: right"
               />
@@ -67,7 +67,7 @@
             <view class="cu-form-group">
               <view class="title font-size-17"> 电表行度 </view>
               <input
-                type="text"
+                type="number"
                 v-model.number="utilityForm.electricity"
                 style="text-align: right"
               />

@@ -9,6 +9,7 @@
           :range-key="'value'"
           @columnchange="houseChange"
           :disabled="houseSelected"
+          :focus="focus"
         >
           <view
             v-if="selectedFloor.length > 0"
@@ -185,6 +186,7 @@ export default {
       utilityList: [],
       barHeight: 0,
       resultModal: false,
+      focus: false,
     };
   },
   methods: {
@@ -206,6 +208,9 @@ export default {
             };
           });
           this.floorDropDown = [floorArray, floorArray[0].sub];
+          this.$nextTick(() => {
+            this.focus = true;
+          });
         })
         .catch((err) => {
           console.error(err);
@@ -216,8 +221,15 @@ export default {
     },
     houseChange(e) {
       let { column, value } = e.detail;
+      console.log(e.detail);
       if (column == 0) {
         this.floorDropDown[1] = this.floorDropDown[0][value].sub;
+        // #ifdef MP-WEIXIN
+        let pages = getCurrentPages();
+        pages[pages.length - 1].setData({
+          floorDropDown: this.floorDropDown,
+        });
+        // #endif
       }
     },
     floorChange(e) {

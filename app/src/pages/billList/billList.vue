@@ -101,7 +101,7 @@ export default {
   },
   onPullDownRefresh() {
     this.billList = [];
-    this.getBillList;
+    this.getBillList();
   },
   mounted() {
     this.billList = []

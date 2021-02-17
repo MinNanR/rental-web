@@ -3,16 +3,24 @@
     <form class="bg-gray">
       <view class="cu-form-group margin-top">
         <view class="title"> 押金 </view>
-        <input type="number" v-model="roomForm.deposit" />
+        <input
+          type="number"
+          v-model="roomForm.deposit"
+          style="font-size: 16px"
+        />
       </view>
       <view class="cu-form-group">
         <view class="title"> 门卡数量 </view>
-        <input type="number" v-model="roomForm.cardQuantity" />
+        <input
+          type="number"
+          v-model="roomForm.cardQuantity"
+          style="font-size: 16px"
+        />
       </view>
       <view class="cu-form-group">
         <view class="title">入住日期</view>
         <picker mode="date" :start="start" :end="end" @change="DateChange">
-          <view class="picker" style="text-align: left">
+          <view class="picker" style="text-align: left; font-size: 16px">
             {{ dateString }}
           </view>
         </picker>
@@ -25,7 +33,7 @@
           :range="payMethodList"
           range-key="value"
         >
-          <view class="picker" style="text-align: left">
+          <view class="picker" style="text-align: left; font-size: 16px">
             {{ payMethodList[payMethodIndex].value }}
           </view>
         </picker>
@@ -37,6 +45,7 @@
           cols="30"
           rows="10"
           maxlength="140"
+          style="font-size: 16px"
         ></textarea>
       </view>
     </form>
@@ -217,11 +226,11 @@ export default {
         hometown: [],
         gender: "male",
       },
-      end: dayjs().format("YYYY-MM-DD"),
+      end: dayjs().add(1, "month").format("YYYY-MM-DD"),
       start: dayjs().subtract(1, "month").format("YYYY-MM-DD"),
       roomForm: {
-        deposit: 0,
-        cardQuantity: 0,
+        deposit: null,
+        cardQuantity: null,
         checkInDate: dayjs().format("YYYY-MM-DD"),
         remark: "押金租满三个月方可退还",
       },
@@ -292,7 +301,6 @@ export default {
     },
     addTenant() {
       const validator = new Schema(this.rules);
-      console.log(1);
       validator
         .validate(this.tenantForm)
         .then((valid) => {
@@ -380,8 +388,9 @@ export default {
           roomNumber: this.roomNumber,
           houseId: this.houseId,
           houseName: this.houseName,
-          deposit: deposit,
-          cardQuantity: cardQuantity,
+          deposit: deposit === "" || deposit === null ? 0 : deposit,
+          cardQuantity:
+            cardQuantity === "" || cardQuantity === null ? 0 : cardQuantity,
           checkInDate: checkInDate,
           payMethod: this.payMethodList[this.payMethodIndex].key,
           remark: remark,

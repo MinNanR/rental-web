@@ -28,7 +28,8 @@
         {
             "path": "pages/utility/utility",
             "style": {
-                "navigationStyle": "custom"
+                "navigationBarTitleText": "水电记录",
+                "enablePullDownRefresh": true
             }
         },
         {
@@ -52,7 +53,8 @@
         {
             "path": "pages/roomInfo/roomInfo",
             "style": {
-                "navigationBarTitleText": "房间详情"
+                "navigationBarTitleText": "房间详情",
+                "enablePullDownRefresh": true
             }
         },
         {

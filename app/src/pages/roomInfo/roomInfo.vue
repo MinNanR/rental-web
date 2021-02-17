@@ -1,138 +1,243 @@
 <template>
   <view class="page">
-    <view class="grid col-1" :style="'padding-bottom: ' + barHeight + 'px'">
-      <view class="padding solid flex">
-        <view class="font-size-20">
-          <text class="cuIcon-home margin-right-xs text-blue"></text>
-        </view>
-        <view class="font-size-17"> 房屋：{{ roomInfo.houseName }} </view>
-      </view>
-      <view class="padding solid flex">
-        <view>
-          <span
-            class="iconfont icon-StudyRoom text-red margin-right-xs font-size-20"
-          ></span>
-        </view>
-        <view class="font-size-17"> 房号：{{ roomInfo.roomNumber }} </view>
-      </view>
-      <view class="padding solid flex">
-        <view class="font-size-20">
-          <text class="cuIcon-list margin-right-xs text-red"></text>
-        </view>
-        <view class="font-size-17"> 楼层：{{ roomInfo.floor }}楼 </view>
-      </view>
-      <view class="padding solid flex justify-between">
-        <view class="flex">
-          <view class="font-size-20">
-            <text class="cuIcon-moneybag margin-right-xs text-yellow"></text>
-          </view>
-          <view class="font-size-17"> 租金：{{ roomInfo.price }}元 </view>
-        </view>
-        <view class="font-size-17">
-          <button class="bg-blue cu-btn sm" @click="showChangePriceModal()">
-            <span class="font-size-17">
-              <text class="cuIcon-settingsfill"></text> 设置租金
-            </span>
-          </button></view
+    <scroll-view scroll-x class="bg-white nav">
+      <view class="flex text-center">
+        <view
+          class="cu-item flex-sub"
+          :class="curPage === 'info' ? 'text-blue cur' : ''"
+          @click="switchPage('info')"
         >
-      </view>
-      <view class="padding solid flex">
-        <view class="font-size-20">
-          <text
-            :class="
-              'cuIcon-' +
-              statusIcon[roomInfo.statusCode] +
-              ' margin-right-xs text-' +
-              statusColor[roomInfo.statusCode]
-            "
-          ></text>
+          房间信息
         </view>
-        <view class="font-size-17"> 状态：{{ roomInfo.status }} </view>
+        <view
+          class="cu-item flex-sub"
+          :class="curPage === 'bill' ? 'text-blue cur' : ''"
+          @click="switchPage('bill')"
+        >
+          房间账单
+        </view>
       </view>
-      <block v-for="(t, index) in tenantList" :key="index">
-        <view class="flex solid-bottom" @click="showTenantDetails(index)">
-          <view class="basis-xl">
-            <view class="padding-sm flex">
+    </scroll-view>
+    <view :style="'padding-bottom: ' + barHeight + 'px'">
+      <view v-if="curPage === 'info'">
+        <view class="grid col-1">
+          <view class="padding solid flex">
+            <view class="font-size-20">
+              <text class="cuIcon-home margin-right-xs text-blue"></text>
+            </view>
+            <view class="font-size-17"> 房屋：{{ roomInfo.houseName }} </view>
+          </view>
+          <view class="padding solid flex">
+            <view>
+              <span
+                class="iconfont icon-StudyRoom text-red margin-right-xs font-size-20"
+              ></span>
+            </view>
+            <view class="font-size-17"> 房号：{{ roomInfo.roomNumber }} </view>
+          </view>
+          <view class="padding solid flex">
+            <view class="font-size-20">
+              <text class="cuIcon-list margin-right-xs text-red"></text>
+            </view>
+            <view class="font-size-17"> 楼层：{{ roomInfo.floor }}楼 </view>
+          </view>
+          <view class="padding solid flex justify-between">
+            <view class="flex">
               <view class="font-size-20">
-                <text class="cuIcon-people margin-right-xs text-olive"></text>
+                <text
+                  class="cuIcon-moneybag margin-right-xs text-yellow"
+                ></text>
               </view>
-              <view class="font-size-17" v-if="tenantList.length > 1">
-                <text> 居住人{{ index + 1 }}：{{ t.name }} </text>
-              </view>
-              <view class="font-size-17" v-else> 居住人：{{ t.name }}</view>
+              <view class="font-size-17"> 租金：{{ roomInfo.price }}元 </view>
             </view>
-          </view>
-          <view class="padding-xs flex align-center" style="font-size: 20px">
-            <text class="cuIcon-roundright" v-show="!t.show"></text>
-            <text class="cuIcon-rounddown" v-show="t.show"></text>
-          </view>
-        </view>
-        <view v-show="t.show" class="bg-gray" style="font-size: 15px">
-          <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs"> 姓名： </view>
-            <view class="basis-lg padding-rb-xs">
-              {{ t.name }}
-            </view>
-          </view>
-          <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs"> 性别： </view>
-            <view class="basis-lg padding-rb-xs">
-              {{ t.gender }}
-            </view>
-          </view>
-          <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs">
-              联系电话：
-            </view>
-            <view
-              class="basis-lg padding-rb-xs text-blue"
-              style="text-decoration: underline"
+            <view class="font-size-17">
+              <button class="bg-blue cu-btn sm" @click="showChangePriceModal()">
+                <span class="font-size-17">
+                  <text class="cuIcon-settingsfill"></text> 设置租金
+                </span>
+              </button></view
             >
-              {{ t.phone }}
-            </view>
           </view>
-          <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs"> 籍贯： </view>
-            <view class="basis-lg padding-rb-xs">
-              {{ t.hometown }}
+          <view class="padding solid flex">
+            <view class="font-size-20">
+              <text
+                :class="
+                  'cuIcon-' +
+                  statusIcon[roomInfo.statusCode] +
+                  ' margin-right-xs text-' +
+                  statusColor[roomInfo.statusCode]
+                "
+              ></text>
             </view>
+            <view class="font-size-17"> 状态：{{ roomInfo.status }} </view>
           </view>
-          <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs">
-              身份证号码：
-            </view>
-            <view class="basis-lg padding-rb-xs">
-              {{ t.identificationNumber }}
-            </view>
-          </view>
-          <view class="flex">
-            <view class="basis-sm padding-lr-sm padding-rb-xs">
-              出生日期：
-            </view>
-            <view class="basis-lg padding-rb-xs">
-              {{ t.birthday }}
-            </view>
-          </view>
-          <view class="flex justify-start">
-            <view class="padding-xs">
-              <button
-                class="cu-btn bg-green shadow-blur round"
-                @click="toModifyTenant(index)"
+          <block v-for="(t, index) in tenantList" :key="index">
+            <view class="flex solid-bottom" @click="showTenantDetails(index)">
+              <view class="basis-xl">
+                <view class="padding-sm flex">
+                  <view class="font-size-20">
+                    <text
+                      class="cuIcon-people margin-right-xs text-olive"
+                    ></text>
+                  </view>
+                  <view class="font-size-17" v-if="tenantList.length > 1">
+                    <text> 居住人{{ index + 1 }}：{{ t.name }} </text>
+                  </view>
+                  <view class="font-size-17" v-else> 居住人：{{ t.name }}</view>
+                </view>
+              </view>
+              <view
+                class="padding-xs flex align-center"
+                style="font-size: 20px"
               >
-                修改
-              </button>
+                <text class="cuIcon-roundright" v-show="!t.show"></text>
+                <text class="cuIcon-rounddown" v-show="t.show"></text>
+              </view>
             </view>
-            <view class="padding-xs">
-              <button
-                class="cu-btn bg-red shadow-blur round"
-                @click="onLeave(t.name, t.id)"
-              >
-                离开
-              </button>
+            <view v-show="t.show" class="bg-gray" style="font-size: 15px">
+              <view class="flex">
+                <view class="basis-sm padding-lr-sm padding-rb-xs">
+                  姓名：
+                </view>
+                <view class="basis-lg padding-rb-xs">
+                  {{ t.name }}
+                </view>
+              </view>
+              <view class="flex">
+                <view class="basis-sm padding-lr-sm padding-rb-xs">
+                  性别：
+                </view>
+                <view class="basis-lg padding-rb-xs">
+                  {{ t.gender }}
+                </view>
+              </view>
+              <view class="flex">
+                <view class="basis-sm padding-lr-sm padding-rb-xs">
+                  联系电话：
+                </view>
+                <view
+                  class="basis-lg padding-rb-xs text-blue"
+                  style="text-decoration: underline"
+                >
+                  {{ t.phone }}
+                </view>
+              </view>
+              <view class="flex">
+                <view class="basis-sm padding-lr-sm padding-rb-xs">
+                  籍贯：
+                </view>
+                <view class="basis-lg padding-rb-xs">
+                  {{ t.hometown }}
+                </view>
+              </view>
+              <view class="flex">
+                <view class="basis-sm padding-lr-sm padding-rb-xs">
+                  身份证号码：
+                </view>
+                <view class="basis-lg padding-rb-xs">
+                  {{ t.identificationNumber }}
+                </view>
+              </view>
+              <view class="flex">
+                <view class="basis-sm padding-lr-sm padding-rb-xs">
+                  出生日期：
+                </view>
+                <view class="basis-lg padding-rb-xs">
+                  {{ t.birthday }}
+                </view>
+              </view>
+              <view class="flex justify-start">
+                <view class="padding-xs">
+                  <button
+                    class="cu-btn bg-green shadow-blur round"
+                    @click="toModifyTenant(index)"
+                  >
+                    修改
+                  </button>
+                </view>
+                <view class="padding-xs">
+                  <button
+                    class="cu-btn bg-red shadow-blur round"
+                    @click="onLeave(t.name, t.id)"
+                  >
+                    离开
+                  </button>
+                </view>
+              </view>
             </view>
-          </view>
+          </block>
         </view>
-      </block>
+      </view>
+      <view v-if="curPage === 'bill'" class="padding-top">
+        <view v-for="(item, index) in billList" :key="index">
+          <view
+            class="cu-list menu-avatar comment solids-top"
+            @click="refer(item.id)"
+          >
+            <view class="cu-item">
+              <view
+                class="cu-avatar round bg-olive"
+                v-if="item.typeCode === 'CHECK_IN'"
+              >
+                <view class="">
+                  <span
+                    class="iconfont icon-checkin text-white"
+                    style="font-size: 20px"
+                  ></span>
+                </view>
+              </view>
+              <view
+                class="cu-avatar round bg-blue"
+                v-if="item.typeCode === 'MONTHLY'"
+              >
+                <text class="cuIcon-calendar" style="font-size-20"></text>
+              </view>
+              <view class="content">
+                <view
+                  style="font-size: 17px; font-weight: 700"
+                  v-if="item.typeCode === 'CHECK_IN'"
+                  >{{ item.time }}入住账单</view
+                >
+                <view
+                  style="font-size: 17px; font-weight: 700"
+                  v-if="item.typeCode === 'MONTHLY'"
+                >
+                  {{ item.time }}账单
+                </view>
+                <view class="text-gray text-content text-df">
+                  <view class="flex">
+                    <view class="basis-sm padding-lr-sm paddingrb-xs">
+                      结算日期
+                    </view>
+                    <view class="bssis-lg padding-rb-xs">
+                      {{ item.updateTime }}
+                    </view>
+                  </view>
+                </view>
+                <view class="text-gray text-content text-df">
+                  <view class="flex">
+                    <view class="basis-sm padding-lr-sm paddingrb-xs">
+                      状态
+                    </view>
+                    <view class="bssis-lg padding-rb-xs">
+                      {{ item.status }}
+                    </view>
+                  </view>
+                </view>
+              </view>
+              <view class="action">
+                <view class="text-blue" style="font-size: 17px"
+                  >{{ item.totalCharge }}元</view
+                >
+              </view>
+            </view>
+          </view>
+          <!-- <view class="flex">
+            <view class="flex-treble"> </view>
+            <view class="flex-sub"> 123 </view>
+          </view> -->
+        </view>
+      </view>
     </view>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
@@ -178,7 +283,11 @@
           <form>
             <view class="cu-form-group">
               <view class="title font-szie-17">房租</view>
-              <input type="number" v-model="priceToChange" :focus="inputFocus" />
+              <input
+                type="number"
+                v-model="priceToChange"
+                :focus="inputFocus"
+              />
               元
             </view>
           </form>
@@ -264,6 +373,20 @@ export default {
       },
       loadingModal: false,
       loadingMessage: "",
+      curPage: "info",
+      billList: [],
+      queryForm: {
+        pageIndex: 1,
+        pageSize: 10,
+        roomId: 0,
+      },
+      statusColor: {
+        PAID: "green",
+        UNPAID: "red",
+        UNCONFIRMED: "grey",
+      },
+      showLoading: false,
+      haveMore: true,
     };
   },
   methods: {
@@ -455,16 +578,42 @@ export default {
         this.getRoomInfo();
       }
     },
+    switchPage(page) {
+      this.curPage = page;
+    },
+    getRoomBillList() {
+      this.showLoading = true;
+      this.request
+        .post("/bill/getRoomBillList", this.queryForm)
+        .then((response) => {
+          let { data } = response;
+          if (this.queryForm.pageIndex === 1) {
+            this.billList = data.list;
+          } else {
+            this.billList = this.billList.concat(data.list);
+          }
+          this.haveMore = this.billList.length < data.totalCount;
+          this.showLoading = false;
+          this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
+        });
+    },
+    refer(id) {
+      uni.navigateTo({
+        url: `/pages/billDetails/billDetails?id=${id}`,
+      });
+    },
   },
   onLoad(params) {
     this.id = params.roomId;
+    this.queryForm.roomId = params.roomId;
     // this.getRoomInfo();
     // this.getTenant();
   },
   onShow() {
+    this.getRoomInfo();
+    this.getTenant();
+    this.getRoomBillList();
     this.$nextTick(() => {
-      this.getRoomInfo();
-      this.getTenant();
       let view = uni.createSelectorQuery().select("#box");
       view
         .fields(
@@ -477,6 +626,11 @@ export default {
         )
         .exec();
     });
+  },
+  onPullDownRefresh() {
+    this.billList = [];
+    this.queryForm.pageIndex = 1
+    this.getRoomBillList();
   },
 };
 </script>

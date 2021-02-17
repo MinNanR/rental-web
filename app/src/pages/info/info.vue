@@ -45,12 +45,12 @@
             <text class="text-grey">设置水电价格</text>
           </view>
         </view>
-        <view class="cu-item" @click="toBillList()">
+        <!-- <view class="cu-item" @click="toBillList()">
           <view class="content">
             <text class="cuIcon-form text-yellow font-size-20"></text>
             <text class="text-grey">历史账单</text>
           </view>
-        </view>
+        </view> -->
       </view>
     </view>
     <view class="cu-modal" :class="changePriceModal ? 'show' : ''">
@@ -89,7 +89,7 @@
             <block v-for="(item, index) in price.accessCardPrice" :key="index">
               <view class="cu-form-group">
                 <view class="title font-size-17">
-                  {{ item.key }}
+                  {{ item.key }}门卡
                 </view>
                 <input
                   type="text"

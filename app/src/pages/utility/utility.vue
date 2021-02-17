@@ -1,20 +1,5 @@
 <template>
   <view class="">
-    <view class="block">
-      <view class="cu-bar search bg-withe status-bar">
-        <view class="content"> 水电 </view>
-        <view
-          class="action padding-xs"
-          style="margin-right: 0"
-          @click="toRecordUtility()"
-        >
-          <text
-            class="cuIcon-roundadd margin-right-xs"
-            style="font-size: 32px"
-          ></text>
-        </view>
-      </view>
-    </view>
     <view class="cu-card">
       <view
         class="cu-item bg-img shadow"
@@ -32,6 +17,12 @@
           </view>
         </view>
       </view>
+    </view>
+    <view class="add-icon" @click="toRecordUtility()">
+      <text
+        class="cuIcon-roundaddfill text-blue"
+        style="font-size: 50px"
+      ></text>
     </view>
     <view
       class="cu-load bg-gray fade"
@@ -100,6 +91,11 @@ export default {
     }
     this.getRecordList();
   },
+  onPullDownRefresh() {
+    if(this.showLoading) return
+    this.queryForm.pageIndex = 1;
+    this.getRecordList();
+  },
 };
 </script>
 
@@ -114,5 +110,11 @@ export default {
 
 .a {
   background: #ffffff;
+}
+
+.add-icon {
+  position: fixed;
+  right: 10px;
+  bottom: 60px;
 }
 </style>
