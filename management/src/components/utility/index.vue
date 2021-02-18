@@ -24,14 +24,6 @@
             @change="handleRoomNumberChange"
           ></el-input>
         </el-form-item>
-        <el-form-item label="月份">
-          <el-date-picker
-            v-model="queryForm.monthValue"
-            type="month"
-            placeholder="选择月"
-          >
-          </el-date-picker>
-        </el-form-item>
         <el-form-item label="状态">
           <el-select
             v-model="queryForm.status"
@@ -55,9 +47,12 @@
           <i class="el-icon-setting"></i>
           设置水电价格
         </el-button>
-        <el-button type="primary" @click="toAddUtility()">
+        <!-- <el-button type="primary" @click="toAddUtility()">
           <i class="el-icon-circle-plus"></i>
           添加
+        </el-button> -->
+        <el-button type="primary" @click="exportUtility()">
+          导出上月记录
         </el-button>
       </div>
     </div>
@@ -72,9 +67,12 @@
         <el-table-column type="index" width="50" label="#"></el-table-column>
         <el-table-column
           width="150"
-          prop="room"
-          label="用户名"
-        ></el-table-column>
+          label="房号"
+        >
+        <template #default="scope">
+          {{scope.row.houseName}}-{{scope.row.roomNumber}}
+        </template>
+        </el-table-column>
         <el-table-column
           width="150"
           prop="water"
@@ -96,7 +94,7 @@
           label="最后更新人"
         ></el-table-column>
         <el-table-column
-          width="150"
+          width="250"
           prop="updateTime"
           label="最后更新时间"
         ></el-table-column>
@@ -222,7 +220,7 @@ export default {
   },
   methods: {
     toAddUtility() {
-      this.$router.push("/addUtilities");
+      this.$router.push("/addUtility");
     },
     getUtilityList(pageIndex) {
       this.loading = true;
@@ -233,7 +231,7 @@ export default {
         this.queryForm.year = this.queryForm.monthValue.getFullYear();
       }
       this.request
-        .post("/bill/getUtilityList", this.queryForm)
+        .post("/utility/getUtilityList", this.queryForm)
         .then((response) => {
           let data = response.data;
           this.utilityList = data.list;
@@ -373,6 +371,9 @@ export default {
         }
       });
     },
+    exportUtility(){
+      console.log(1111);
+    }
   },
   mounted() {
     this.getUtilityStautsDropDown();

@@ -1,19 +1,19 @@
 <template>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
   <div>
-      <router-view></router-view>
-    </div>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script>
 // import Layout from "./components/layout/layout.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     // Layout
-  }
-}
+  },
+};
 </script>
 
 <style>

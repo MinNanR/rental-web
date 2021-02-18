@@ -1,141 +1,167 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
-const routes = [
-    {
+const routes = [{
         path: '/login',
-        component: () => import('../components/login.vue'),
+        component: () =>
+            import ('../components/login/login.vue'),
         meta: {
             title: '登陆'
         }
     },
     {
         path: '/',
-        component: () => import('../components/layout/layout.vue'),
-        children: [
-            {
+        component: () =>
+            import ('../components/layout/layout.vue'),
+        children: [{
                 path: "/",
-                component: () => import('../components/index/index.vue'),
+                component: () =>
+                    import ('../components/index/index.vue'),
                 meta: {
                     title: "主页"
                 }
             },
             {
                 path: 'house',
-                component: () => import('../components/house/index.vue'),
+                component: () =>
+                    import ('../components/house/index.vue'),
                 meta: {
                     title: "房屋信息"
                 },
             },
             {
                 path: 'addHouse',
-                component: () => import('../components/house/addHouse.vue'),
+                component: () =>
+                    import ('../components/house/addHouse.vue'),
                 meta: {
                     title: '添加房屋'
                 }
             },
             {
                 path: 'houseInfo',
-                component: () => import('../components/house/updateHouse.vue'),
+                component: () =>
+                    import ('../components/house/updateHouse.vue'),
                 meta: {
                     title: '修改房屋'
                 }
             },
             {
                 path: 'room',
-                component: () => import('../components/room/index.vue'),
+                component: () =>
+                    import ('../components/room/index.vue'),
                 meta: {
                     title: '房间信息'
                 }
             },
             {
                 path: 'addRoom',
-                component: () => import('../components/room/addRoom.vue'),
+                component: () =>
+                    import ('../components/room/addRoom.vue'),
                 meta: {
                     title: "添加房间"
                 }
             },
             {
                 path: 'updateRoom',
-                component: () => import('../components/room/updateRoom.vue'),
+                component: () =>
+                    import ('../components/room/updateRoom.vue'),
                 meta: {
                     title: "修改房间"
                 }
             },
             {
                 path: 'roomInfo',
-                component: () => import('../components/room/roomInfo.vue'),
+                component: () =>
+                    import ('../components/room/roomInfo.vue'),
                 meta: {
                     title: "房间信息"
                 }
             },
             {
                 path: 'tenant',
-                component: () => import('../components/tenant/index.vue'),
+                component: () =>
+                    import ('../components/tenant/index.vue'),
                 meta: {
                     title: "房客信息"
                 }
             },
             {
                 path: 'addTenant',
-                component: () => import('../components/tenant/addTenant.vue'),
+                component: () =>
+                    import ('../components/tenant/addTenant.vue'),
                 meta: {
                     title: '添加房客'
                 }
             },
             {
                 path: 'tenantInfo',
-                component: () => import('../components/tenant/updateTenant.vue'),
+                component: () =>
+                    import ('../components/tenant/updateTenant.vue'),
                 meta: {
                     title: '修改房客信息'
                 }
             },
             {
                 path: 'user',
-                component: () => import('../components/user/index.vue'),
+                component: () =>
+                    import ('../components/user/index.vue'),
                 meta: {
                     title: '用户信息'
                 }
             },
             {
                 path: 'adduser',
-                component: () => import('../components/user/addUser.vue'),
+                component: () =>
+                    import ('../components/user/addUser.vue'),
                 meta: {
                     title: '添加用户'
                 }
             },
             {
                 path: 'updateUser',
-                component: () => import('../components/user/updateUser.vue'),
+                component: () =>
+                    import ('../components/user/updateUser.vue'),
                 meta: {
                     title: '修改用户信息'
                 }
             },
             {
-                path: 'utilities',
-                component: () => import('../components/utilities/index.vue'),
+                path: 'utility',
+                component: () =>
+                    import ('../components/utility/index.vue'),
                 meta: {
                     title: '水电'
                 }
             },
             {
-                path: "addUtilities",
-                component: () => import('../components/utilities/addUtilities.vue'),
+                path: "addUtility",
+                component: () =>
+                    import ('../components/utility/addUtility.vue'),
                 meta: {
                     title: '登记水电'
                 }
             },
             {
                 path: "bill",
-                component: () => import('../components/bill/index.vue'),
+                component: () =>
+                    import ('../components/bill/index.vue'),
                 meta: {
                     title: '账单'
                 }
             },
             {
                 path: "settle",
-                component: () => import('../components/bill/settle.vue'),
+                component: () =>
+                    import ('../components/bill/settle.vue'),
                 meta: {
                     title: '结算'
+                }
+            },
+            {
+                path: "receipt",
+                component: () =>
+                    import ('../components/bill/receipt.vue'),
+                meta: {
+                    title: "收据"
                 }
             }
         ]
@@ -143,7 +169,7 @@ const routes = [
 ]
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHashHistory("rental"),
     routes: routes
 })
 
@@ -151,7 +177,7 @@ router.beforeEach((to, from, next) => {
     if (to.path == '/unauthorized' || to.path == '/login') {
         next()
     } else {
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("rental-token")
         if (token == null) {
             next('/login')
         } else {

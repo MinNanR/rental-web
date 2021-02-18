@@ -13,4 +13,5 @@ app.use(router)
 app.config.globalProperties.request = request
 app.mount("#app")
 
+
 export default app

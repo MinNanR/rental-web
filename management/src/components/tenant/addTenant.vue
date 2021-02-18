@@ -22,12 +22,12 @@
             ref="roomCascader"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="性别" prop="gender">
+        <!-- <el-form-item label="性别" prop="gender">
           <el-radio-group v-model="addTenantForm.gender">
             <el-radio label="MALE">男</el-radio>
             <el-radio label="FEMALE">女</el-radio>
           </el-radio-group>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="联系电话" prop="phone">
           <el-input type="text" v-model="addTenantForm.phone"></el-input>
         </el-form-item>
@@ -37,7 +37,7 @@
             v-model="addTenantForm.identificationNumber"
           ></el-input>
         </el-form-item>
-        <el-form-item label="出生日期">
+        <!-- <el-form-item label="出生日期">
           <el-date-picker
             type="date"
             v-model="addTenantForm.birthday"
@@ -45,14 +45,14 @@
             format="YYYY 年 M 月 D 日"
           >
           </el-date-picker>
-        </el-form-item>
-        <el-form-item label="籍贯">
+        </el-form-item> -->
+        <!-- <el-form-item label="籍贯">
           <el-cascader
             v-model="addTenantForm.hometown"
             :options="cities"
             ref="hometownCascader"
           ></el-cascader>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <el-button type="primary" @click="submit('addTenantForm')"
             >提交</el-button
@@ -73,12 +73,9 @@ export default {
     return {
       addTenantForm: {
         name: "",
-        gender: "",
         phone: "",
         identificationNumber: "",
-        birthday: "",
         room: [],
-        hometown: [],
       },
       rules: {
         name: [{ required: true, message: "请填写房客姓名", trigger: "blur" }],
@@ -90,7 +87,6 @@ export default {
             trigger: "blur",
           },
         ],
-        gender: [{ required: true, message: "请填写性别", trigger: "blur" }],
         phone: [
           { required: true, message: "请输入联系电话", trigger: "blur" },
           {

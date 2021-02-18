@@ -19,7 +19,7 @@ const request = axios.create({
 
 request.interceptors.request.use(
     config => {
-        let token = localStorage.getItem('token')
+        let token = localStorage.getItem('rental-token')
         config.headers.authorization = token
         return config;
     },

@@ -8,20 +8,12 @@
           ref="baseInfoForm"
           :model="baseInfo"
         >
-          <el-form-item label="月份" prop="monthValue">
-            <el-date-picker
-              type="month"
-              v-model="baseInfo.monthValue"
-              @change="handleSelectMonth"
-              :disabled="baseInfoFinshed"
-            ></el-date-picker>
-          </el-form-item>
           <el-form-item label="房屋" prop="floor">
             <el-cascader
               v-model="baseInfo.floor"
               :props="props"
               ref="roomCascader"
-              :disabled="!monthSelected || baseInfoFinshed"
+              :disabled="baseInfoFinshed"
             ></el-cascader>
           </el-form-item>
           <el-form-item>
@@ -84,9 +76,6 @@ export default {
       utilityList: [],
       rules: {
         floor: [{ required: "true", message: "请选择楼层", trigger: "blur" }],
-        monthValue: [
-          { required: "true", message: "请选择月份", trigger: "blur" },
-        ],
       },
     };
   },
@@ -104,7 +93,7 @@ export default {
             month: this.baseInfo.monthValue.getMonth() + 1,
           };
           this.request
-            .post("/bill/getBillList/Unrecorded", query)
+            .post("/room/getRoomByFloor", query)
             .then((response) => {
               let data = response.data;
               this.utilityList = [];

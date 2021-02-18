@@ -62,27 +62,42 @@
         :header-cell-style="{ background: '#d7e4fb' }"
       >
         <el-table-column type="index" width="55"> </el-table-column>
-        <el-table-column
-          prop="roomNumber"
-          label="房号"
-          width="200"
-        ></el-table-column>
-        <el-table-column
-          prop="waterUsage"
-          label="用水量(度)"
-          width="100"
-        ></el-table-column>
-        <el-table-column
-          prop="electricityUsage"
-          label="用电量(度)"
-          width="100"
-        ></el-table-column>
+        <el-table-column label="房号" width="150">
+          <template #default="scope"
+            >{{ scope.row.houseName }}-{{ scope.row.roomNumber }}</template
+          >
+        </el-table-column>
+        <el-table-column label="类型" prop="type" width="100"></el-table-column>
         <el-table-column label="水费" width="100">
-          <template #default="scope"> {{ scope.row.waterCharge }} 元 </template>
+          <template #default="scope">
+            <div v-if="scope.row.typeCode === 'MONTHLY'">
+              {{ scope.row.waterCharge }}元
+            </div>
+            <div v-if="scope.row.typeCode === 'CHECK_IN'">/</div>
+          </template>
         </el-table-column>
         <el-table-column label="电费" width="100">
           <template #default="scope">
-            {{ scope.row.electricityCharge }} 元
+            <div v-if="scope.row.typeCode === 'MONTHLY'">
+              {{ scope.row.electricityCharge }}元
+            </div>
+            <div v-if="scope.row.typeCode === 'CHECK_IN'">/</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="押金" width="100">
+          <template #default="scope">
+            <div v-if="scope.row.typeCode === 'MONTHLY'">/</div>
+            <div v-if="scope.row.typeCode === 'CHECK_IN'">
+              {{ scope.row.deposit }}元
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="门禁卡" width="100">
+          <template #default="scope">
+            <div v-if="scope.row.typeCode === 'MONTHLY'">/</div>
+            <div v-if="scope.row.typeCode === 'CHECK_IN'">
+              {{ scope.row.accessCardCharge }}元
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="房租" width="100">
@@ -91,15 +106,35 @@
         <el-table-column label="费用总计" width="150">
           <template #default="scope"> {{ scope.row.totalCharge }} 元 </template>
         </el-table-column>
-        <el-table-column prop="time" label="时间" width="100"></el-table-column>
-        <el-table-column
-          prop="updateUserName"
-          label="更新人"
-          width="150"
-        ></el-table-column>
+        <el-table-column label="时间" width="100">
+          <template #default="scope">
+            {{ scope.row.year }}年{{ scope.row.month }}月
+          </template>
+        </el-table-column>
         <el-table-column prop="updateTime" label="更新时间"></el-table-column>
+        <el-table-column label="操作">
+          <template #default="scope">
+            <el-button type="primary" @click="referImage(scope.row.receiptUrl)"
+              >预览收据</el-button
+            >
+          </template>
+        </el-table-column>
       </el-table>
     </div>
+    <el-dialog title="收据" v-model="receiptDialogVisable" width="50%">
+      <el-image
+        style="width: 60vw; height: 400px"
+        :src="receiptUrl"
+        :fit="none"
+      ></el-image>
+      <!-- <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="utilityDialogVisable = false">取 消</el-button>
+          <el-button type="primary" @click="submitPrice()">确 定</el-button>
+        </span>
+      </template> -->
+    </el-dialog>
+    <!-- 敬请期待 -->
   </div>
 </template>
 
@@ -121,6 +156,8 @@ export default {
       loading: false,
       billList: [],
       total: 0,
+      receiptUrl: "",
+      receiptDialogVisable: false,
     };
   },
   methods: {
@@ -155,6 +192,7 @@ export default {
       } else {
         this.houseSelected = true;
       }
+      console.log(this.queryForm);
     },
     handleSelectStatus(val) {
       this.queryForm.status = val === "" ? null : val;
@@ -173,7 +211,7 @@ export default {
         this.queryForm.month = null;
       }
       this.request
-        .post("/bill/getBillList", this.queryForm)
+        .post("/bill/getBills", this.queryForm)
         .then((response) => {
           let data = response.data;
           this.billList = data.list;
@@ -182,6 +220,11 @@ export default {
         .catch((err) => {
           console.error(err);
         });
+    },
+    referImage(url) {
+      // this.receiptUrl = url;
+      // this.receiptDialogVisable = true;
+      this.$router.push({ path: "/receipt", query: { src: url } });
     },
   },
   mounted() {

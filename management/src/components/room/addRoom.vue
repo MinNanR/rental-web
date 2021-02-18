@@ -46,11 +46,17 @@
         </el-form-item>
         <el-form-item label="每月房租" prop="price">
           <el-input
-            type="text"
+            type="number"
             v-model.number="addRoomForm.price"
             placeholder="每月房租"
             ><template #append>元</template></el-input
           >
+        </el-form-item>
+        <el-form-item label="水表行度" prop="water">
+          <el-input type="number" v-model="addRoomForm.water" placeholder="水表行度"><template #append>度</template></el-input>
+        </el-form-item>
+        <el-form-item label="电表行度" prop="electricity">
+          <el-input type="number" v-model="addRoomForm.electricity" placeholder="电表行度"><template #append>度</template></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submit('addRoomForm')"
@@ -74,6 +80,8 @@ export default {
         roomNumber: "",
         floor: null,
         price: "",
+        water: 0,
+        electricity: 0,
       },
       houseSelected: false,
       rules: {
@@ -99,7 +107,7 @@ export default {
       let house = this.houseDropDown.find((item) => {
         return item.id === val;
       });
-      this.addRoomForm.houseName = house.houseName
+      this.addRoomForm.houseName = house.houseName;
     },
     checkRoomNumberExist(rule, value, callback) {
       this.request
@@ -156,5 +164,4 @@ export default {
 </script>
 
 <style>
-
 </style>

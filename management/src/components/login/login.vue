@@ -48,7 +48,7 @@ export default {
         .then((response) => {
           let data = response.data;
           let token = data.token;
-          localStorage.setItem("token", `Bearer ${token}`);
+          localStorage.setItem("rental-token", `Bearer ${token}`);
           this.$router.push('/');
         })
         .catch((error) => {
