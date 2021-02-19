@@ -51,8 +51,8 @@
           <i class="el-icon-circle-plus"></i>
           添加
         </el-button> -->
-        <el-button type="primary" @click="exportUtility()">
-          导出上月记录
+        <el-button type="primary" @click="toHistoryRecord()">
+          往期水电记录
         </el-button>
       </div>
     </div>
@@ -65,13 +65,10 @@
         :header-cell-style="{ background: '#d7e4fb' }"
       >
         <el-table-column type="index" width="50" label="#"></el-table-column>
-        <el-table-column
-          width="150"
-          label="房号"
-        >
-        <template #default="scope">
-          {{scope.row.houseName}}-{{scope.row.roomNumber}}
-        </template>
+        <el-table-column width="150" label="房号">
+          <template #default="scope">
+            {{ scope.row.houseName }}-{{ scope.row.roomNumber }}
+          </template>
         </el-table-column>
         <el-table-column
           width="150"
@@ -224,7 +221,7 @@ export default {
     },
     getUtilityList(pageIndex) {
       this.loading = true;
-      this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex;
+      this.queryForm.pageIndex = pageIndex || this.queryForm.pageIndex;
       console.log(this.queryForm);
       if (this.queryForm.monthValue !== null) {
         this.queryForm.month = this.queryForm.monthValue.getMonth() + 1;
@@ -358,7 +355,7 @@ export default {
                 message: message,
                 type: "success",
               });
-              this.utilityDialogVisable = false
+              this.utilityDialogVisable = false;
             })
             .catch((err) => {
               console.error(err);
@@ -371,9 +368,16 @@ export default {
         }
       });
     },
-    exportUtility(){
-      console.log(1111);
-    }
+    toHistoryRecord() {
+      this.$router.push("/historyRecord");
+    },
+    handleCurrentChange(value) {
+      this.getUtilityList(value);
+    },
+    handleSizeChange(value) {
+      this.queryForm.pageSize = value;
+      this.getUtilityList(1);
+    },
   },
   mounted() {
     this.getUtilityStautsDropDown();

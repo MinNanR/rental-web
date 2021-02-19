@@ -133,11 +133,11 @@ const routes = [{
                 }
             },
             {
-                path: "addUtility",
+                path: "historyRecord",
                 component: () =>
-                    import ('../components/utility/addUtility.vue'),
+                    import ('../components/utility/historyRecord.vue'),
                 meta: {
-                    title: '登记水电'
+                    title: '水电记录'
                 }
             },
             {

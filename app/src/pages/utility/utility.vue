@@ -2,6 +2,15 @@
   <view class="">
     <view class="cu-card">
       <view
+        class="cu-item bg-img shadow text-center"
+        style="margin: 10px 10px"
+        @click="toRecordUtility()"
+      >
+        <view class="padding-sm light bg-green" style="border-radius: 15px">
+          <text class="cuIcon-roundaddfill" style="font-size: 20px">添加</text>
+        </view>
+      </view>
+      <view
         class="cu-item bg-img shadow"
         v-for="(item, index) in recordList"
         :key="index"
@@ -18,12 +27,12 @@
         </view>
       </view>
     </view>
-    <view class="add-icon" @click="toRecordUtility()">
+    <!-- <view class="add-icon" @click="toRecordUtility()">
       <text
         class="cuIcon-roundaddfill text-blue"
         style="font-size: 50px"
       ></text>
-    </view>
+    </view> -->
     <view
       class="cu-load bg-gray fade"
       v-show="showLoading"
@@ -92,7 +101,7 @@ export default {
     this.getRecordList();
   },
   onPullDownRefresh() {
-    if(this.showLoading) return
+    if (this.showLoading) return;
     this.queryForm.pageIndex = 1;
     this.getRecordList();
   },

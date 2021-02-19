@@ -129,7 +129,9 @@ export default {
   methods: {
     getRoomList(pageIndex) {
       this.loading = true;
-      this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex
+      console.log(pageIndex,this.queryForm.pageIndex);
+      this.queryForm.pageIndex = pageIndex || this.queryForm.pageIndex
+      console.log(this.queryForm.pageIndex);
       this.request
         .post("/room/getRoomList", this.queryForm)
         .then((response) => {
@@ -152,7 +154,6 @@ export default {
           if (this.houseDropDown.length > 0) {
             this.$nextTick(() => {
               this.queryForm.houseId = this.houseDropDown[0].id;
-              console.log(this.queryForm.houseId);
               this.getRoomList();
             });
           }
