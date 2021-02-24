@@ -5,16 +5,18 @@
         <view class="title"> 押金 </view>
         <input
           type="number"
-          v-model="roomForm.deposit"
+          v-model.number="roomForm.deposit"
           style="font-size: 16px"
+          @change="onDepositChange"
         />
       </view>
       <view class="cu-form-group">
         <view class="title"> 门卡数量 </view>
         <input
           type="number"
-          v-model="roomForm.cardQuantity"
+          v-model.number="roomForm.cardQuantity"
           style="font-size: 16px"
+          @change="onAccessCardChange"
         />
       </view>
       <view class="cu-form-group">
@@ -217,6 +219,8 @@ export default {
       roomNumber: "",
       houseId: "",
       houseName: "",
+      price: null,
+      accessCardPrice: 0,
       tenantList: [],
       formShow: true,
       tenantForm: {
@@ -232,7 +236,7 @@ export default {
         deposit: null,
         cardQuantity: null,
         checkInDate: dayjs().format("YYYY-MM-DD"),
-        remark: "押金租满三个月方可退还",
+        remark: "",
       },
       dateString: dayjs().format("YYYY年M月D日"),
       payMethodList: [
@@ -417,6 +421,12 @@ export default {
           });
         });
     },
+    getPrice() {
+      this.request.post("/bill/getUtilityPrice", {}).then((response) => {
+        let { data } = response;
+        this.accessCardPrice = data.accessCardPrice[this.houseName];
+      });
+    },
     responseModalConfirm() {
       this.responseModalShow = false;
       this.responseModal.action();
@@ -438,12 +448,33 @@ export default {
     paymethodChange(e) {
       this.payMethodIndex = e.detail.value;
     },
+    onDepositChange(e) {
+      let total = new Number(this.price) + new Number(e.detail.value);
+      let qunantity =
+        this.roomForm.cardQuantity == null ? 0 : this.roomForm.cardQuantity;
+      this.roomForm.remark = `押金租满三个月方可退还，门卡${qunantity}个收押金${
+        qunantity * this.accessCardPrice
+      }元，房租共${total}元，自己财物自己保管`;
+    },
+    onAccessCardChange(e) {
+      let total = new Number(this.price) + new Number(this.accessCardPrice);
+      let qunantity =
+        e.detail.value == null || e.detail.value == "" ? 0 : e.detail.value;
+      this.roomForm.remark = `押金租满三个月方可退还，门卡${qunantity}个收押金${
+        qunantity * this.accessCardPrice
+      }元，房租共${total}元，自己财物自己保管`;
+    },
   },
   onLoad(params) {
     this.id = params.roomId;
     this.roomNumber = params.roomNumber;
     this.houseId = params.houseId;
     this.houseName = params.houseName;
+    this.price = new Number(params.price);
+    this.roomForm.deposit = new Number(params.price);
+    this.roomForm.remark = `押金租满三个月方可退还，门卡0个收押金0元，房租共${
+      this.price + this.roomForm.deposit
+    }元，自己财物自己保管`;
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");
       view
@@ -460,6 +491,7 @@ export default {
     uni.setNavigationBarTitle({
       title: `${params.houseName}-${params.roomNumber}号房入住登记`,
     });
+    this.getPrice();
   },
   filters: {
     genderStr(value) {

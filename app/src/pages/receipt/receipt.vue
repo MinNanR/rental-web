@@ -31,18 +31,26 @@ export default {
   },
   methods: {
     saveImage() {
-      uni.downloadFile({
-        url: this.imageUrl, //仅为示例，并非真实的资源
-        success: (res) => {
-          if (res.statusCode === 200) {
-            console.log(res.tempFilePath);
-            uni.saveImageToPhotosAlbum({
-              filePath: res.tempFilePath,
-              success: (message) => {
-                console.log(message);
-              },
-            });
-          }
+      uni.authorize({
+        scope: "scope.writePhotosAlbum",
+        success: () => {
+          uni.downloadFile({
+            url: this.imageUrl, //仅为示例，并非真实的资源
+            success: (res) => {
+              if (res.statusCode === 200) {
+                console.log(res.tempFilePath);
+                uni.saveImageToPhotosAlbum({
+                  filePath: res.tempFilePath,
+                  success: (message) => {
+                    console.log(message);
+                  },
+                });
+              }
+            },
+          });
+        },
+        fail: (errMsg) => {
+          console.error(errMsg);
         },
       });
     },

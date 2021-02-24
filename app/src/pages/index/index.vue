@@ -34,7 +34,9 @@
       </view>
     </view>
     <unpaid-bill v-show="currentPage === 'unpaidBill'"></unpaid-bill>
-    <unconfirmed-bill v-show="currentPage === 'unconfirmedBill'"></unconfirmed-bill>
+    <unconfirmed-bill
+      v-show="currentPage === 'unconfirmedBill'"
+    ></unconfirmed-bill>
   </view>
 </template>
 
@@ -80,9 +82,16 @@ export default {
   onShow() {
     this.getTotal();
   },
-  onLoad(){
-
-  }
+  onLoad() {
+    // #ifdef MP-WEIXIN
+    uni.authorize({
+      scope: "scope.writePhotosAlbum",
+      success(a, b, c) {
+        console.log(a, b, c);
+      },
+    });
+    // #endif
+  },
 };
 </script>
 

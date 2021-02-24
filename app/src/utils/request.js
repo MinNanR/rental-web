@@ -1,9 +1,9 @@
-const baseUrl = "http://localhost:2000/rental"
-// const baseUrl = "https://minnan.site:2002/rental"
+// const baseUrl = "http://localhost:2000/rental"
+const baseUrl = "https://minnan.site:2002/rental"
 import localstorage from './localstorage.js'
 
 const request = {
-    post: function(url, param) {
+    post: function (url, param) {
         let header = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -21,6 +21,13 @@ const request = {
                 data: param,
                 success: (response) => {
                     if (response.statusCode === 200) {
+                        if (response.header.newToken != null || response.header.newToken != '') {
+                            localstorage.setStorageExpire(
+                                "token",
+                                `Bearer ${response.header.newToken}`,
+                                7 * 24 * 60 * 60 * 1000
+                            )
+                        }
                         let data = response.data
                         if (data.code === '000') {
                             resolve(data)
@@ -59,7 +66,7 @@ const request = {
         })
     },
 
-    get: function(url, param) {
+    get: function (url, param) {
         return new Promise(resolve => {
             uni.request({
                 url: `${baseUrl}${url}`,

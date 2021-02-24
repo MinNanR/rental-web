@@ -20,6 +20,7 @@
               type="text"
               v-model="loginForm.username"
               placeholder="请输入账号"
+               placeholder-style="font-size: 16px;color: black"
             />
           </view>
           <view class="form-group">
@@ -31,6 +32,7 @@
               type="password"
               v-model="loginForm.password"
               placeholder="请输入密码"
+               placeholder-style="font-size: 16px;color: black"
             />
           </view>
         </form>

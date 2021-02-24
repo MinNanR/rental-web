@@ -108,7 +108,7 @@
                   性别：
                 </view>
                 <view class="basis-lg padding-rb-xs">
-                  {{ t.gender }}
+                  {{ t.gender | blankFilter }}
                 </view>
               </view>
               <view class="flex">
@@ -119,7 +119,7 @@
                   class="basis-lg padding-rb-xs text-blue"
                   style="text-decoration: underline"
                 >
-                  {{ t.phone }}
+                  {{ t.phone | blankFilter }}
                 </view>
               </view>
               <view class="flex">
@@ -127,7 +127,7 @@
                   籍贯：
                 </view>
                 <view class="basis-lg padding-rb-xs">
-                  {{ t.hometown }}
+                  {{ t.hometown | blankFilter }}
                 </view>
               </view>
               <view class="flex">
@@ -135,7 +135,7 @@
                   身份证号码：
                 </view>
                 <view class="basis-lg padding-rb-xs">
-                  {{ t.identificationNumber }}
+                  {{ t.identificationNumber | blankFilter }}
                 </view>
               </view>
               <view class="flex">
@@ -143,7 +143,7 @@
                   出生日期：
                 </view>
                 <view class="basis-lg padding-rb-xs">
-                  {{ t.birthday }}
+                  {{ t.birthday | blankFilter }}
                 </view>
               </view>
               <view class="flex justify-start">
@@ -458,7 +458,7 @@ export default {
     toCheckIn() {
       let roomInfo = this.roomInfo;
       uni.navigateTo({
-        url: `/pages/checkIn/checkIn?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
+        url: `/pages/checkIn/checkIn?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}&price=${roomInfo.price}`,
       });
     },
     getTenantDropDown() {
@@ -627,9 +627,14 @@ export default {
         .exec();
     });
   },
+  filters: {
+    blankFilter(val) {
+      return val == null ? "" : val;
+    },
+  },
   onPullDownRefresh() {
     this.billList = [];
-    this.queryForm.pageIndex = 1
+    this.queryForm.pageIndex = 1;
     this.getRoomBillList();
   },
 };

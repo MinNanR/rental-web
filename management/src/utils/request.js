@@ -33,6 +33,9 @@ request.interceptors.response.use(
         if (response.status === 200) {
             let data = response.data
             if (data.code === '000') {
+                if(response.headers['newtoken'] != null){
+                    localStorage.setItem("rental-token", `Bearer ${response.headers.newtoken}`);
+                }
                 return { data: data.data, message: data.message }
             } else {
                 return Promise.reject(data.message)
