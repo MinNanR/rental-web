@@ -135,7 +135,7 @@ export default {
     },
     getUserList(pageIndex) {
       this.loading = true;
-      this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex;
+      this.queryForm.pageIndex = pageIndex || this.queryForm.pageIndex;
       this.request
         .post("/user/getUserList", this.queryForm)
         .then((response) => {

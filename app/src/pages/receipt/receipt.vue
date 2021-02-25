@@ -15,6 +15,14 @@
         >
           保存图片
         </button>
+        <!-- #ifdef MP-WEIXIN -->
+        <button
+          class="cu-btn bg-blue shadow-blur round lg"
+          @click="shareImage()"
+        >
+          分享图片
+        </button>
+        <!-- #endif -->
       </view>
     </view>
   </view>
@@ -54,6 +62,24 @@ export default {
         },
       });
     },
+    // #ifdef MP-WEIXIN
+    shareImage() {
+      uni.downloadFile({
+        url: this.imageUrl,
+        success: (res) => {
+          wx.showShareImageMenu({
+            path: res.tempFilePath,
+            success: (message) => {
+              console.log(message);
+            },
+            fail: (err) => {
+              console.error(err);
+            },
+          });
+        },
+      });
+    },
+    // #endif
   },
   onLoad(params) {
     this.imageUrl = JSON.parse(decodeURIComponent(params.url));

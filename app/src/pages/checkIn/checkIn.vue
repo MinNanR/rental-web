@@ -78,7 +78,7 @@
         </view>
         <view class="font-size-17"> 联系电话：{{ tenant.phone }} </view>
       </view>
-      <view
+      <!-- <view
         class="padding-sm flex"
         v-if="
           !(
@@ -94,7 +94,7 @@
         <view class="font-size-17">
           身份证号码：{{ tenant.identificationNumber }}
         </view>
-      </view>
+      </view> -->
       <view class="basis-xs padding-xs">
         <button class="cu-btn bg-red round" @click="deleteTenant(index)">
           删除
@@ -115,14 +115,14 @@
             v-model="tenantForm.phone"
           />
         </view>
-        <view class="cu-form-group">
+        <!-- <view class="cu-form-group">
           <view class="title">身份证号码</view>
           <input
             placeholder="身份证号码"
             name="identifiNumber"
             v-model="tenantForm.identificationNumber"
           />
-        </view>
+        </view> -->
       </form>
       <view class="flex justify-start">
         <view class="padding">

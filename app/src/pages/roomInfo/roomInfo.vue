@@ -58,6 +58,14 @@
               </button></view
             >
           </view>
+          <view class="padding solid flex" v-if="roomInfo.statusCode == 'ON_RENT'">
+            <view class="font-size-20">
+              <text class="cuIcon-ticket margin-right-xs text-black"></text>
+            </view>
+            <view class="font-size-17">
+              当前押金：{{ roomInfo.deposit }}元
+            </view>
+          </view>
           <view class="padding solid flex">
             <view class="font-size-20">
               <text
@@ -65,7 +73,7 @@
                   'cuIcon-' +
                   statusIcon[roomInfo.statusCode] +
                   ' margin-right-xs text-' +
-                  statusColor[roomInfo.statusCode]
+                  roomStatusColor[roomInfo.statusCode]
                 "
               ></text>
             </view>
@@ -130,14 +138,14 @@
                   {{ t.hometown | blankFilter }}
                 </view>
               </view>
-              <view class="flex">
+              <!-- <view class="flex">
                 <view class="basis-sm padding-lr-sm padding-rb-xs">
                   身份证号码：
                 </view>
                 <view class="basis-lg padding-rb-xs">
                   {{ t.identificationNumber | blankFilter }}
                 </view>
-              </view>
+              </view> -->
               <view class="flex">
                 <view class="basis-sm padding-lr-sm padding-rb-xs">
                   出生日期：
@@ -352,7 +360,7 @@ export default {
         ON_RENT: "roundcheckfill",
         VACANT: "roundclosefill",
       },
-      statusColor: {
+      roomStatusColor: {
         ON_RENT: "green",
         VACANT: "red",
       },

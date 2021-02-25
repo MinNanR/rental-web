@@ -9,14 +9,14 @@
         <view class="title">联系电话</view>
         <input placeholder="联系电话" name="phone" v-model="tenantForm.phone" />
       </view>
-      <view class="cu-form-group">
+      <!-- <view class="cu-form-group">
         <view class="title">身份证号码</view>
         <input
           placeholder="身份证号码"
           name="identifiNumber"
           v-model="tenantForm.identificationNumber"
         />
-      </view>
+      </view> -->
     </form>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">

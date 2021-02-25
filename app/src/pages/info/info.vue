@@ -42,7 +42,7 @@
                 style="font-size: 22px"
               ></span
             ></view>
-            <text class="text-grey">设置水电价格</text>
+            <text class="text-grey">设置水电、门卡价格</text>
           </view>
         </view>
         <!-- <view class="cu-item" @click="toBillList()">
@@ -88,9 +88,7 @@
             </view> -->
             <block v-for="(item, index) in price.accessCardPrice" :key="index">
               <view class="cu-form-group">
-                <view class="title font-size-17">
-                  {{ item.key }}门卡
-                </view>
+                <view class="title font-size-17"> {{ item.key }}门卡 </view>
                 <input
                   type="text"
                   v-model.number="item.value"
@@ -154,7 +152,6 @@ export default {
         }
         this.price = data;
         this.price.accessCardPrice = accessCardPrice;
-
         this.loadingModal = false;
         this.$nextTick(() => {
           this.changePriceModal = true;

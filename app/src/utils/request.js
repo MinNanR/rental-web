@@ -21,7 +21,7 @@ const request = {
                 data: param,
                 success: (response) => {
                     if (response.statusCode === 200) {
-                        if (response.header.newToken != null || response.header.newToken != '') {
+                        if (response.header.newToken != null && response.header.newToken != '') {
                             localstorage.setStorageExpire(
                                 "token",
                                 `Bearer ${response.header.newToken}`,

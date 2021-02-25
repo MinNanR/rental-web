@@ -121,6 +121,22 @@
         </el-table-column>
       </el-table>
     </div>
+    <div style="display: flex; margin-top: 30px">
+      <div class="refresh-btn" @click="getUserList(1)">
+        <i class="el-icon-refresh-right"></i>
+      </div>
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="queryForm.pageIndex"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="10"
+        :hide-on-single-page="false"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+      >
+      </el-pagination>
+    </div>
     <el-dialog title="收据" v-model="receiptDialogVisable" width="50%">
       <el-image
         style="width: 60vw; height: 400px"
@@ -202,7 +218,7 @@ export default {
     },
     getBillList(pageIndex) {
       this.loading = true;
-      this.queryForm.pageIndex = pageIndex | this.queryForm.pageIndex;
+      this.queryForm.pageIndex = pageIndex || this.queryForm.pageIndex;
       if (this.queryForm.monthValue !== null) {
         this.queryForm.year = this.queryForm.monthValue.getFullYear();
         this.queryForm.month = this.queryForm.monthValue.getMonth() + 1;
@@ -225,6 +241,14 @@ export default {
       // this.receiptUrl = url;
       // this.receiptDialogVisable = true;
       this.$router.push({ path: "/receipt", query: { src: url } });
+    },
+    handleSizeChange(val) {
+      this.queryForm.pageSize = val;
+      this.getBillList(1);
+    },
+    handleCurrentChange(val) {
+      console.log(val);
+      this.getBillList(val);
     },
   },
   mounted() {
