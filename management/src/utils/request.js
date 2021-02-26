@@ -48,11 +48,11 @@ request.interceptors.response.use(
         if (error.response != null) {
             if (error.response.status != null) {
                 if (error.response.status === 401) {
-                    localStorage.removeItem("token")
+                    localStorage.removeItem("rental-token")
                     alert("登录信息过期")
                     app.router.push("/login")
                 } else if (error.response.status === 403) {
-                    localStorage.removeItem("token")
+                    localStorage.removeItem("rental-token")
                     alert("无权限")
                     app.router.push('/login')
                 }

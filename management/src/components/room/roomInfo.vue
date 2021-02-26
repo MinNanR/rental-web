@@ -4,6 +4,7 @@
       <div class="header">
         <div style="margin-bottom: 20px; color: #909eff">基本信息</div>
         <div>
+          <el-button @click="triggerSettle()">结算账单</el-button>
           <el-button type="primary" @click="toUpdateRoom()">编辑</el-button>
           <el-button @click="turnBack()">返回</el-button>
         </div>
@@ -126,7 +127,11 @@
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog title="选择房客" v-model="dialogVisible" @closed="onDialogClosed">
+    <el-dialog
+      title="选择房客"
+      v-model="dialogVisible"
+      @closed="onDialogClosed"
+    >
       <el-row>
         <el-col :span="12">
           <div style="padding-left: 20px; padding-right: 20px">
@@ -262,7 +267,7 @@ export default {
             message: message,
             type: "success",
           });
-          this.getTenantList()
+          this.getTenantList();
         })
         .catch((error) => {
           console.error(error);
@@ -332,10 +337,29 @@ export default {
           });
         });
     },
-    onDialogClosed(){
-      this.tenantDropDown = []
-      this.selectTenantList = []
-    }
+    onDialogClosed() {
+      this.tenantDropDown = [];
+      this.selectTenantList = [];
+    },
+    triggerSettle() {
+      this.request
+        .post("/bill/triggerSetBillUnconfirmed", {id :this.id})
+        .then((response, message) => {
+          this.$notify({
+            title: "操作成功",
+            message: message,
+            type: "success",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          this.$notify({
+            title: "操作失败",
+            message: error,
+            type: "warning",
+          });
+        });
+    },
   },
   mounted() {
     this.infoLoading = true;
@@ -347,7 +371,6 @@ export default {
 </script>
 
 <style>
-
 .label {
   text-align: right;
 }
