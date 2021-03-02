@@ -8,6 +8,7 @@ Vue.prototype.request = request
 Vue.prototype.setStorage = localstorage.setStorage
 Vue.prototype.setStorageExpire = localstorage.setStorageExpire
 Vue.prototype.getStorage = localstorage.getStorage
+Vue.prototype.removeStorage = localstorage.removeStorage
 
 App.mpType = 'app'
 

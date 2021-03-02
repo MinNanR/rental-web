@@ -53,6 +53,9 @@
         </view> -->
       </view>
     </view>
+    <view class="margin-top-xl bg-white">
+      <button class="cuBtn" @click="logout()">退出登录</button>
+    </view>
     <view class="cu-modal" :class="changePriceModal ? 'show' : ''">
       <view class="cu-dialog">
         <view class="cu-bar bg-white justify-end">
@@ -186,6 +189,14 @@ export default {
     },
     toBillList() {
       uni.navigateTo({ url: "/pages/billList/billList" });
+    },
+    logout() {
+      uni.navigateTo({
+        url: "/pages/login/login",
+        success: () => {
+          this.removeStorage("token");
+        },
+      });
     },
   },
   onShow() {

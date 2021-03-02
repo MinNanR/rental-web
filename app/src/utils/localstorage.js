@@ -23,7 +23,7 @@ const localstorage = {
   },
 
   /**
-   * 获取缓存，获取到缓存则返回缓存值，不存在活过期则返回null
+   * 获取缓存，获取到缓存则返回缓存值，不存在或过期则返回null
    */
   getStorage: function (key) {
     let objStr = uni.getStorageSync(key)

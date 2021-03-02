@@ -32,8 +32,8 @@
         >
           <view class="padding-xs"> 居住人：{{ item.livingPeople }} </view>
           <view class="padding-xs"> 账单时间：{{ item.time }} </view>
-          <view class="padding-xs"> 水费：{{ item.waterCharge }}元 </view>
-          <view class="padding-xs"> 电费：{{ item.electricityCharge }}元 </view>
+          <view class="padding-xs" v-if="item.typeCode === 'MONTHLY'"> 水费：{{ item.waterCharge }}元 </view>
+          <view class="padding-xs" v-if="item.typeCode === 'MONTHLY'"> 电费：{{ item.electricityCharge }}元 </view>
           <view class="padding-xs"> 房租：{{ item.rent }}元 </view>
           <view class="padding-xs" style="color: blue" @click="refer(item.id)">
             详情

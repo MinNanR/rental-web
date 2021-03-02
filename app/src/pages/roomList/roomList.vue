@@ -73,19 +73,22 @@
                   ></span>
                 </view>
                 <view class="content">
-                  <view :class="'text-black'" style="font-size: 20px">{{
-                    room.roomNumber
-                  }}</view>
-                  <view> 租金：{{ room.price }} 元</view>
-                  <view>
-                    <text
-                      class="cuIcon-round margin-right-xs"
-                      :class="'text-' + statusTextColor[room.statusCode]"
-                    ></text>
-                    <text :class="'text-' + statusTextColor[room.statusCode]">{{
-                      room.status
-                    }}</text>
-                  </view>
+                  <view :class="'text-black'" style="font-size: 20px"
+                    >{{ room.roomNumber
+                    }}<span style="font-size: 16px;margin-left: 10px"
+                      ><text
+                        class="cuIcon-round margin-right-xs"
+                        :class="'text-' + statusTextColor[room.statusCode]"
+                      ></text>
+                      <text
+                        :class="'text-' + statusTextColor[room.statusCode]"
+                        >{{ room.status }}</text
+                      ></span
+                    ></view
+                  >
+                  <view> 水：{{ room.water }} 度</view>
+                  <view> 电：{{ room.electricity }}度 </view>
+                  <view> </view>
                 </view>
                 <view class="action">
                   <text class="cuIcon-right" style="font-size: 20px"></text>

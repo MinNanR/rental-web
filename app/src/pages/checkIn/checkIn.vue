@@ -7,7 +7,7 @@
           type="number"
           v-model.number="roomForm.deposit"
           style="font-size: 16px"
-          @change="onDepositChange"
+          @input="onDepositChange"
         />
       </view>
       <view class="cu-form-group">
@@ -16,7 +16,7 @@
           type="number"
           v-model.number="roomForm.cardQuantity"
           style="font-size: 16px"
-          @change="onAccessCardChange"
+          @input="onAccessCardChange"
         />
       </view>
       <view class="cu-form-group">
@@ -458,8 +458,10 @@ export default {
     },
     onAccessCardChange(e) {
       let total = new Number(this.price) + new Number(this.accessCardPrice);
+      console.log(e);
       let qunantity =
         e.detail.value == null || e.detail.value == "" ? 0 : e.detail.value;
+        console.log(qunantity);
       this.roomForm.remark = `押金租满三个月方可退还，门卡${qunantity}个收押金${
         qunantity * this.accessCardPrice
       }元，房租共${total}元，自己财物自己保管`;

@@ -1,11 +1,24 @@
 <template>
   <view class="">
     <view class="" :style="'padding-bottom: ' + barHeight + 'px'">
-      <cover-image
+      <!-- <cover-image
         class="controls-play img receipt"
         @click="play"
         :src="imageUrl"
-      ></cover-image>
+      ></cover-image> -->
+      <view class="uni-padding-wrap uni-common-mt">
+        <movable-area scale-area>
+          <movable-view
+            direction="all"
+            scale="true"
+            scale-min="1"
+            scale-max="4"
+            :scale-value="scale"
+          >
+            <image :src="imageUrl" mode="widthFix"></image>
+          </movable-view>
+        </movable-area>
+      </view>
     </view>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
@@ -43,7 +56,7 @@ export default {
         scope: "scope.writePhotosAlbum",
         success: () => {
           uni.downloadFile({
-            url: this.imageUrl, //仅为示例，并非真实的资源
+            url: this.imageUrl,
             success: (res) => {
               if (res.statusCode === 200) {
                 console.log(res.tempFilePath);
@@ -101,4 +114,22 @@ export default {
 </script>
 
 <style>
+movable-view {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height:100%;
+}
+
+movable-area {
+	height: 100%;
+	width: 100%;
+	position:fixed;
+	overflow: hidden;
+}
+	
+movable-view image{
+	width:100%;
+}
 </style>

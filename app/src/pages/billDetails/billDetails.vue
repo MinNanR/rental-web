@@ -117,13 +117,50 @@
             </view>
           </view>
         </view>
-        <view class="flex justify-between margin-top">
+        <view
+          class="flex justify-between margin-top"
+          v-if="bill.statusCode === 'PAID'"
+        >
           <view class="text-xl"> 支付方式 </view>
           <view class="text-xl"> {{ bill.paymentMethod }} </view>
         </view>
       </view>
     </view>
     <view class="margin padding bg-white">
+      <view class="text-xl" style="font-weight: 700"> 水电明细 </view>
+      <view class="padding-top font-size-17 text-center">
+        <view class="flex bg-cyan">
+          <view class="flex-sub padding solid"> </view>
+          <view class="flex-sub padding solid"> 上月行度 </view>
+          <view class="flex-sub padding solid"> 本月行度 </view>
+        </view>
+        <view class="flex bg-white">
+          <view class="flex-sub padding solid"> 水 </view>
+          <view class="flex-sub padding solid">
+            {{ bill.waterStart }}
+          </view>
+          <view class="flex-sub padding solid" v-if="bill.typeCode === 'MONTHLY'">
+            {{ bill.waterEnd }}
+          </view>
+          <view class="flex-sub padding solid" v-if="bill.typeCode === 'CHECK_IN'">
+            /
+          </view>
+        </view>
+        <view class="flex bg-white">
+          <view class="flex-sub padding solid"> 电 </view>
+          <view class="flex-sub padding solid">
+            {{ bill.electricityStart }}
+          </view>
+          <view class="flex-sub padding solid" v-if="bill.typeCode === 'MONTHLY'">
+            {{ bill.electricityEnd }}
+          </view>
+          <view class="flex-sub padding solid" v-if="bill.typeCode === 'CHECK_IN'">
+            /
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="margin padding bg-white" v-if="!showLoading">
       <view class="text-xl" style="font-weight: 700"> 账单明细 </view>
       <view class="padding-top font-size-17 text-center">
         <view class="flex bg-cyan" style="">
