@@ -1,9 +1,9 @@
-const baseUrl = "http://192.168.10.2:2000/rental"
-// const baseUrl = "https://minnan.site:2002/rental"
+const baseUrl = "http://localhost:2000/rental"
+    // const baseUrl = "https://minnan.site:2002/rental"
 import localstorage from './localstorage.js'
 
 const request = {
-    post: function (url, param) {
+    post: function(url, param) {
         let header = {
             'Content-Type': 'application/json',
             'Accept': 'application/json'
@@ -66,7 +66,7 @@ const request = {
         })
     },
 
-    get: function (url, param) {
+    get: function(url, param) {
         return new Promise(resolve => {
             uni.request({
                 url: `${baseUrl}${url}`,

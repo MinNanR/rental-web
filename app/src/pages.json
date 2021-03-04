@@ -1,15 +1,15 @@
 {
     "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
         {
-            "path": "pages/tenant/index/index",
-            "style": {
-                "navigationBarTitleText": "出租屋管理器"
-            }
-        },
-        {
             "path": "pages/admin/index/index",
             "style": {
                 "navigationBarTitleText": "首页"
+            }
+        },
+        {
+            "path": "pages/tenant/index/index",
+            "style": {
+                "navigationBarTitleText": "出租屋管理器"
             }
         },
         {
@@ -110,13 +110,19 @@
             "style": {
                 "navigationBarTitleText": "历史账单"
             }
+        }, {
+            "path": "pages/tenant/billList/billList",
+            "style": {
+                "navigationBarTitleText": "账单"
+            }
+        },
+        {
+            "path": "pages/admin/billRegister/billRegister"
         }
-
     ],
     "tabBar": {
         "selectedColor": "#808efe",
-        "list": [
-            {
+        "list": [{
                 "pagePath": "pages/admin/index/index",
                 "text": "首页",
                 "iconPath": "/static/tabbar/home.png",
@@ -153,6 +159,6 @@
         "navigationBarTitleText": "uni-app",
         "navigationBarBackgroundColor": "#FFFFFF",
         "backgroundColor": "#FFFFFF"
-        // "onReachBottomDistance": 100
+            // "onReachBottomDistance": 100
     }
 }

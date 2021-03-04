@@ -179,7 +179,14 @@
           </block>
         </view>
       </view>
-      <view v-if="curPage === 'bill'" class="padding-top">
+      <view v-if="curPage === 'bill'" >
+        <view class="text-center padding-tb-sm" >
+          <view class="padding-sm light bg-green" style="border-radius: 15px" @click="toBillRegister()">
+            <text class="cuIcon-calendar" style="font-size: 20px"
+              >月度出单</text
+            >
+          </view>
+        </view>
         <view v-for="(item, index) in billList" :key="index">
           <view
             class="cu-list menu-avatar comment solids-top"
@@ -609,6 +616,9 @@ export default {
         url: `/pages/admin/billDetails/billDetails?id=${id}`,
       });
     },
+    toBillRegister(){
+      uni.navigateTo({url:`/pages/admin/billRegister/billRegister?roomId=${this.id}`})
+    }
   },
   onLoad(params) {
     this.id = params.roomId;
