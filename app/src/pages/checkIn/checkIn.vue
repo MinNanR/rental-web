@@ -449,22 +449,30 @@ export default {
       this.payMethodIndex = e.detail.value;
     },
     onDepositChange(e) {
-      let total = new Number(this.price) + new Number(e.detail.value);
       let qunantity =
         this.roomForm.cardQuantity == null ? 0 : this.roomForm.cardQuantity;
-      this.roomForm.remark = `押金租满三个月方可退还，门卡${qunantity}个收押金${
-        qunantity * this.accessCardPrice
-      }元，房租共${total}元，自己财物自己保管`;
+      let total =
+        this.price +
+        new Number(e.detail.value) +
+        qunantity * this.accessCardPrice;
+      if (qunantity > 0) {
+        this.roomForm.remark = `押金租满三个月方可退还，门卡${qunantity}个收押金${
+          qunantity * this.accessCardPrice
+        }元，房租共${total}元，自己财物自己保管`;
+      } else {
+        this.roomForm.remark = `押金租满三个月方可退还，共${total}元，自己财物自己保管`;
+      }
     },
     onAccessCardChange(e) {
-      let total = new Number(this.price) + new Number(this.accessCardPrice);
-      console.log(e);
       let qunantity =
         e.detail.value == null || e.detail.value == "" ? 0 : e.detail.value;
-        console.log(qunantity);
-      this.roomForm.remark = `押金租满三个月方可退还，门卡${qunantity}个收押金${
-        qunantity * this.accessCardPrice
-      }元，房租共${total}元，自己财物自己保管`;
+      let accessCardCharge = this.accessCardPrice * qunantity;
+      let total = this.price + accessCardCharge + this.roomForm.deposit;
+      if (qunantity > 0) {
+        this.roomForm.remark = `押金租满三个月方可退还，门卡${qunantity}个收押金${accessCardCharge}元，共${total}元，自己财物自己保管`;
+      } else {
+        this.roomForm.remark = `押金租满三个月方可退还，共${total}元，自己财物自己保管`;
+      }
     },
   },
   onLoad(params) {
@@ -474,7 +482,7 @@ export default {
     this.houseName = params.houseName;
     this.price = new Number(params.price);
     this.roomForm.deposit = new Number(params.price);
-    this.roomForm.remark = `押金租满三个月方可退还，门卡0个收押金0元，房租共${
+    this.roomForm.remark = `押金租满三个月方可退还，共${
       this.price + this.roomForm.deposit
     }元，自己财物自己保管`;
     this.$nextTick(() => {

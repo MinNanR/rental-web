@@ -58,7 +58,10 @@
               </button></view
             >
           </view>
-          <view class="padding solid flex" v-if="roomInfo.statusCode == 'ON_RENT'">
+          <view
+            class="padding solid flex"
+            v-if="roomInfo.statusCode == 'ON_RENT'"
+          >
             <view class="font-size-20">
               <text class="cuIcon-ticket margin-right-xs text-black"></text>
             </view>
@@ -240,10 +243,6 @@
               </view>
             </view>
           </view>
-          <!-- <view class="flex">
-            <view class="flex-treble"> </view>
-            <view class="flex-sub"> 123 </view>
-          </view> -->
         </view>
       </view>
     </view>
@@ -388,10 +387,10 @@ export default {
         pageSize: 10,
         roomId: 0,
       },
-      statusColor: {
+      billStatusColor: {
         PAID: "green",
         UNPAID: "red",
-        UNCONFIRMED: "grey",
+        UNCONFIRMED: "blue",
       },
       showLoading: false,
       haveMore: true,
@@ -618,8 +617,10 @@ export default {
     // this.getTenant();
   },
   onShow() {
+    console.log("onShow");
     this.getRoomInfo();
     this.getTenant();
+    this.queryForm.pageIndex = 1;
     this.getRoomBillList();
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");

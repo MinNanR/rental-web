@@ -292,7 +292,7 @@ export default {
     this.roomNumber = params.roomNumber;
     this.houseId = params.houseId;
     this.houseName = params.houseName;
-    this.queryForm.pageIndex = 1
+    this.queryForm.pageIndex = 1;
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");
       view

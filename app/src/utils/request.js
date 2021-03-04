@@ -43,7 +43,7 @@ const request = {
                             confirmText: "确定",
                             success: (res) => {
                                 if (res.confirm) {
-                                    uni.navigateTo({ url: "/pages/login/login" })
+                                    uni.reLaunch({ url: "/pages/login/login" })
                                 }
                             }
                         })
@@ -58,7 +58,7 @@ const request = {
                     if (res.statusCode === 401) {
                         const pages = getCurrentPages()
                         if (pages[pages.length - 1].route !== 'pages/login/login') {
-                            uni.navigateTo({ url: "/pages/login/login" })
+                            uni.reLaunch({ url: "/pages/login/login" })
                         }
                     }
                 }

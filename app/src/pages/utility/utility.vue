@@ -88,6 +88,7 @@ export default {
     },
   },
   onShow() {
+    this.queryForm.pageIndex = 1
     this.getRecordList();
   },
   onReachBottom() {
