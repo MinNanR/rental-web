@@ -188,7 +188,7 @@ export default {
         });
     },
     toBillList() {
-      uni.navigateTo({ url: "/pages/billList/billList" });
+      uni.navigateTo({ url: "/pages/admin/billList/billList" });
     },
     logout() {
       uni.navigateTo({

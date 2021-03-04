@@ -34,7 +34,7 @@
           </view>
         </view>
       </view> -->
-    <view v-for="(item, index) in billList" :key="index">
+      <view v-for="(item, index) in billList" :key="index">
         <view
           class="cu-list menu-avatar comment solids-top"
           @click="refer(item.id)"
@@ -67,7 +67,7 @@
                 style="font-size: 17px; font-weight: 700"
                 v-if="item.typeCode === 'MONTHLY'"
               >
-                {{ item.roomNumber }}号房{{item.month}}账单
+                {{ item.roomNumber }}号房{{ item.month }}账单
               </view>
               <view class="text-gray text-content text-df">
                 <view class="flex">
@@ -168,8 +168,8 @@ export default {
     },
     refer(id) {
       uni.navigateTo({
-        url:`/pages/billDetails/billDetails?id=${id}`
-      })
+        url: `/pages/admin/billDetails/billDetails?id=${id}`,
+      });
     },
   },
   mounted() {

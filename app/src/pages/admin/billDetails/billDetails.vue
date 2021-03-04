@@ -327,12 +327,8 @@
 
 <script>
 import dayjs from "dayjs";
-import Skeleton from "../../components/J-skeleton/J-skeleton.vue";
 
 export default {
-  components: {
-    Skeleton,
-  },
   data() {
     return {
       barHeight: 0,
@@ -398,7 +394,7 @@ export default {
     referReceipt() {
       console.log(this.id);
       uni.navigateTo({
-        url: `/pages/receipt/receipt?url=${encodeURIComponent(
+        url: `/pages/admin/receipt/receipt?url=${encodeURIComponent(
           JSON.stringify(this.bill.receiptUrl)
         )}`,
       });
@@ -503,7 +499,7 @@ export default {
     },
     correctUtility() {
       uni.navigateTo({
-        url: `/pages/roomUtility/roomUtility?id=${this.bill.roomId}&roomNumber=${this.bill.roomNumber}&houseId=${this.bill.houseId}&houseName=${this.bill.houseName}`,
+        url: `/pages/admin/roomUtility/roomUtility?id=${this.bill.roomId}&roomNumber=${this.bill.roomNumber}&houseId=${this.bill.houseId}&houseName=${this.bill.houseName}`,
       });
     },
   },

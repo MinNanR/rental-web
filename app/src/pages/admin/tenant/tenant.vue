@@ -153,7 +153,7 @@ export default {
       });
     },
     toModifyTenant(id){
-      uni.navigateTo({url: `/pages/modifyTenant/modifyTenant?id=${id}`})
+      uni.navigateTo({url: `/pages/admin/modifyTenant/modifyTenant?id=${id}`})
     }
   },
 };

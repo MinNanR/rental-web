@@ -173,7 +173,7 @@ export default {
     },
     refer(id) {
       uni.navigateTo({
-        url: `/pages/billDetails/billDetails?id=${id}`,
+        url: `/pages/admin/billDetails/billDetails?id=${id}`,
       });
     },
   },

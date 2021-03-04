@@ -459,13 +459,13 @@ export default {
     toAddTenant() {
       let roomInfo = this.roomInfo;
       uni.navigateTo({
-        url: `/pages/addTenant/addTenant?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
+        url: `/pages/admin/addTenant/addTenant?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
       });
     },
     toCheckIn() {
       let roomInfo = this.roomInfo;
       uni.navigateTo({
-        url: `/pages/checkIn/checkIn?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}&price=${roomInfo.price}`,
+        url: `/pages/admin/checkIn/checkIn?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}&price=${roomInfo.price}`,
       });
     },
     getTenantDropDown() {
@@ -553,7 +553,7 @@ export default {
     toModifyTenant(index) {
       let id = this.tenantList[index].id;
       uni.navigateTo({
-        url: `/pages/modifyTenant/modifyTenant?id=${id}`,
+        url: `/pages/admin/modifyTenant/modifyTenant?id=${id}`,
         success: (res) => {
           res.eventChannel.emit("getTenantInfo", {
             tenantInfo: this.tenantList[index],
@@ -606,7 +606,7 @@ export default {
     },
     refer(id) {
       uni.navigateTo({
-        url: `/pages/billDetails/billDetails?id=${id}`,
+        url: `/pages/admin/billDetails/billDetails?id=${id}`,
       });
     },
   },

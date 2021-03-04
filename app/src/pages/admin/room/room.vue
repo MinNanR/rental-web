@@ -44,7 +44,7 @@ export default {
         });
     },
     refer(id, name) {
-      uni.navigateTo({ url: `/pages/roomList/roomList?id=${id}&name=${name}` });
+      uni.navigateTo({ url: `/pages/admin/roomList/roomList?id=${id}&name=${name}` });
     },
   },
   mounted() {

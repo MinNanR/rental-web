@@ -205,7 +205,7 @@ export default {
     },
     refer(id) {
       uni.navigateTo({
-        url: `/pages/roomInfo/roomInfo?roomId=${id}`,
+        url: `/pages/admin/roomInfo/roomInfo?roomId=${id}`,
         events: {
           acceptDataFromOpenedPage: function (data) {
             console.log(data);

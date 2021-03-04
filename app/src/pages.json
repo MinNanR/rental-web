@@ -1,7 +1,13 @@
 {
     "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
         {
-            "path": "pages/index/index",
+            "path": "pages/tenant/index/index",
+            "style": {
+                "navigationBarTitleText": "出租屋管理器"
+            }
+        },
+        {
+            "path": "pages/admin/index/index",
             "style": {
                 "navigationBarTitleText": "首页"
             }
@@ -13,128 +19,129 @@
             }
         },
         {
-            "path": "pages/room/room",
+            "path": "pages/admin/room/room",
             "style": {
                 "navigationBarTitleText": "房间",
                 "enablePullDownRefresh": true
             }
         },
         {
-            "path": "pages/tenant/tenant",
+            "path": "pages/admin/tenant/tenant",
             "style": {
                 "navigationBarTitleText": "房客"
             }
         },
         {
-            "path": "pages/utility/utility",
+            "path": "pages/admin/utility/utility",
             "style": {
                 "navigationBarTitleText": "水电记录",
                 "enablePullDownRefresh": true
             }
         },
         {
-            "path": "pages/info/info",
+            "path": "pages/admin/info/info",
             "style": {
                 "navigationBarTitleText": "我的"
             }
         },
         {
-            "path": "pages/billDetails/billDetails",
+            "path": "pages/admin/billDetails/billDetails",
             "style": {
                 "navigationBarTitleText": "账单详情"
             }
         },
         {
-            "path": "pages/roomList/roomList",
+            "path": "pages/admin/roomList/roomList",
             "style": {
                 "navigationBarTitleText": "房间列表"
             }
         },
         {
-            "path": "pages/roomInfo/roomInfo",
+            "path": "pages/admin/roomInfo/roomInfo",
             "style": {
                 "navigationBarTitleText": "房间详情",
                 "enablePullDownRefresh": true
             }
         },
         {
-            "path": "pages/addTenant/addTenant",
+            "path": "pages/admin/addTenant/addTenant",
             "style": {
                 "navigationBarTitleText": "房间详情"
             }
         },
         {
-            "path": "pages/modifyTenant/modifyTenant",
+            "path": "pages/admin/modifyTenant/modifyTenant",
             "style": {
                 "navigationBarTitleText": "修改房客信息"
             }
         },
         {
-            "path": "pages/utilityList/utilityList",
+            "path": "pages/admin/utilityList/utilityList",
             "style": {
                 "navigationBarTitleText": "水电记录"
             }
         },
         {
-            "path": "pages/recordUtility/recordUtility",
+            "path": "pages/admin/recordUtility/recordUtility",
             "style": {
                 "navigationBarTitleText": "登记水电"
             }
         },
         {
-            "path": "pages/roomUtility/roomUtility",
+            "path": "pages/admin/roomUtility/roomUtility",
             "style": {
                 "navigationBarTitleText": "房间水电"
             }
         },
         {
-            "path": "pages/receipt/receipt",
+            "path": "pages/admin/receipt/receipt",
             "style": {
                 "navigationBarTitleText": "收据"
             }
         },
         {
-            "path": "pages/checkIn/checkIn",
+            "path": "pages/admin/checkIn/checkIn",
             "style": {
                 "navigationBarTitleText": "登记入住"
             }
         },
         {
-            "path": "pages/billList/billList",
+            "path": "pages/admin/billList/billList",
             "style": {
                 "navigationBarTitleText": "历史账单"
             }
         }
+
     ],
     "tabBar": {
         "selectedColor": "#808efe",
         "list": [
             {
-                "pagePath": "pages/index/index",
+                "pagePath": "pages/admin/index/index",
                 "text": "首页",
                 "iconPath": "/static/tabbar/home.png",
                 "selectedIconPath": "/static/tabbar/home_selected.png"
             },
             {
-                "pagePath": "pages/room/room",
+                "pagePath": "pages/admin/room/room",
                 "text": "房间",
                 "iconPath": "/static/tabbar/room.png",
                 "selectedIconPath": "/static/tabbar/room_selected.png"
             },
             {
-                "pagePath": "pages/tenant/tenant",
+                "pagePath": "pages/admin/tenant/tenant",
                 "text": "租客",
                 "iconPath": "/static/tabbar/tenant.png",
                 "selectedIconPath": "/static/tabbar/tenant_selected.png"
             },
             {
-                "pagePath": "pages/utility/utility",
+                "pagePath": "pages/admin/utility/utility",
                 "text": "水电",
                 "iconPath": "/static/tabbar/utility.png",
                 "selectedIconPath": "/static/tabbar/utility_selected.png"
             },
             {
-                "pagePath": "pages/info/info",
+                "pagePath": "pages/admin/info/info",
                 "text": "我的",
                 "iconPath": "/static/tabbar/info.png",
                 "selectedIconPath": "/static/tabbar/info_selected.png"

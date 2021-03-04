@@ -80,11 +80,11 @@ export default {
     refer(index) {
       let { houseId, date, name } = this.recordList[index];
       uni.navigateTo({
-        url: `/pages/utilityList/utilityList?houseId=${houseId}&date=${date}&name=${name}`,
+        url: `/pages/admin/utilityList/utilityList?houseId=${houseId}&date=${date}&name=${name}`,
       });
     },
     toRecordUtility() {
-      uni.navigateTo({ url: "/pages/recordUtility/recordUtility" });
+      uni.navigateTo({ url: "/pages/admin/recordUtility/recordUtility" });
     },
   },
   onShow() {

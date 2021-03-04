@@ -20,7 +20,7 @@
               type="text"
               v-model="loginForm.username"
               placeholder="请输入账号"
-               placeholder-style="font-size: 16px;color: black"
+              placeholder-style="font-size: 16px;color: black"
             />
           </view>
           <view class="form-group">
@@ -32,7 +32,7 @@
               type="password"
               v-model="loginForm.password"
               placeholder="请输入密码"
-               placeholder-style="font-size: 16px;color: black"
+              placeholder-style="font-size: 16px;color: black"
             />
           </view>
         </form>
@@ -114,7 +114,11 @@ export default {
               );
               this.setStorage("username", this.loginForm.username);
               this.loadModal = false;
-              uni.switchTab({ url: "/pages/index/index" });
+              if (data.role === "TENANT") {
+                uni.redirectTo({ url: "/pages/tenant/index/index" });
+              } else {
+                uni.switchTab({ url: "/pages/admin/index/index" });
+              }
             })
             .catch((err) => {
               this.loadModal = false;
