@@ -40,7 +40,7 @@
           </view>
         </picker>
       </view>
-      <view class="cu-form-group solid">
+      <view class="cu-form-group">
         <view class="title"> 备注 </view>
         <textarea
           v-model="roomForm.remark"
@@ -49,6 +49,14 @@
           maxlength="140"
           style="font-size: 16px"
         ></textarea>
+      </view>
+      <view class="cu-form-group">
+        <view class="title"> 水 </view>
+        <input type="number" v-model="roomForm.water" />
+      </view>
+      <view class="cu-form-group solid-bottom">
+        <view class="title"> 电 </view>
+        <input type="number" v-model="roomForm.electricity" />
       </view>
     </form>
     <view class="padding-xs text-xl" style="font-weight: 700"> 入住人: </view>
@@ -237,6 +245,8 @@ export default {
         cardQuantity: null,
         checkInDate: dayjs().format("YYYY-MM-DD"),
         remark: "",
+        water: "",
+        electricity: "",
       },
       dateString: dayjs().format("YYYY年M月D日"),
       payMethodList: [
@@ -385,7 +395,7 @@ export default {
       // this.responseModal.loading = true;
       // this.responseModal.action = ""
       this.loadingModal = true;
-      let { deposit, cardQuantity, remark, checkInDate } = this.roomForm;
+      let { deposit, cardQuantity, remark, checkInDate, water, electricity } = this.roomForm;
       this.request
         .post("/tenant/checkIn", {
           roomId: this.id,
@@ -399,6 +409,8 @@ export default {
           payMethod: this.payMethodList[this.payMethodIndex].key,
           remark: remark,
           tenantList: this.tenantList,
+          water: water,
+          electricity: electricity
         })
         .then((response) => {
           let { message } = response;
@@ -462,11 +474,11 @@ export default {
       // } else {
       //   this.roomForm.remark = `押金租满三个月方可退还，共${total}元，自己财物自己保管`;
       // }
-      let deposit = new Number(e.detail.value)
+      let deposit = new Number(e.detail.value);
       if (qunantity > 0) {
-        this.roomForm.remark = `押金${deposit}元，房租${this.price}元，门卡${qunantity}个${accessCardCharge}元，租满三个月后退回押金，自己财务自己保管，退房时清理好卫生还原房内原状`;
+        this.roomForm.remark = `押金${deposit}元，房租${this.price}元，门卡${qunantity}个${accessCardCharge}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
       } else {
-        this.roomForm.remark = `押金${deposit}元，房租${this.price}元，租满三个月后退回押金，自己财务自己保管，退房时清理好卫生还原房内原状`;
+        this.roomForm.remark = `押金${deposit}元，房租${this.price}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
       }
     },
     onAccessCardChange(e) {
@@ -481,9 +493,9 @@ export default {
       //   this.roomForm.remark = `押金租满三个月方可退还，共${total}元，自己财物自己保管`;
       // }
       if (qunantity > 0) {
-        this.roomForm.remark = `押金${this.roomForm.deposit}元，房租${this.price}元，门卡${qunantity}个${accessCardCharge}元，租满三个月后退回押金，自己财务自己保管，退房时清理好卫生还原房内原状`;
+        this.roomForm.remark = `押金${this.roomForm.deposit}元，房租${this.price}元，门卡${qunantity}个${accessCardCharge}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
       } else {
-        this.roomForm.remark = `押金${this.roomForm.deposit}元，房租${this.price}元，租满三个月后退回押金，自己财务自己保管，退房时清理好卫生还原房内原状`;
+        this.roomForm.remark = `押金${this.roomForm.deposit}元，房租${this.price}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
       }
     },
   },
@@ -497,7 +509,7 @@ export default {
     // this.roomForm.remark = `押金租满三个月方可退还，共${
     //   this.price + this.roomForm.deposit
     // }元，自己财物自己保管`;
-    this.roomForm.remark = `押金${this.roomForm.deposit}元，房租${this.price}元，租满三个月后退回押金，自己财务自己保管，退房时清理好卫生还原房内原状`;
+    this.roomForm.remark = `押金${this.roomForm.deposit}元，房租${this.price}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");
       view

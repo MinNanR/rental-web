@@ -60,7 +60,7 @@
             "path": "pages/admin/roomInfo/roomInfo",
             "style": {
                 "navigationBarTitleText": "房间详情",
-                "enablePullDownRefresh": true
+                "enablePullDownRefresh": false
             }
         },
         {
@@ -110,19 +110,24 @@
             "style": {
                 "navigationBarTitleText": "历史账单"
             }
-        }, {
+        },
+        {
             "path": "pages/tenant/billList/billList",
             "style": {
                 "navigationBarTitleText": "账单"
             }
         },
         {
-            "path": "pages/admin/billRegister/billRegister"
+            "path": "pages/admin/fillBill/fillBill",
+            "style": {
+                "navigationBarTitleText": "账单填写"
+            }
         }
     ],
     "tabBar": {
         "selectedColor": "#808efe",
-        "list": [{
+        "list": [
+            {
                 "pagePath": "pages/admin/index/index",
                 "text": "首页",
                 "iconPath": "/static/tabbar/home.png",
@@ -159,6 +164,6 @@
         "navigationBarTitleText": "uni-app",
         "navigationBarBackgroundColor": "#FFFFFF",
         "backgroundColor": "#FFFFFF"
-            // "onReachBottomDistance": 100
+        // "onReachBottomDistance": 100
     }
 }

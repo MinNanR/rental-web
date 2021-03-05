@@ -16,6 +16,13 @@
         >
           房间账单
         </view>
+        <view
+          class="cu-item flex-sub"
+          :class="curPage === 'utility' ? 'text-blue cur' : ''"
+          @click="switchPage('utility')"
+        >
+          水电记录
+        </view>
       </view>
     </scroll-view>
     <view :style="'padding-bottom: ' + barHeight + 'px'">
@@ -179,78 +186,30 @@
           </block>
         </view>
       </view>
-      <view v-if="curPage === 'bill'" >
-        <view class="text-center padding-tb-sm" >
-          <view class="padding-sm light bg-green" style="border-radius: 15px" @click="toBillRegister()">
+      <view v-if="curPage === 'bill'">
+        <view
+          class="text-center padding-tb-sm"
+          v-if="roomInfo.statusCode === 'ON_RENT'"
+        >
+          <view
+            class="padding-sm light bg-green"
+            style="border-radius: 15px"
+            @click="toBillRegister()"
+          >
             <text class="cuIcon-calendar" style="font-size: 20px"
               >月度出单</text
             >
           </view>
         </view>
-        <view v-for="(item, index) in billList" :key="index">
-          <view
-            class="cu-list menu-avatar comment solids-top"
-            @click="refer(item.id)"
-          >
-            <view class="cu-item">
-              <view
-                class="cu-avatar round bg-olive"
-                v-if="item.typeCode === 'CHECK_IN'"
-              >
-                <view class="">
-                  <span
-                    class="iconfont icon-checkin text-white"
-                    style="font-size: 20px"
-                  ></span>
-                </view>
-              </view>
-              <view
-                class="cu-avatar round bg-blue"
-                v-if="item.typeCode === 'MONTHLY'"
-              >
-                <text class="cuIcon-calendar" style="font-size-20"></text>
-              </view>
-              <view class="content">
-                <view
-                  style="font-size: 17px; font-weight: 700"
-                  v-if="item.typeCode === 'CHECK_IN'"
-                  >{{ item.time }}入住账单</view
-                >
-                <view
-                  style="font-size: 17px; font-weight: 700"
-                  v-if="item.typeCode === 'MONTHLY'"
-                >
-                  {{ item.time }}账单
-                </view>
-                <view class="text-gray text-content text-df">
-                  <view class="flex">
-                    <view class="basis-sm padding-lr-sm paddingrb-xs">
-                      结算日期
-                    </view>
-                    <view class="bssis-lg padding-rb-xs">
-                      {{ item.updateTime }}
-                    </view>
-                  </view>
-                </view>
-                <view class="text-gray text-content text-df">
-                  <view class="flex">
-                    <view class="basis-sm padding-lr-sm paddingrb-xs">
-                      状态
-                    </view>
-                    <view class="bssis-lg padding-rb-xs">
-                      {{ item.status }}
-                    </view>
-                  </view>
-                </view>
-              </view>
-              <view class="action">
-                <view class="text-blue" style="font-size: 17px"
-                  >{{ item.totalCharge }}元</view
-                >
-              </view>
-            </view>
-          </view>
-        </view>
+        <bill-list :roomId="id"></bill-list>
+      </view>
+      <view v-if="curPage === 'utility'">
+        <utility-list
+          :roomId="id"
+          :roomNumber="roomInfo.roomNumber"
+          :houseId="roomInfo.houseId"
+          :houseName="roomInfo.houesName"
+        ></utility-list>
       </view>
     </view>
     <view class="box">
@@ -356,7 +315,14 @@
 </template>
 
 <script>
+import utilityList from "./utilityList.vue";
+import billList from "./billList.vue";
+
 export default {
+  components: {
+    "utility-list": utilityList,
+    "bill-list": billList,
+  },
   data() {
     return {
       id: "",
@@ -595,30 +561,12 @@ export default {
     switchPage(page) {
       this.curPage = page;
     },
-    getRoomBillList() {
-      this.showLoading = true;
-      this.request
-        .post("/bill/getRoomBillList", this.queryForm)
-        .then((response) => {
-          let { data } = response;
-          if (this.queryForm.pageIndex === 1) {
-            this.billList = data.list;
-          } else {
-            this.billList = this.billList.concat(data.list);
-          }
-          this.haveMore = this.billList.length < data.totalCount;
-          this.showLoading = false;
-          this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
-        });
-    },
-    refer(id) {
+
+    toBillRegister() {
       uni.navigateTo({
-        url: `/pages/admin/billDetails/billDetails?id=${id}`,
+        url: `/pages/admin/fillBill/fillBill?roomId=${this.id}`,
       });
     },
-    toBillRegister(){
-      uni.navigateTo({url:`/pages/admin/billRegister/billRegister?roomId=${this.id}`})
-    }
   },
   onLoad(params) {
     this.id = params.roomId;
@@ -627,11 +575,8 @@ export default {
     // this.getTenant();
   },
   onShow() {
-    console.log("onShow");
     this.getRoomInfo();
     this.getTenant();
-    this.queryForm.pageIndex = 1;
-    this.getRoomBillList();
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");
       view
