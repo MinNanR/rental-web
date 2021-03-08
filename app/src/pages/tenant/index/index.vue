@@ -1,28 +1,59 @@
 <template>
   <view class="">
-    <home v-show="curPage === 'home'"></home>
-    <info v-show="curPage === 'info'"></info>
+    <view class="">
+      <view class="flex margin-top" style="background: #ffffff">
+        <view
+          class="basis-sub padding text-center flex align-center"
+          style="height: 102px"
+        >
+          <view class="cu-avatar round lg">{{ baseInfo.roomNumber }}</view>
+        </view>
+        <view>
+          <view class="padding-sm-lr padding-top text-xxl">
+            你好，{{ baseInfo.name }}
+          </view>
+          <!-- <view class="padding-sm-lr padding-top-sm text-lg">
+          房号：{{ baseInfo.roomNumber }}
+        </view> -->
+          <view class="padding-sm-lr padding-top-sm text-lg">
+            入住日期：{{ baseInfo.checkInDate }}
+          </view>
+          <view class="padding-sm-lr padding-tb-sm text-lg">
+            已入住 {{ baseInfo.checkInDays }} 天
+          </view>
+        </view>
+      </view>
+      <view class="padding-top">
+        <view class="grid col-3 bg-white">
+          <view
+            class="padding solid flex align-center bg-red light"
+            style="height: 120px; font-size: 20px"
+            @click="toBillList()"
+          >
+            我的账单
+          </view>
+          <view
+            class="padding solid flex align-center bg-blue light"
+            style="height: 120px; font-size: 20px"
+            @click="toUtility()"
+            >水电记录</view
+          >
+        </view>
+      </view>
+    </view>
     <view class="box">
       <view class="cu-bar tabbar bg-white foot">
-        <view class="action" @click="switchPage('home')">
+        <view class="action">
           <view class="cuIcon-cu-image">
-            <image
-              src="/static/tabbar/home_selected.png"
-              v-if="curPage === 'home'"
-            ></image>
-            <image src="/static/tabbar/home.png" v-else></image>
+            <image src="/static/tabbar/home_selected.png"></image>
           </view>
-          <view :class="curPage === 'home' ? 'text-blue' : ''">首页</view>
+          <view class="text-blue">首页</view>
         </view>
-        <view class="action" @click="switchPage('info')">
+        <view class="action" @click="switchPage()">
           <view class="cuIcon-cu-image">
-            <image
-              src="/static/tabbar/info_selected.png"
-              v-if="curPage === 'info'"
-            ></image>
-            <image src="/static/tabbar/info.png" v-else></image>
+            <image src="/static/tabbar/info.png"></image>
           </view>
-          <view :class="curPage === 'info' ? 'text-blue' : ''">我的</view>
+          <view>我的</view>
         </view>
       </view>
     </view>
@@ -30,22 +61,27 @@
 </template>
 
 <script>
-import home from "./home.vue";
-import info from "./info.vue";
-
 export default {
-  components: {
-    home: home,
-    info: info,
-  },
   data() {
     return {
-      curPage: "home",
+      baseInfo: {},
     };
   },
   methods: {
-    switchPage(page) {
-      this.curPage = page;
+    switchPage() {
+      uni.redirectTo({ url: "/pages/tenant/info/info" });
+    },
+    getBaseInfo() {
+      this.request.post("/tenant/getBaseInfo", {}).then((response) => {
+        let { data } = response;
+        this.baseInfo = data;
+      });
+    },
+    toBillList() {
+      uni.navigateTo({ url: "/pages/tenant/billList/billList" });
+    },
+    toUtility() {
+      uni.navigateTo({ url: `/pages/tenant/utility/utility?roomId=${this.baseInfo.roomId}` });
     },
   },
   onLoad() {
@@ -57,6 +93,9 @@ export default {
       },
     });
     // #endif
+  },
+  onShow() {
+    this.getBaseInfo();
   },
 };
 </script>

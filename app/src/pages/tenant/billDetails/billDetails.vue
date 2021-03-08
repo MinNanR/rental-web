@@ -1,6 +1,5 @@
 <template>
-  <view class="page" :style="'padding-bottom: ' + barHeight + 'px'">
-    <view class="cu-load bg-gray fade loading" v-if="showLoading"></view>
+  <view class="" :style="'padding-bottom: ' + barHeight + 'px'">
     <view class="border-solid" v-if="!showLoading">
       <view class="margin padding bg-white">
         <view class="flex justify-center">
@@ -92,7 +91,9 @@
                   :class="statusIndex >= 3 ? 'text-blue text-xl' : ''"
                 >
                   账单完成<text style="font-size: 12px" class="padding-left">{{
-                    bill.payTime == null || bill.statusCode !== 'PAID' ? "" : bill.payTime
+                    bill.payTime == null || bill.statusCode !== "PAID"
+                      ? ""
+                      : bill.payTime
                   }}</text>
                 </view>
               </view>
@@ -108,7 +109,7 @@
         </view>
       </view>
     </view>
-    <view class="margin padding bg-white">
+    <view class="padding margin bg-white">
       <view class="text-xl" style="font-weight: 700"> 水电明细 </view>
       <view class="padding-top font-size-17 text-center">
         <view class="flex bg-cyan">
@@ -203,135 +204,29 @@
         </view>
       </view>
     </view>
-
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
-        <template v-if="bill.statusCode === 'UNPAID'">
-          <button
-            class="cu-btn bg-green shadow-blur round lg"
-            @click="showPaymentMethodModal()"
-          >
-            房客已支付
-          </button>
-        </template>
-        <template v-if="bill.statusCode === 'UNCONFIRMED'">
-          <button
-            class="cu-btn bg-green shadow-blur round lg"
-            @click="confirm()"
-          >
-            确认无误并出单
-          </button>
-        </template>
-        <template v-if="bill.receiptUrl !== '' && bill.receiptUrl !== null">
-          <button
-            class="cu-btn bg-blue shadow-blur round lg"
-            @click="referReceipt"
-          >
-            查看收据
-          </button>
-        </template>
-        <template v-else>
-          <button
-            class="cu-btn bg-blue shadow-blur round lg"
-            @click="createReceipt()"
-          >
-            生成收据
-          </button>
-        </template>
-        <template v-if="bill.statusCode !== 'PAID' && bill.typeCode !== 'CHECK_IN'">
-          <button
-            class="cu-btn bg-red shadow-blur round lg"
-            @click="correctBill()"
-          >
-            修改账单
-          </button>
-        </template>
+        <button
+          class="cu-btn bg-green shadow-blur round lg"
+          v-if="bill.statusCode !== 'PAID'"
+          @click="toPay()"
+        >
+          前往支付
+        </button>
+        <button class="cu-btn bg-blue shadow-blur round lg" @click="referReceipt()">
+          查看收据
+        </button>
       </view>
-    </view>
-    <view class="cu-modal" :class="paymentModal ? 'show' : ''">
-      <view class="cu-dialog" @tap.stop="">
-        <view class="cu-bar bg-white justify-end">
-          <view class="content">Modal标题</view>
-          <view class="action" @tap="hidePaymentMethodModal">
-            <text class="cuIcon-close text-red"></text>
-          </view>
-        </view>
-        <radio-group class="block" @change="paymentMethodChange">
-          <view class="cu-list menu text-left">
-            <view
-              class="cu-item"
-              v-for="(item, index) in paymentMethodList"
-              :key="index"
-            >
-              <label class="flex justify-between align-center flex-sub">
-                <view class="flex-sub">{{ item.value }}</view>
-                <radio
-                  class="round"
-                  :class="paymentMethod == item.key ? 'checked' : ''"
-                  :checked="paymentMethod == item.key"
-                  :value="item.key"
-                ></radio>
-              </label>
-            </view>
-          </view>
-        </radio-group>
-        <view class="cu-bar bg-white justify-end">
-          <view class="action">
-            <button
-              class="cu-btn line-green text-green"
-              @tap="hidePaymentMethodModal()"
-            >
-              取消
-            </button>
-            <button class="cu-btn bg-green margin-left" @tap="paid()">
-              确定
-            </button>
-          </view>
-        </view>
-      </view>
-    </view>
-    <view class="cu-modal" :class="responseModalShow ? 'show' : ''">
-      <view class="cu-dialog">
-        <view class="cu-bar bg-white justify-end">
-          <view class="content"> </view>
-          <view class="action" @tap="responseModalShow = false">
-            <text class="cuIcon-close text-red"></text>
-          </view>
-        </view>
-        <view class="padding">
-          {{ responseMessage }}
-        </view>
-        <view class="cu-bar bg-white justify-end">
-          <button
-            class="cu-btn bg-green margin-left"
-            @tap="responseModalShow = false"
-          >
-            确定
-          </button>
-        </view>
-      </view>
-    </view>
-    <view class="cu-load load-modal" v-if="loadingModal">
-      <!-- <view class="cuIcon-emojifill text-orange"></view> -->
-      <image src="/static/logo.png" mode="aspectFit"></image>
-      <view class="gray-text">{{ loadingMessage }}</view>
     </view>
   </view>
 </template>
 
 <script>
-import dayjs from "dayjs";
-
 export default {
   data() {
     return {
-      barHeight: 0,
-      id: 0,
+      id: "",
       bill: {},
-      loadingModal: false,
-      showLoading: false,
-      responseModalShow: false,
-      responseMessage: "",
       statusIcon: {
         UNPAID: "icon-weizhifu",
         PAID: "icon-ic_paid",
@@ -364,10 +259,13 @@ export default {
         UNPAID: 2,
         PAID: 3,
       },
+      showLoading: false,
+      barHeight: 0,
     };
   },
   methods: {
-    getBillDetails() {
+    getBillInfo() {
+      this.showLoading = true;
       this.request
         .post("/bill/getBillInfo", { id: this.id })
         .then((response) => {
@@ -375,14 +273,13 @@ export default {
           this.bill = data;
           this.showLoading = false;
           this.statusIndex = this.statusIndexList[data.statusCode];
-          // uni.setNavigationBarTitle({
-          //   title: `${data.houseName}-${data.roomNumber}号房${data.year}年${
-          //     data.month
-          //   }月${data.typeCode === "CHECK_IN" ? "入住账单" : "账单"}`,
-          // });
         })
         .catch((err) => {
-          console.error(err);
+          uni.showToast({
+            title: err,
+            duration: 2000,
+          });
+          this.showLoading = false;
         });
     },
     referReceipt() {
@@ -393,95 +290,13 @@ export default {
         )}`,
       });
     },
-    createReceipt() {
-      this.loadingModal = true;
-      this.loadingMessage = "生成收据中";
-      this.request
-        .post("/bill/createReceipt", { id: this.id })
-        .then((response) => {
-          let { data } = response;
-          this.bill.receiptUrl = data;
-          this.loadingModal = false;
-          this.$nextTick(() => {
-            this.responseMessage = "生成成功";
-            this.responseModalShow = true;
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-        });
-    },
-    correctBill() {
-      uni.navigateTo({ url: `/pages/admin/editBill/editBill?id=${this.id}` });
-    },
-    confirm() {
-      this.loadingModal = true;
-      this.loadingMessage = "处理中";
-      this.request
-        .post("/bill/confirmBill", { id: this.id })
-        .then((response) => {
-          this.loadingModal = false;
-          this.responseMessage = "处理成功";
-          this.$nextTick(() => {
-            this.responseModalShow = true;
-            this.getBillDetails();
-          });
-        })
-        .catch((err) => {
-          console.error(err);
-          this.loadingModal = false;
-          this.responseMessage = "处理失败";
-          this.$nextTick(() => {
-            this.responseModalShow = true;
-          });
-        });
-    },
-    showPaymentMethodModal() {
-      this.paymentModal = true;
-    },
-    hidePaymentMethodModal() {
-      this.paymentModal = false;
-    },
-    paymentMethodChange(e) {
-      this.paymentMethod = e.detail.value;
-    },
-    paid() {
-      this.paymentModal = false;
-      this.$nextTick(() => {
-        this.loadingModal = true;
-        this.loadingMessage = "处理中";
-        this.request
-          .post("/bill/paid", {
-            id: this.id,
-            paymentMethod: this.paymentMethod,
-          })
-          .then((response) => {
-            this.loadingModal = false;
-            this.responseMessage = "处理成功";
-            this.$nextTick(() => {
-              this.responseModalShow = true;
-              this.getBillDetails();
-            });
-          })
-          .catch((err) => {
-            console.error(err);
-            this.loadingModal = false;
-            this.responseMessage = "处理失败";
-            this.$nextTick(() => {
-              this.responseModalShow = true;
-            });
-          });
-      });
-    },
-    correctUtility() {
-      uni.navigateTo({
-        url: `/pages/admin/roomUtility/roomUtility?id=${this.bill.roomId}&roomNumber=${this.bill.roomNumber}&houseId=${this.bill.houseId}&houseName=${this.bill.houseName}`,
-      });
-    },
+    toPay(){
+      //TODO 拉起支付
+      console.log("pay");
+    }
   },
-  onLoad(param) {
-    this.id = param.id;
-
+  onLoad(params) {
+    this.id = params.id;
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");
       view
@@ -497,31 +312,11 @@ export default {
     });
   },
   onShow() {
-    this.showLoading = true;
-    this.getBillDetails();
+    this.getBillInfo();
   },
-  filters: {
-    time(value) {
-      return dayjs(value).format("YYYY年M月D日");
-    },
-  },
+
 };
 </script>
 
 <style>
-.font-size-17 {
-  font-size: 17px;
-}
-
-.font-size-20 {
-  font-size: 20px;
-}
-
-.font-size-22 {
-  font-size: 22px;
-}
-
-.cu-timeline > .cu-item::before {
-  font-size: 22px;
-}
 </style>

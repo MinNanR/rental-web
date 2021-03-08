@@ -66,6 +66,11 @@
             <view class="flex-sub"> 123 </view>
           </view> -->
     </view>
+    <view
+      class="cu-load bg-gray fade"
+      v-show="showLoading"
+      :class="haveMore ? 'loading' : 'over'"
+    ></view>
   </view>
 </template>
 
@@ -73,43 +78,50 @@
 export default {
   data() {
     return {
-      baseInfo: {
-        // name: "张三",
-        // firstPinyinLetter: "Z",
-        // roomNumber: "203",
-        // checkInDate: "2021年1月3日",
-        // checkInDays: 60,
-      },
-      billList: [{}],
+      billList: [],
       queryForm: {
         pageSize: 10,
         pageIndex: 1,
       },
+      showLoading: false,
+      haveMore: true,
     };
   },
   methods: {
-    getBaseInfo() {
-      this.request.post("/tenant/getBaseInfo", {}).then((response) => {
-        let { data } = response;
-        this.baseInfo = data;
-      });
-    },
     getTenantBill() {
+      this.showloading = true;
       this.request
         .post("/bill/getTenantBill", this.queryForm)
         .then((response) => {
           let { data } = response;
-          this.billList = data.list;
+          if (this.queryForm.pageIndex === 1) {
+            this.billList = data.list;
+          } else {
+            this.billList = this.billList.concat(data.list);
+          }
+          this.haveMore = this.billList.length < data.totalCount;
+          this.queryForm.pageIndex = this.queryForm.pageIndex + 1;
+          setTimeout(() => {
+            this.showloading = false;
+          }, 1500);
         });
+    },
+    refer(id) {
+      uni.navigateTo({
+        url: `/pages/tenant/billDetails/billDetails?id=${id}`,
+      });
     },
   },
   onShow() {
-    this.getBaseInfo();
     this.getTenantBill();
   },
-  onReachBottom(){
-    console.log("123");
-  }
+  onPullDownRefresh() {
+    this.queryForm.pageIndex = 1;
+    this.getTenantBill();
+  },
+  onReachBottom() {
+    this.getTenantBill(); 
+  },
 };
 </script>
 

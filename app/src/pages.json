@@ -1,15 +1,15 @@
 {
     "pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
         {
-            "path": "pages/admin/index/index",
-            "style": {
-                "navigationBarTitleText": "首页"
-            }
-        },
-        {
             "path": "pages/tenant/index/index",
             "style": {
                 "navigationBarTitleText": "出租屋管理器"
+            }
+        },
+        {
+            "path": "pages/admin/index/index",
+            "style": {
+                "navigationBarTitleText": "首页"
             }
         },
         {
@@ -114,7 +114,8 @@
         {
             "path": "pages/tenant/billList/billList",
             "style": {
-                "navigationBarTitleText": "账单"
+                "navigationBarTitleText": "账单",
+                "enablePullDownRefresh": true
             }
         },
         {
@@ -134,6 +135,24 @@
             "path": "pages/admin/editBill/editBill",
             "style": {
                 "navigationBarTitleText": "修改账单"
+            }
+        },
+        {
+            "path": "pages/tenant/billDetails/billDetails",
+            "style": {
+                "navigationBarTitleText": "账单详情"
+            }
+        },
+        {
+            "path": "pages/tenant/info/info",
+            "sytle": {
+                "navigationBarTitleText": "出租屋管理器"
+            }
+        },
+        {
+            "path": "pages/tenant/utility/utility",
+            "sytle": {
+                "navigationBarTitleText": "水电记录"
             }
         }
     ],
