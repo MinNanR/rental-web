@@ -3,30 +3,27 @@
     <scroll-view scroll-x class="bg-white nav">
       <view class="flex text-center">
         <view
-          class="cu-item flex-sub"
-          :class="curPage === 'info' ? 'text-blue cur' : ''"
+          class="cu-item flex-sub text-blue cur"
           @click="switchPage('info')"
         >
           房间信息
         </view>
         <view
           class="cu-item flex-sub"
-          :class="curPage === 'bill' ? 'text-blue cur' : ''"
-          @click="switchPage('bill')"
+          @click="toRoomBill()"
         >
           房间账单
         </view>
         <view
           class="cu-item flex-sub"
-          :class="curPage === 'utility' ? 'text-blue cur' : ''"
-          @click="switchPage('utility')"
+          @click="toUtilityRecord()"
         >
           水电记录
         </view>
       </view>
     </scroll-view>
     <view :style="'padding-bottom: ' + barHeight + 'px'">
-      <view v-if="curPage === 'info'">
+      <view>
         <view class="grid col-1">
           <view class="padding solid flex">
             <view class="font-size-20">
@@ -186,31 +183,6 @@
           </block>
         </view>
       </view>
-      <view v-if="curPage === 'bill'">
-        <view
-          class="text-center padding-tb-sm"
-          v-if="roomInfo.statusCode === 'ON_RENT'"
-        >
-          <view
-            class="padding-sm light bg-green"
-            style="border-radius: 15px"
-            @click="toBillRegister()"
-          >
-            <text class="cuIcon-calendar" style="font-size: 20px"
-              >月度出单</text
-            >
-          </view>
-        </view>
-        <bill-list :roomId="id"></bill-list>
-      </view>
-      <view v-if="curPage === 'utility'">
-        <utility-list
-          :roomId="id"
-          :roomNumber="roomInfo.roomNumber"
-          :houseId="roomInfo.houseId"
-          :houseName="roomInfo.houesName"
-        ></utility-list>
-      </view>
     </view>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
@@ -236,12 +208,6 @@
             登记入住
           </button>
         </block>
-        <button
-          class="cu-btn bg-blue shadow-blur round lg"
-          @click="toUtilityRecord()"
-        >
-          水电记录
-        </button>
       </view>
     </view>
     <view class="cu-modal" :class="changePriceModal ? 'show' : ''">
@@ -315,17 +281,11 @@
 </template>
 
 <script>
-import utilityList from "./utilityList.vue";
-import billList from "./billList.vue";
 
 export default {
-  components: {
-    "utility-list": utilityList,
-    "bill-list": billList,
-  },
   data() {
     return {
-      id: "",
+      roomId: "",
       roomInfo: {},
       tenantList: [],
       statusIcon: {
@@ -372,7 +332,7 @@ export default {
   methods: {
     getRoomInfo() {
       this.request
-        .post("/room/getRoomInfo", { id: this.id })
+        .post("/room/getRoomInfo", { id: this.roomId })
         .then((response) => {
           let { data } = response;
           this.roomInfo = data;
@@ -386,7 +346,7 @@ export default {
     },
     getTenant() {
       this.request
-        .post("/tenant/getTenantByRoom", { roomId: this.id })
+        .post("/tenant/getTenantByRoom", { roomId: this.roomId })
         .then((resposne) => {
           let { data } = resposne;
           data.forEach((e) => (e.show = false));
@@ -412,7 +372,7 @@ export default {
         this.loadingModal = true;
         this.request
           .post("/room/updateRoom", {
-            id: this.id,
+            id: this.roomId,
             price: this.priceToChange,
           })
           .then((response) => {
@@ -432,19 +392,19 @@ export default {
     toAddTenant() {
       let roomInfo = this.roomInfo;
       uni.navigateTo({
-        url: `/pages/admin/addTenant/addTenant?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
+        url: `/pages/admin/addTenant/addTenant?roomId=${this.roomId}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}`,
       });
     },
     toCheckIn() {
       let roomInfo = this.roomInfo;
       uni.navigateTo({
-        url: `/pages/admin/checkIn/checkIn?roomId=${this.id}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}&price=${roomInfo.price}`,
+        url: `/pages/admin/checkIn/checkIn?roomId=${this.roomId}&roomNumber=${roomInfo.roomNumber}&houseId=${roomInfo.houseId}&houseName=${roomInfo.houseName}&price=${roomInfo.price}`,
       });
     },
     getTenantDropDown() {
       this.request
         .post("/tenant/getTenantDropDown", {
-          roomId: this.id,
+          roomId: this.roomId,
           name: this.search,
         })
         .then((response) => {
@@ -539,8 +499,8 @@ export default {
       console.log("拨打电话" + number);
     },
     toUtilityRecord() {
-      uni.navigateTo({
-        url: `/pages/roomUtility/roomUtility?id=${this.roomInfo.id}&roomNumber=${this.roomInfo.roomNumber}&houseId=${this.roomInfo.houseId}&houseName=${this.roomInfo.houseName}`,
+      uni.redirectTo({
+        url: `/pages/admin/roomUtility/roomUtility?roomId=${this.roomInfo.id}&roomNumber=${this.roomInfo.roomNumber}&houseId=${this.roomInfo.houseId}&houseName=${this.roomInfo.houseName}&statusCode=${this.roomInfo.statusCode}`,
       });
     },
     confirmAction() {
@@ -558,18 +518,23 @@ export default {
         this.getRoomInfo();
       }
     },
-    switchPage(page) {
-      this.curPage = page;
+    // switchPage(page) {
+    //   this.curPage = page;
+    // },
+    toRoomBill(){
+      uni.redirectTo({
+        url: `/pages/admin/roomBill/roomBill?roomId=${this.roomId}&roomNumber=${this.roomInfo.roomNumber}&houseId=${this.roomInfo.houseId}&houseName=${this.roomInfo.houseName}&statusCode=${this.roomInfo.statusCode}`,
+        animationType:"none"
+      });
     },
-
     toBillRegister() {
       uni.navigateTo({
-        url: `/pages/admin/fillBill/fillBill?roomId=${this.id}`,
+        url: `/pages/admin/fillBill/fillBill?roomId=${this.roomId}`,
       });
     },
   },
   onLoad(params) {
-    this.id = params.roomId;
+    this.roomId = params.roomId;
     this.queryForm.roomId = params.roomId;
     // this.getRoomInfo();
     // this.getTenant();

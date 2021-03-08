@@ -122,6 +122,19 @@
             "style": {
                 "navigationBarTitleText": "账单填写"
             }
+        },
+        {
+            "path": "pages/admin/roomBill/roomBill",
+            "style": {
+                "navigationBarTitleText": "房间账单",
+                "enablePullDownRefresh": true
+            }
+        },
+        {
+            "path": "pages/admin/editBill/editBill",
+            "style": {
+                "navigationBarTitleText": "修改账单"
+            }
         }
     ],
     "tabBar": {

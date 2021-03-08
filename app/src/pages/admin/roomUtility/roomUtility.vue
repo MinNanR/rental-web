@@ -1,6 +1,15 @@
 <template>
   <view class="" id="page" :style="'padding-bottom: ' + barHeight + 'px'">
-    <view class="padding-top font-size-17 text-center">
+    <scroll-view scroll-x class="bg-white nav">
+      <view class="flex text-center">
+        <view class="cu-item flex-sub" @click="toInfo()"> 房间信息 </view>
+        <view class="cu-item flex-sub" @click="toRoomBill()"> 房间账单 </view>
+        <view class="cu-item flex-sub text-blue cur" @click="toUtilityRecord()">
+          水电记录
+        </view>
+      </view>
+    </scroll-view>
+    <view class="font-size-17 text-center">
       <view class="flex bg-cyan" style="">
         <view class="flex-twice padding solid"> 时间 </view>
         <view class="flex-sub padding solid"> 水表行度 </view>
@@ -166,10 +175,11 @@ import dayjs from "dayjs";
 export default {
   data() {
     return {
-      id: 0,
+      roomId: 0,
       roomNumber: null,
       houseId: null,
       houseName: null,
+      statusCode: null,
       barHeight: 0,
       queryForm: {
         pageSize: 10,
@@ -191,8 +201,8 @@ export default {
     };
   },
   methods: {
-    getUtlityList() {
-      this.queryForm.roomId = Number(this.id);
+    getUtilityList() {
+      this.queryForm.roomId = Number(this.roomId);
       this.showLoading = true;
       this.request
         .post("/utility/getUtilityList", this.queryForm)
@@ -235,7 +245,7 @@ export default {
       ) {
         this.utilityForm.electricity = current.electricity;
       }
-      this.utilityForm.roomId = this.id;
+      this.utilityForm.roomId = this.roomId;
       this.utilityForm.roomNumber = this.roomNumber;
       this.utilityForm.houseId = this.houseId;
       this.utilityForm.houseName = this.houseName;
@@ -245,9 +255,17 @@ export default {
           .post("/utility/recordUtility/single", this.utilityForm)
           .then((response) => {
             this.queryForm.pageIndex = 1;
-            this.getUtlityList();
+            this.getUtilityList();
             this.$nextTick(() => {
               this.loadingModal = false;
+            });
+          })
+          .catch((err) => {
+            this.loadingModal = false;
+            uni.showToast({
+              title: err,
+              icon: "none",
+              duration: 2000,
             });
           });
       });
@@ -276,11 +294,22 @@ export default {
           .post("/utility/updateUtility", this.utilityForm)
           .then((response) => {
             this.queryForm.pageIndex = 1;
-            this.getUtlityList();
+            this.getUtilityList();
             this.$nextTick(() => {
               this.loadingModal = false;
             });
           });
+      });
+    },
+    toInfo() {
+      uni.redirectTo({
+        url: `/pages/admin/roomInfo/roomInfo?roomId=${this.roomId}`,
+      });
+    },
+    toRoomBill() {
+      uni.redirectTo({
+        url: `/pages/admin/roomBill/roomBill?roomId=${this.roomId}&roomNumber=${this.roomNumber}&houseId=${this.houseId}&houseName=${this.houseName}&statusCode=${this.statusCode}`,
+        animationType: "none",
       });
     },
   },
@@ -288,10 +317,11 @@ export default {
     uni.setNavigationBarTitle({
       title: `${params.houseName}-${params.roomNumber}水电登记表`,
     });
-    this.id = params.id;
+    this.roomId = params.roomId;
     this.roomNumber = params.roomNumber;
     this.houseId = params.houseId;
     this.houseName = params.houseName;
+    this.statusCode = params.statusCode;
     this.queryForm.pageIndex = 1;
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");
@@ -308,7 +338,7 @@ export default {
     });
   },
   onShow() {
-    this.getUtlityList();
+    this.getUtilityList();
   },
   onReachBottom() {
     if (!this.haveMore) {

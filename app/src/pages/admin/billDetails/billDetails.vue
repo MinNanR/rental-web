@@ -59,6 +59,14 @@
           <text class="text-price text-xxl">{{ bill.totalCharge }}</text>
         </view>
         <view class="flex justify-between margin-top">
+          <view class="text-xl"> 从 </view>
+          <view class="text-xl"> {{ bill.startDate }} </view>
+        </view>
+        <view class="flex justify-between margin-top">
+          <view class="text-xl"> 至 </view>
+          <view class="text-xl"> {{ bill.endDate }} </view>
+        </view>
+        <view class="flex justify-between margin-top">
           <view class="text-xl"> 账单进度 </view>
           <view style="width: 200px">
             <view class="cu-timeline">
@@ -110,7 +118,7 @@
                   :class="statusIndex >= 3 ? 'text-blue text-xl' : ''"
                 >
                   账单完成<text style="font-size: 12px" class="padding-left">{{
-                    bill.payTime == null ? "" : bill.payTime
+                    bill.payTime == null || bill.statusCode !== 'PAID' ? "" : bill.payTime
                   }}</text>
                 </view>
               </view>
@@ -139,10 +147,16 @@
           <view class="flex-sub padding solid">
             {{ bill.waterStart }}
           </view>
-          <view class="flex-sub padding solid" v-if="bill.typeCode === 'MONTHLY'">
+          <view
+            class="flex-sub padding solid"
+            v-if="bill.typeCode === 'MONTHLY'"
+          >
             {{ bill.waterEnd }}
           </view>
-          <view class="flex-sub padding solid" v-if="bill.typeCode === 'CHECK_IN'">
+          <view
+            class="flex-sub padding solid"
+            v-if="bill.typeCode === 'CHECK_IN'"
+          >
             /
           </view>
         </view>
@@ -151,10 +165,16 @@
           <view class="flex-sub padding solid">
             {{ bill.electricityStart }}
           </view>
-          <view class="flex-sub padding solid" v-if="bill.typeCode === 'MONTHLY'">
+          <view
+            class="flex-sub padding solid"
+            v-if="bill.typeCode === 'MONTHLY'"
+          >
             {{ bill.electricityEnd }}
           </view>
-          <view class="flex-sub padding solid" v-if="bill.typeCode === 'CHECK_IN'">
+          <view
+            class="flex-sub padding solid"
+            v-if="bill.typeCode === 'CHECK_IN'"
+          >
             /
           </view>
         </view>
@@ -244,12 +264,12 @@
             生成收据
           </button>
         </template>
-        <template v-if="bill.statusCode === 'UNCONFIRMED'">
+        <template v-if="bill.statusCode !== 'PAID' && bill.typeCode !== 'CHECK_IN'">
           <button
             class="cu-btn bg-red shadow-blur round lg"
             @click="correctBill()"
           >
-            校正水电读数
+            修改账单
           </button>
         </template>
       </view>
@@ -418,25 +438,26 @@ export default {
         });
     },
     correctBill() {
-      this.loadingModal = true;
-      this.loadingMessage = "校正中...";
-      this.request
-        .post("/bill/correctBill", { id: this.id })
-        .then((response) => {
-          this.loadingModal = false;
-          this.responseMessage = "校正成功";
-          this.$nextTick(() => {
-            this.responseModalShow = true;
-            this.getBillDetails();
-          });
-        })
-        .catch((err) => {
-          this.loadingModal = false;
-          this.responseMessage = "校正失败";
-          this.$nextTick(() => {
-            this.responseModalShow = true;
-          });
-        });
+      uni.navigateTo({ url: `/pages/admin/editBill/editBill?id=${this.id}` });
+      // this.loadingModal = true;
+      // this.loadingMessage = "校正中...";
+      // this.request
+      //   .post("/bill/correctBill", { id: this.id })
+      //   .then((response) => {
+      //     this.loadingModal = false;
+      //     this.responseMessage = "校正成功";
+      //     this.$nextTick(() => {
+      //       this.responseModalShow = true;
+      //       this.getBillDetails();
+      //     });
+      //   })
+      //   .catch((err) => {
+      //     this.loadingModal = false;
+      //     this.responseMessage = "校正失败";
+      //     this.$nextTick(() => {
+      //       this.responseModalShow = true;
+      //     });
+      //   });
     },
     confirm() {
       this.loadingModal = true;

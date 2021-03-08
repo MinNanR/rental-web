@@ -10,9 +10,13 @@
         <view class="flex-sub padding solid"> 从 </view>
         <view class="flex-twice padding solid">
           <view>
-            <picker mode="date" @change="startDateChange" :value="bill.startDate"> 
+            <picker
+              mode="date"
+              @change="startDateChange"
+              :value="modifyForm.startDate"
+            >
               <view class="picker" style="text-align: left; font-size: 16px">
-                {{ bill.startDate }}
+                {{ modifyForm.startDate }}
               </view>
             </picker>
           </view>
@@ -21,9 +25,13 @@
       <view class="flex bg-white">
         <view class="flex-sub padding solid"> 至 </view>
         <view class="flex-twice padding solid">
-          <picker mode="date" @change="endDateChange" :value="bill.endDate">
+          <picker
+            mode="date"
+            @change="endDateChange"
+            :value="modifyForm.endDate"
+          >
             <view class="picker" style="text-align: left; font-size: 16px">
-              {{ bill.endDate }}
+              {{ modifyForm.endDate }}
             </view>
           </picker>
         </view>
@@ -38,37 +46,35 @@
           <view class="flex-sub padding solid"> 电 </view>
         </view>
         <view class="flex bg-white">
-          <view class="flex-sub padding solid">
-            {{ baseData.utilityStartDate }}</view
-          >
+          <view class="flex-sub padding solid"> 上月行度</view>
           <view class="flex-sub padding solid">
             <input
               type="number"
-              v-model.number="bill.waterStart"
+              v-model.number="modifyForm.waterStart"
               @input="onWaterStartChange"
             />
           </view>
           <view class="flex-sub padding solid">
             <input
               type="number"
-              v-model.number="bill.electricityStart"
+              v-model.number="modifyForm.electricityStart"
               @input="onElectricityStartChange"
             />
           </view>
         </view>
         <view class="flex bg-white">
-          <view class="flex-sub padding solid"> {{ bill.today }}</view>
+          <view class="flex-sub padding solid">本月行度</view>
           <view class="flex-sub padding solid">
             <input
               type="number"
-              v-model.number="bill.waterEnd"
+              v-model.number="modifyForm.waterEnd"
               @input="onWaterEndChange"
             />
           </view>
           <view class="flex-sub padding solid">
             <input
               type="number"
-              v-model.number="bill.electricityEnd"
+              v-model.number="modifyForm.electricityEnd"
               @input="onElectricityEndChange"
             />
           </view>
@@ -100,7 +106,7 @@
         <view class="flex bg-white">
           <view class="flex-sub padding solid"> 房租 </view>
           <view class="flex-sub padding solid"> /</view>
-          <view class="flex-sub padding solid"> {{ baseData.price }} </view>
+          <view class="flex-sub padding solid"> {{ bill.rent }} </view>
         </view>
         <view class="flex bg-white">
           <view class="flex-sub padding solid"> 总收费 </view>
@@ -112,7 +118,7 @@
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
         <button class="cu-btn bg-green shadow-blur round lg" @click="save()">
-          保存并出单
+          保存修改
         </button>
       </view>
     </view>
@@ -160,21 +166,7 @@ export default {
       roomId: "",
       baseData: {},
       showLoading: false,
-      bill: {
-        totalCharge: 0,
-        rent: 0,
-        waterUsage: 0,
-        waterCharge: 0,
-        electricityUsage: 0,
-        electricityCharge: 0,
-        today: "",
-        waterStart: 0,
-        waterEnd: "",
-        electricityStart: 0,
-        electricityEnd: "",
-        startDate: "",
-        endDate: "",
-      },
+      bill: {},
       loadingModal: false,
       loadingMessage: "",
       modalShow: false,
@@ -182,57 +174,66 @@ export default {
         title: "",
         message: [],
       },
+      modifyForm: {},
     };
   },
   methods: {
     getBillData() {
       this.request
-        .post("/bill/getBillData", { roomId: this.roomId })
+        .post("/bill/getBillInfo", { id: this.id })
         .then((response) => {
           let { data } = response;
-          this.baseData = data;
-          this.bill.waterStart = data.waterStart;
-          this.bill.electricityStart = data.electricityStart;
-          this.bill.today = dayjs().format("M月DD日");
-          this.bill.totalCharge = data.price;
-          this.bill.billId = data.id;
-          this.bill.utilityStartId = data.utilityStartId;
-          this.bill.startDate = data.startDate;
-          this.bill.endDate = data.endDate;
+          this.bill = data;
+          this.modifyForm = {
+            billId: data.id,
+            waterStart: data.waterStart,
+            waterEnd: data.waterEnd,
+            electricityStart: data.electricityStart,
+            electricityEnd: data.electricityEnd,
+            startDate: data.startDate,
+            endDate: data.endDate,
+          };
         });
     },
+    getUtilityPrice() {
+      this.request.post("/bill/getUtilityPrice", {}).then((response) => {
+        let { data } = response;
+        this.baseData = {
+          waterPrice: data.waterPrice,
+          electricityPrice: data.electricityPrice,
+        };
+      });
+    },
     onWaterEndChange(e) {
-      let waterEnd = e.detail.value;
-      if (waterEnd < this.bill.waterStart) {
-        waterEnd = 1000 + new Number(waterEnd);
+      let waterEnd = new Number(e.detail.value);
+      let waterStart = new Number(this.modifyForm.waterStart);
+      if (waterEnd < waterStart) {
+        waterEnd = 1000 + waterEnd;
       }
-      this.bill.waterUsage = waterEnd - this.bill.waterStart;
+      this.bill.waterUsage = waterEnd - waterStart;
       let waterUsage = this.bill.waterUsage;
       if (waterUsage === 0) {
         waterUsage = 1;
       }
       this.bill.waterCharge = waterUsage * this.baseData.waterPrice;
       this.bill.totalCharge =
-        this.bill.waterCharge +
-        this.bill.electricityCharge +
-        this.baseData.price;
+        this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
     },
     onElectricityEndChange(e) {
-      let electricityEnd = e.detail.value;
-      if (electricityEnd < this.bill.electricityStart) {
-        electricityEnd = 10000 + new Number(electricityEnd);
+      let electricityEnd = new Number(e.detail.value);
+      let electricityStart = new Number(this.modifyForm.electricityStart);
+      if (electricityEnd < electricityStart) {
+        electricityEnd = 10000 + electricityEnd;
       }
-      this.bill.electricityUsage = electricityEnd - this.bill.electricityStart;
+      this.bill.electricityUsage = electricityEnd - electricityStart;
       this.bill.electricityCharge =
         this.bill.electricityUsage * this.baseData.electricityPrice;
       this.bill.totalCharge =
-        this.bill.waterCharge +
-        this.bill.electricityCharge +
-        this.baseData.price;
+        this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
     },
     onWaterStartChange(e) {
-      let waterStart = e.detail.value;
-      let waterEnd = this.bill.waterEnd;
+      let waterStart = new Number(e.detail.value);
+      let waterEnd = new Number(this.modifyForm.waterEnd);
       if (waterEnd < waterStart) {
         waterEnd = waterEnd + 1000;
       }
@@ -243,13 +244,11 @@ export default {
       }
       this.bill.waterCharge = waterUsage * this.baseData.waterPrice;
       this.bill.totalCharge =
-        this.bill.waterCharge +
-        this.bill.electricityCharge +
-        this.baseData.price;
+        this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
     },
     onElectricityStartChange(e) {
-      let electricityStart = e.detail.value;
-      let electricityEnd = this.bill.electricityEnd;
+      let electricityStart = new Number(e.detail.value);
+      let electricityEnd = new Number(this.modifyForm.electricityEnd);
       if (electricityEnd < electricityStart) {
         electricityEnd = electricityEnd + 10000;
       }
@@ -257,31 +256,65 @@ export default {
       this.bill.electricityCharge =
         this.bill.electricityUsage * this.baseData.electricityPrice;
       this.bill.totalCharge =
-        this.bill.waterCharge +
-        this.bill.electricityCharge +
-        this.baseData.price;
+        this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
     },
     startDateChange(e) {
-      this.bill.startDate = e.detail.value;
+      this.modifyForm.startDate = e.detail.value;
     },
     endDateChange(e) {
-      this.bill.endDate = e.detail.value;
+      this.modifyForm.endDate = e.detail.value;
     },
     save() {
+      let {
+        waterStart,
+        waterEnd,
+        electricityStart,
+        electricityEnd,
+        startDate,
+        endDate,
+      } = this.modifyForm;
+      let submitForm = {};
+      let bill = this.bill;
+      if (waterStart !== bill.waterStart) {
+        submitForm.waterStart = waterStart;
+      }
+      if (waterEnd !== bill.waterEnd) {
+        submitForm.waterEnd = waterEnd;
+      }
+      if (electricityStart !== bill.electricityStart) {
+        submitForm.electricityStart = electricityStart;
+      }
+      if (electricityEnd !== bill.electricityEnd) {
+        submitForm.electricityEnd = electricityEnd;
+      }
+      if (startDate !== bill.startDate) {
+        submitForm.startDate = startDate;
+      }
+      if (endDate !== bill.endDate) {
+        submitForm.endDate = endDate;
+      }
+      if (Object.keys(submitForm).length == 0) {
+        this.modal.title = "保存成功";
+        this.modal.message = ["没有要修改的信息"];
+        this.modal.confirmAction = "SUCCESS";
+        this.modalShow = true;
+        return;
+      }
+      submitForm.billId = this.modifyForm.billId;
       this.loadingModal = true;
       this.loadingMessage = "保存中";
       this.request
-        .post("/bill/fillBill", this.bill)
+        .post("/bill/modifyBill", submitForm)
         .then((response) => {
           this.loadingModal = false;
-          this.modal.confirAction = "SUCCESS";
+          this.modal.confirmAction = "SUCCESS";
           this.modal.title = "保存成功";
           this.modal.message = [response.message];
           this.modalShow = true;
         })
         .catch((err) => {
           this.loadingModal = false;
-          this.modal.confirAction = "FAIL";
+          this.modal.confirmAction = "FAIL";
           this.modal.title = "保存失败";
           this.modal.message = [err];
           this.modalShow = true;
@@ -290,18 +323,22 @@ export default {
     },
     confirmAction() {
       this.modalShow = false;
-      if (this.modal.confirAction === "SUCCESS") {
-        uni.redirectTo({
-          url: `/pages/admin/billDetails/billDetails?id=${this.bill.billId}`,
+      if (this.modal.confirmAction === "SUCCESS") {
+        this.modalShow = false;
+        uni.navigateBack({
+          delta: 1,
         });
+      } else if (this.modal.confirmAction === "FAIL") {
+        this.modalShow = false;
       }
     },
   },
   onShow() {},
   onLoad(param) {
     this.today = dayjs().format("M月D日");
-    this.roomId = param.roomId;
+    this.id = param.id;
     this.getBillData();
+    this.getUtilityPrice();
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");
       view

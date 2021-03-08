@@ -1,45 +1,15 @@
 <template>
   <view class="">
-    <scroll-view
-      scroll-y
-      class="scroll"
-      refresher-enabled
-      :refresher-triggered="triggered"
-      @refresherrefresh="onRefresh"
-      @scrolltolower="onScrollToLower"
-    >
-      <!-- <view
-        class="paid-bill-container"
-        v-for="(item, index) in billList"
-        :key="item.id"
-      >
-        <view
-          :class="item.className"
-          @click="showContent(index)"
-          style="font-size: 16px"
-        >
-          <view class="padding-sm margin-xs">
-            房号：{{ item.roomNumber }}
-          </view>
-          <view class="padding-sm margin-xs">
-            总费用：{{ item.totalCharge }}元
-          </view>
+    <scroll-view scroll-x class="bg-white nav">
+      <view class="flex text-center">
+        <view class="cu-item flex-sub" @click="toInfo()"> 房间信息 </view>
+        <view class="cu-item flex-sub text-blue cur"> 房间账单 </view>
+        <view class="cu-item flex-sub" @click="toUtilityRecord()">
+          水电记录
         </view>
-        <view
-          v-show="item.show"
-          class="grid col-2 bg-gray"
-          style="font-size: 14px"
-        >
-          <view class="padding-xs"> 居住人：{{ item.livingPeople }} </view>
-          <view class="padding-xs"> 账单时间：{{ item.time }} </view>
-          <view class="padding-xs" v-if="item.typeCode === 'MONTHLY'"> 水费：{{ item.waterCharge }}元 </view>
-          <view class="padding-xs" v-if="item.typeCode === 'MONTHLY'"> 电费：{{ item.electricityCharge }}元 </view>
-          <view class="padding-xs"> 房租：{{ item.rent }}元 </view>
-          <view class="padding-xs" style="color: blue" @click="refer(item.id)">
-            详情
-          </view>
-        </view>
-      </view> -->
+      </view>
+    </scroll-view>
+    <view :style="'padding-bottom: ' + barHeight + 'px'">
       <view v-for="(item, index) in billList" :key="index">
         <view
           class="cu-list menu-avatar comment solids-top"
@@ -104,7 +74,23 @@
           </view>
         </view>
       </view>
-    </scroll-view>
+    </view>
+    <view class="box">
+      <view
+        class="cu-bar tabbar btn-group foot bg-white"
+        id="box"
+        v-if="roomInfo.statusCode === 'ON_RENT'"
+      >
+        <block>
+          <button
+            class="cu-btn bg-green shadow-blur round lg"
+            @click="toBillRegister()"
+          >
+            填写月度账单
+          </button>
+        </block>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -112,23 +98,37 @@
 export default {
   data() {
     return {
+      roomInfo: {},
       billList: [],
       queryForm: {
-        pageSize: 1,
-        pageIndex: 10,
+        pageSize: 10,
+        pageIndex: 1,
       },
       haveMore: true,
       showLoading: false,
-      triggered: false,
-      _freshing: false,
+      barHeight: 0,
     };
   },
-  props: ["roomId"],
   methods: {
+    toInfo() {
+      uni.redirectTo({
+        url: `/pages/admin/roomInfo/roomInfo?roomId=${this.roomInfo.roomId}`,
+      });
+    },
+    toUtilityRecord() {
+      uni.redirectTo({
+        url: `/pages/admin/roomUtility/roomUtility?roomId=${this.roomInfo.roomId}&roomNumber=${this.roomInfo.roomNumber}&houseId=${this.roomInfo.houseId}&houseName=${this.roomInfo.houseName}&statusCode=${this.roomInfo.statusCode}`,
+      });
+    },
+    toBillRegister() {
+      uni.navigateTo({
+        url: `/pages/admin/fillBill/fillBill?roomId=${this.roomInfo.roomId}`,
+      });
+    },
     getRoomBillList() {
       this.showLoading = true;
       let queryForm = this.queryForm;
-      queryForm.roomId = this.roomId;
+      queryForm.roomId = this.roomInfo.roomId;
       this.request.post("/bill/getRoomBillList", queryForm).then((response) => {
         let { data } = response;
         if (this.queryForm.pageIndex === 1) {
@@ -146,31 +146,51 @@ export default {
         url: `/pages/admin/billDetails/billDetails?id=${id}`,
       });
     },
-    onRefresh() {
-      if (this._freshing) return;
-      this._freshing = true;
-      if (!this.triggered) this.triggered = true;
-      this.queryForm.pageIndex = 1;
-      this.getRoomBillList();
-    },
-    onRestore() {
-      this.triggered = false; // 需要重置
-    },
-    onScrollToLower() {
-      if (this.haveMore) {
-        this.getRoomBillList();
-      }
-    },
   },
-  mounted() {
+  onLoad(params) {
+    this.roomInfo = {
+      roomId: params.roomId,
+      roomNumber: params.roomNumber,
+      houseId: params.houseId,
+      houseName: params.houseName,
+      statusCode: params.statusCode,
+    };
+    uni.setNavigationBarTitle({
+      title: `${params.houseName}-${params.roomNumber}账单`,
+    });
+    if (this.roomInfo.statusCode === "ON_RENT") {
+      this.$nextTick(() => {
+        let view = uni.createSelectorQuery().select("#box");
+        view
+          .fields(
+            {
+              size: true,
+            },
+            (data) => {
+              this.barHeight = data.height;
+            }
+          )
+          .exec();
+      });
+    } else {
+      this.barHeight = 0;
+    }
+  },
+  onShow() {
     this.queryForm.pageIndex = 1;
+    this.getRoomBillList();
+  },
+  onReachBottom() {
+    if (!this.haveMore) {
+      this.showLoading = true;
+      setTimeout(() => {
+        this.showLoading = false;
+      }, 2000);
+    }
     this.getRoomBillList();
   },
 };
 </script>
 
 <style>
-.scroll {
-  height: 80vh;
-}
 </style>
