@@ -92,7 +92,9 @@
                   :class="statusIndex >= 3 ? 'text-blue text-xl' : ''"
                 >
                   账单完成<text style="font-size: 12px" class="padding-left">{{
-                    bill.payTime == null || bill.statusCode !== 'PAID' ? "" : bill.payTime
+                    bill.payTime == null || bill.statusCode !== "PAID"
+                      ? ""
+                      : bill.payTime
                   }}</text>
                 </view>
               </view>
@@ -113,13 +115,33 @@
       <view class="padding-top font-size-17 text-center">
         <view class="flex bg-cyan">
           <view class="flex-sub padding solid"> </view>
-          <view class="flex-sub padding solid"> 上月行度 </view>
-          <view class="flex-sub padding solid"> 本月行度 </view>
+          <view class="flex-sub padding solid"> 水 </view>
+          <view class="flex-sub padding solid"> 电 </view>
         </view>
         <view class="flex bg-white">
-          <view class="flex-sub padding solid"> 水 </view>
+          <view class="flex-sub padding solid"> 上月行度 </view>
           <view class="flex-sub padding solid">
             {{ bill.waterStart }}
+          </view>
+          <view
+            class="flex-sub padding solid"
+          >
+            {{ bill.electricityStart }}
+          </view>
+        </view>
+        <view class="flex bg-white">
+          <view class="flex-sub padding solid"> 本月行度 </view>
+          <view
+            class="flex-sub padding solid"
+            v-if="bill.typeCode === 'CHECK_IN'"
+          >
+            /
+          </view>
+          <view
+            class="flex-sub padding solid"
+            v-if="bill.typeCode === 'CHECK_IN'"
+          >
+            /
           </view>
           <view
             class="flex-sub padding solid"
@@ -129,27 +151,9 @@
           </view>
           <view
             class="flex-sub padding solid"
-            v-if="bill.typeCode === 'CHECK_IN'"
-          >
-            /
-          </view>
-        </view>
-        <view class="flex bg-white">
-          <view class="flex-sub padding solid"> 电 </view>
-          <view class="flex-sub padding solid">
-            {{ bill.electricityStart }}
-          </view>
-          <view
-            class="flex-sub padding solid"
             v-if="bill.typeCode === 'MONTHLY'"
           >
             {{ bill.electricityEnd }}
-          </view>
-          <view
-            class="flex-sub padding solid"
-            v-if="bill.typeCode === 'CHECK_IN'"
-          >
-            /
           </view>
         </view>
       </view>
@@ -238,7 +242,9 @@
             生成收据
           </button>
         </template>
-        <template v-if="bill.statusCode !== 'PAID' && bill.typeCode !== 'CHECK_IN'">
+        <template
+          v-if="bill.statusCode !== 'PAID' && bill.typeCode !== 'CHECK_IN'"
+        >
           <button
             class="cu-btn bg-red shadow-blur round lg"
             @click="correctBill()"

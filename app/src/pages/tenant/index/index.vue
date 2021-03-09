@@ -81,7 +81,7 @@ export default {
       uni.navigateTo({ url: "/pages/tenant/billList/billList" });
     },
     toUtility() {
-      uni.navigateTo({ url: `/pages/tenant/utility/utility?roomId=${this.baseInfo.roomId}` });
+      uni.navigateTo({ url: `/pages/tenant/utility/utility` });
     },
   },
   onLoad() {

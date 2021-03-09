@@ -1,6 +1,6 @@
 <template>
   <view class="" :style="'padding-bottom: ' + barHeight + 'px'">
-    <view class="margin padding bg-white">
+    <view class="margin padding bg-white font-size-17">
       <view class="text-xl" style="font-weight: 700"> 账单日期 </view>
       <view class="flex margin-top bg-cyan">
         <view class="flex-sub padding solid"> </view>
@@ -357,4 +357,15 @@ export default {
 </script>
 
 <style>
+.font-size-17 {
+  font-size: 17px;
+}
+
+.font-size-20 {
+  font-size: 20px;
+}
+
+.font-size-22 {
+  font-size: 22px;
+}
 </style>
