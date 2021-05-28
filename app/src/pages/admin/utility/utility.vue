@@ -14,14 +14,14 @@
         class="cu-item bg-img shadow"
         v-for="(item, index) in recordList"
         :key="index"
-        style="margin: 10px 10px"
+        style="margin: 10px 0px"
         @click="refer(index)"
       >
         <view
           style="border-radius: 15px"
-          :class="'light bg-' + colorList[index % colorList.length]"
+          :class="'light bg-white'"
         >
-          <view class="cardTitle text-center padding" style="font-size: 20px">
+          <view class="cardTitle text-left padding-lr-xl padding-tb" style="font-size: 20px;">
             {{ item.name }}
           </view>
         </view>

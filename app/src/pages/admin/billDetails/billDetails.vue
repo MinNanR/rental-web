@@ -243,7 +243,7 @@
           </button>
         </template>
         <template
-          v-if="bill.statusCode !== 'PAID' && bill.typeCode !== 'CHECK_IN'"
+          v-if="bill.statusCode !== 'PAID'"
         >
           <button
             class="cu-btn bg-red shadow-blur round lg"

@@ -3,10 +3,11 @@
     <template v-for="(item, index) in houseList">
       <view class="grid col-1" :key="item.id">
         <view
-          class="padding-lg margin font-size text-center radius"
-          :class="index % 2 == 0 ? 'bg-orange' : 'bg-yellow'"
+          class="padding-sm margin-tb-sm font-size text-left bg-white"
           @click="refer(item.id, item.houseName)"
         >
+          <text class="cuIcon-home margin-right-xs" 
+          :class="index % 2 == 0 ? 'text-orange' : 'text-yellow'"></text>
           {{ item.houseName }}
         </view>
       </view>

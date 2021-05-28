@@ -8,21 +8,35 @@
         >
           房间信息
         </view>
-        <view
-          class="cu-item flex-sub"
-          @click="toRoomBill()"
-        >
-          房间账单
-        </view>
-        <view
-          class="cu-item flex-sub"
-          @click="toUtilityRecord()"
-        >
+        <view class="cu-item flex-sub" @click="toRoomBill()"> 房间账单 </view>
+        <view class="cu-item flex-sub" @click="toUtilityRecord()">
           水电记录
         </view>
       </view>
     </scroll-view>
     <view :style="'padding-bottom: ' + barHeight + 'px'">
+       <!-- <view class="flex justify-center">
+        <view class="basis-sub padding-lr" style="width: 50%">
+          <button
+            class="cu-btn bg-gray lg"
+            style="width: 100%"
+            @click="lastRoom()"
+          >
+          <text class="cuIcon-back"></text>
+            上一间
+          </button>
+        </view>
+        <view class="basis-sub padding-lr" style="width: 50%">
+          <button
+            class="cu-btn bg-gray lg"
+            style="width: 100%"
+            @click="nextRoom()"
+          >
+            下一间
+            <text class="cuIcon-right"></text>
+          </button>
+        </view>
+      </view> -->
       <view>
         <view class="grid col-1">
           <view class="padding solid flex">
@@ -57,9 +71,20 @@
             <view class="font-size-17">
               <button class="bg-blue cu-btn sm" @click="showChangePriceModal()">
                 <span class="font-size-17">
-                  <text class="cuIcon-settingsfill"></text> 设置租金
+                  <text class="cuIcon-settingsfill"></text> 调整租金
                 </span>
               </button></view
+            >
+          </view>
+          <view
+            class="padding solid flex"
+            v-if="roomInfo.statusCode === 'ON_RENT'"
+          >
+            <view class="font-size-20">
+              <text class="cuIcon-calendar margin-right-xs text-blue"></text>
+            </view>
+            <view class="font-size-17"
+              >入住日期: {{ roomInfo.checkInDate }}</view
             >
           </view>
           <view
@@ -183,6 +208,7 @@
           </block>
         </view>
       </view>
+     
     </view>
     <view class="box">
       <view class="cu-bar tabbar btn-group foot bg-white" id="box">
@@ -281,7 +307,6 @@
 </template>
 
 <script>
-
 export default {
   data() {
     return {
@@ -521,15 +546,45 @@ export default {
     // switchPage(page) {
     //   this.curPage = page;
     // },
-    toRoomBill(){
+    toRoomBill() {
       uni.redirectTo({
         url: `/pages/admin/roomBill/roomBill?roomId=${this.roomId}&roomNumber=${this.roomInfo.roomNumber}&houseId=${this.roomInfo.houseId}&houseName=${this.roomInfo.houseName}&statusCode=${this.roomInfo.statusCode}`,
-        animationType:"none"
+        animationType: "none",
       });
     },
     toBillRegister() {
       uni.navigateTo({
         url: `/pages/admin/fillBill/fillBill?roomId=${this.roomId}`,
+      });
+    },
+    nextRoom() {
+      let roomIdList = this.getStorage("roomIdList");
+      let index = roomIdList.indexOf(this.roomInfo.id);
+      if (index === roomIdList.length - 1) {
+        uni.showToast({
+          title: "已经是最后一间房间了",
+          icon: "none",
+        });
+        return;
+      }
+      let nextId = roomIdList[index + 1];
+      uni.redirectTo({
+        url: `/pages/admin/roomInfo/roomInfo?roomId=${nextId}`,
+      });
+    },
+    lastRoom() {
+      let roomIdList = this.getStorage("roomIdList");
+      let index = roomIdList.indexOf(this.roomInfo.id);
+      if (index === 0) {
+        uni.showToast({
+          title: "已经是第一间房间了",
+          icon: "none",
+        });
+        return;
+      }
+      let lastId = roomIdList[index - 1];
+      uni.redirectTo({
+        url: `/pages/admin/roomInfo/roomInfo?roomId=${lastId}`,
       });
     },
   },

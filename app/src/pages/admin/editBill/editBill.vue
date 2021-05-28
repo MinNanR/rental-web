@@ -62,7 +62,7 @@
             />
           </view>
         </view>
-        <view class="flex bg-white">
+        <view class="flex bg-white" v-if="bill.typeCode === 'MONTHLY'">
           <view class="flex-sub padding solid">本月行度</view>
           <view class="flex-sub padding solid">
             <input
@@ -81,6 +81,38 @@
         </view>
       </view>
     </view>
+    <view class="margin padding bg-white" v-if="bill.typeCode === 'CHECK_IN'">
+      <view class="text-xl" style="font-weight: 700"> 入住费用 </view>
+      <view
+        class="padding-top font-size-17 text-center"
+        v-if="bill.typeCode === 'CHECK_IN'"
+      >
+        <view class="flex bg-cyan">
+          <view class="flex-sub padding solid"> 收款项 </view>
+          <view class="flex-sub padding solid">数量/金额</view>
+        </view>
+        <view class="flex bg-white">
+          <view class="flex-sub padding solid"> 押金 </view>
+          <view class="flex-sub padding solid">
+            <input
+              type="number"
+              v-model.number="modifyForm.deposit"
+              @input="depositChange"
+            />
+          </view>
+        </view>
+        <view class="flex bg-white">
+          <view class="flex-sub padding solid"> 门禁卡 </view>
+          <view class="flex-sub padding solid">
+            <input
+              type="number"
+              v-model.number="modifyForm.accessCardQuantity"
+              @input="accessCardQuantityChange"
+            />
+          </view>
+        </view>
+      </view>
+    </view>
     <view class="margin padding bg-white" v-if="!showLoading">
       <view class="text-xl" style="font-weight: 700"> 账单结算 </view>
       <view class="padding-top font-size-17 text-center">
@@ -89,18 +121,38 @@
           <view class="flex-sub padding solid"> 数量 </view>
           <view class="flex-sub padding solid"> 收费(元) </view>
         </view>
-        <view class="flex bg-white">
+        <view class="flex bg-white" v-if="bill.typeCode === 'MONTHLY'">
           <view class="flex-sub padding solid"> 水 </view>
           <view class="flex-sub padding solid"> {{ bill.waterUsage }}度 </view>
           <view class="flex-sub padding solid"> {{ bill.waterCharge }} </view>
         </view>
-        <view class="flex bg-white">
+        <view class="flex bg-white" v-if="bill.typeCode === 'MONTHLY'">
           <view class="flex-sub padding solid"> 电 </view>
           <view class="flex-sub padding solid">
             {{ bill.electricityUsage }}度
           </view>
           <view class="flex-sub padding solid">
             {{ bill.electricityCharge }}
+          </view>
+        </view>
+        <view class="flex bg-white" v-if="bill.typeCode === 'CHECK_IN'">
+          <view class="flex-sub padding solid"> 押金 </view>
+          <view class="flex-sub padding solid"> / </view>
+          <view class="flex-sub padding solid">
+            {{ modifyForm.deposit }}
+          </view>
+        </view>
+        <view class="flex bg-white" v-if="bill.typeCode === 'CHECK_IN'">
+          <view class="flex-sub padding solid"> 门禁卡 </view>
+          <view class="flex-sub padding solid">
+            {{
+              modifyForm.accessCardQuantity === ""
+                ? 0
+                : modifyForm.accessCardQuantity
+            }}
+          </view>
+          <view class="flex-sub padding solid">
+            {{ modifyForm.accessCardQuantity * baseData.accessCardPrice }}
           </view>
         </view>
         <view class="flex bg-white">
@@ -113,6 +165,18 @@
           <view class="flex-sub padding solid"> / </view>
           <view class="flex-sub padding solid"> {{ bill.totalCharge }} </view>
         </view>
+      </view>
+    </view>
+    <view class="margin padding bg-white" v-if="bill.typeCode === 'CHECK_IN'">
+      <view class="text-xl" style="font-weight: 700"> 备注 </view>
+      <view class="margin-top">
+        <textarea
+          v-model="modifyForm.remark"
+          cols="30"
+          rows="10"
+          maxlength="140"
+          style="font-size: 16px"
+        ></textarea>
       </view>
     </view>
     <view class="box">
@@ -192,7 +256,11 @@ export default {
             electricityEnd: data.electricityEnd,
             startDate: data.startDate,
             endDate: data.endDate,
+            deposit: data.deposit,
+            accessCardQuantity: data.accessCardQuantity,
+            remark: data.remark,
           };
+          this.getUtilityPrice();
         });
     },
     getUtilityPrice() {
@@ -201,6 +269,7 @@ export default {
         this.baseData = {
           waterPrice: data.waterPrice,
           electricityPrice: data.electricityPrice,
+          accessCardPrice: data.accessCardPrice[this.bill.houseName],
         };
       });
     },
@@ -232,37 +301,63 @@ export default {
         this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
     },
     onWaterStartChange(e) {
-      let waterStart = new Number(e.detail.value);
-      let waterEnd = new Number(this.modifyForm.waterEnd);
-      if (waterEnd < waterStart) {
-        waterEnd = waterEnd + 1000;
+      if (this.bill.typeCode === "MONTHLY") {
+        let waterStart = new Number(e.detail.value);
+        let waterEnd = new Number(this.modifyForm.waterEnd);
+        if (waterEnd < waterStart) {
+          waterEnd = waterEnd + 1000;
+        }
+        this.bill.waterUsage = waterEnd - waterStart;
+        let waterUsage = this.bill.waterUsage;
+        if (waterUsage === 0) {
+          waterUsage = 1;
+        }
+        this.bill.waterCharge = waterUsage * this.baseData.waterPrice;
+        this.bill.totalCharge =
+          this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
       }
-      this.bill.waterUsage = waterEnd - waterStart;
-      let waterUsage = this.bill.waterUsage;
-      if (waterUsage === 0) {
-        waterUsage = 1;
-      }
-      this.bill.waterCharge = waterUsage * this.baseData.waterPrice;
-      this.bill.totalCharge =
-        this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
     },
     onElectricityStartChange(e) {
-      let electricityStart = new Number(e.detail.value);
-      let electricityEnd = new Number(this.modifyForm.electricityEnd);
-      if (electricityEnd < electricityStart) {
-        electricityEnd = electricityEnd + 10000;
+      if (this.bill.typeCode === "MONTHLY") {
+        let electricityStart = new Number(e.detail.value);
+        let electricityEnd = new Number(this.modifyForm.electricityEnd);
+        if (electricityEnd < electricityStart) {
+          electricityEnd = electricityEnd + 10000;
+        }
+        this.bill.electricityUsage = electricityEnd - electricityStart;
+        this.bill.electricityCharge =
+          this.bill.electricityUsage * this.baseData.electricityPrice;
+        this.bill.totalCharge =
+          this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
       }
-      this.bill.electricityUsage = electricityEnd - electricityStart;
-      this.bill.electricityCharge =
-        this.bill.electricityUsage * this.baseData.electricityPrice;
-      this.bill.totalCharge =
-        this.bill.waterCharge + this.bill.electricityCharge + this.bill.rent;
     },
     startDateChange(e) {
       this.modifyForm.startDate = e.detail.value;
     },
     endDateChange(e) {
       this.modifyForm.endDate = e.detail.value;
+    },
+    depositChange(e) {
+      let deposit = new Number(e.detail.value);
+      let quantity = this.modifyForm.accessCardQuantity;
+      let accessCardCharge = quantity * this.baseData.accessCardPrice;
+      this.bill.totalCharge = deposit + this.bill.rent + accessCardCharge;
+      if (quantity > 0) {
+        this.modifyForm.remark = `押金${deposit}元，房租${this.bill.rent}元，门卡${quantity}个${accessCardCharge}元，总共${this.bill.totalCharge}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
+      } else {
+        this.modifyForm.remark = `押金${deposit}元，房租${this.bill.rent}元，总共${this.bill.totalCharge}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
+      }
+    },
+    accessCardQuantityChange(e) {
+      let accessCardQuantity = new Number(e.detail.value);
+      let accessCardCharge = accessCardQuantity * this.baseData.accessCardPrice;
+      this.bill.totalCharge =
+        this.modifyForm.deposit + this.bill.rent + accessCardCharge;
+      if (accessCardQuantity > 0) {
+        this.modifyForm.remark = `押金${this.modifyForm.deposit}元，房租${this.bill.rent}元，门卡${accessCardQuantity}个${accessCardCharge}元，总共${this.bill.totalCharge}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
+      }else{
+        this.modifyForm.remark = `押金${this.modifyForm.deposit}元，房租${this.bill.rent}元，总共${this.bill.totalCharge}元，租满三个月后退房时清洁好卫生还原房内现状，计清水电再退回所剩押金，自己财物自己保管`;
+      }
     },
     save() {
       let {
@@ -272,6 +367,9 @@ export default {
         electricityEnd,
         startDate,
         endDate,
+        deposit,
+        accessCardQuantity,
+        remark
       } = this.modifyForm;
       let submitForm = {};
       let bill = this.bill;
@@ -293,6 +391,15 @@ export default {
       if (endDate !== bill.endDate) {
         submitForm.endDate = endDate;
       }
+      if(deposit !== bill.deposit){
+        submitForm.deposit = deposit
+      }
+      if(accessCardQuantity !== bill.accessCardQuantity){
+        submitForm.accessCardQuantity = accessCardQuantity
+      }
+      if(remark !== bill.remark){
+        submitForm.remark = remark
+      }
       if (Object.keys(submitForm).length == 0) {
         this.modal.title = "保存成功";
         this.modal.message = ["没有要修改的信息"];
@@ -301,6 +408,7 @@ export default {
         return;
       }
       submitForm.billId = this.modifyForm.billId;
+      console.log(submitForm);
       this.loadingModal = true;
       this.loadingMessage = "保存中";
       this.request
@@ -319,7 +427,6 @@ export default {
           this.modal.message = [err];
           this.modalShow = true;
         });
-      setTimeout(() => {}, 1000);
     },
     confirmAction() {
       this.modalShow = false;
@@ -338,7 +445,6 @@ export default {
     this.today = dayjs().format("M月D日");
     this.id = param.id;
     this.getBillData();
-    this.getUtilityPrice();
     this.$nextTick(() => {
       let view = uni.createSelectorQuery().select("#box");
       view

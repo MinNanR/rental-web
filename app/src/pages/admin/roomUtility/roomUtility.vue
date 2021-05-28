@@ -9,6 +9,28 @@
         </view>
       </view>
     </scroll-view>
+    <!-- <view class="flex justify-center">
+      <view class="basis-sub padding-lr" style="width: 50%">
+        <button
+          class="cu-btn bg-gray lg"
+          style="width: 100%"
+          @click="lastRoom()"
+        >
+          <text class="cuIcon-back"></text>
+          上一间
+        </button>
+      </view>
+      <view class="basis-sub padding-lr" style="width: 50%">
+        <button
+          class="cu-btn bg-gray lg"
+          style="width: 100%"
+          @click="nextRoom()"
+        >
+          下一间
+          <text class="cuIcon-right"></text>
+        </button>
+      </view>
+    </view> -->
     <view class="font-size-17 text-center">
       <view class="flex bg-cyan" style="">
         <view class="flex-twice padding solid"> 时间 </view>
@@ -310,6 +332,39 @@ export default {
       uni.redirectTo({
         url: `/pages/admin/roomBill/roomBill?roomId=${this.roomId}&roomNumber=${this.roomNumber}&houseId=${this.houseId}&houseName=${this.houseName}&statusCode=${this.statusCode}`,
         animationType: "none",
+      });
+    },
+    nextRoom() {
+      let roomIdList = this.getStorage("roomIdList");
+      let id = parseInt(this.roomId);
+      console.log(id);
+      let index = roomIdList.indexOf(id);
+      if (index === roomIdList.length - 1) {
+        uni.showToast({
+          title: "已经是最后一间房间了",
+          icon: "none",
+        });
+        return;
+      }
+      let nextId = roomIdList[index + 1];
+      uni.redirectTo({
+        url: `/pages/admin/roomInfo/roomInfo?roomId=${nextId}`,
+      });
+    },
+    lastRoom() {
+      let roomIdList = this.getStorage("roomIdList");
+      let id = parseInt(this.roomId);
+      let index = roomIdList.indexOf(id);
+      if (index <= 0) {
+        uni.showToast({
+          title: "已经是第一间房间了",
+          icon: "none",
+        });
+        return;
+      }
+      let lastId = roomIdList[index - 1];
+      uni.redirectTo({
+        url: `/pages/admin/roomInfo/roomInfo?roomId=${lastId}`,
       });
     },
   },

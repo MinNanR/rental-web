@@ -75,7 +75,7 @@
                 <view class="content">
                   <view :class="'text-black'" style="font-size: 20px"
                     >{{ room.roomNumber
-                    }}<span style="font-size: 16px;margin-left: 10px"
+                    }}<span style="font-size: 16px; margin-left: 10px"
                       ><text
                         class="cuIcon-round margin-right-xs"
                         :class="'text-' + statusTextColor[room.statusCode]"
@@ -120,11 +120,11 @@ export default {
       // colorList: ["red", "blue", "yellow", "green"],
       statusTextColor: {
         VACANT: "gray",
-        ON_RENT: "olive",
+        ON_RENT: "on-rent",
       },
       statusIconColor: {
         VACANT: "grey",
-        ON_RENT: "green",
+        ON_RENT: "on-rent",
       },
       queryForm: {
         houseId: "",
@@ -198,6 +198,8 @@ export default {
           this.list.forEach((e) => (e.id = id++));
           this.listCur = this.list[0];
           this.showLoading = false;
+          // let roomIdList = data.map(e => e.roomList.map(r => r.id)).flat()
+          // this.setStorage("roomIdList", roomIdList)
         })
         .catch((err) => {
           console.error(err);
@@ -266,5 +268,14 @@ export default {
 .VerticalMain {
   background-color: #f1f1f1;
   flex: 1;
+}
+
+.bg-on-rent {
+  background-color: #08ce65;
+  color: white;
+}
+
+.text-on-rent {
+  color: #08ce65;
 }
 </style>
